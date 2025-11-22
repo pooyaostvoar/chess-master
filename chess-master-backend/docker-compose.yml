@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: chess_db
+    restart: always
+    environment:
+      POSTGRES_USER: chessuser
+      POSTGRES_PASSWORD: chesspass
+      POSTGRES_DB: chess_master
+    ports:
+      - "5432:5432"   # hostPort:containerPort
+    volumes:
+      - chess_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: chess_redis
+    restart: always
+    command: ["redis-server", "--requirepass", "redis-pass"]
+    environment:
+      REDIS_PASSWORD: redis-pass
+    ports:
+      - "6378:6379"
+  
+  chess_master:
+    build: ./chess_master
+    container_name: chess_master_app
+    restart: always
+    depends_on:
+      - db
+      - redis
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: chessuser
+      DB_PASSWORD: chesspass
+      DB_NAME: chess_master
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: redis-pass
+    ports:
+      - "8000:8000"
+    command: ["./start_chess_master.sh"]
+
+volumes:
+  chess_data:
