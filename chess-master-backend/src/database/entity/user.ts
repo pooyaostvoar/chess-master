@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { ScheduleSlot } from "./schedule-slots";
 
 @Entity("users")
 export class User {
@@ -28,4 +29,7 @@ export class User {
 
   @Column("bytea")
   salt: Buffer;
+
+  @OneToMany(() => ScheduleSlot, (slot) => slot.master)
+  schedule: ScheduleSlot[];
 }

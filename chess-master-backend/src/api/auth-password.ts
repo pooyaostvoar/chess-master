@@ -25,12 +25,14 @@ passwordAuthRouter.post(
   }
 );
 
-passwordAuthRouter.post("/logout", function (req, res, next) {
-  req.logout(function (err) {
-    if (err) {
-      return next(err);
-    }
-    res.redirect("/");
+passwordAuthRouter.post("/logout", (req, res, next) => {
+  req.logout((err) => {
+    if (err) return next(err);
+
+    req.session.destroy(() => {
+      res.clearCookie("connect.sid");
+      res.json({ message: "Logged out" });
+    });
   });
 });
 

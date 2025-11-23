@@ -6,17 +6,25 @@ import Login from "./pages/Login";
 import Game from "./pages/Game";
 import EditProfile from "./pages/EditProfile";
 import Masters from "./pages/Masters";
+import MasterScheduleCalendar from "./pages/MasterCalender";
+import Layout from "./components/Layout";
 
 const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Layout />}>
+          <Route path="/home" element={<Home />} />
+          {/* <Route path="/game/:gameId" element={<Game />} /> */}
+          <Route path="/edit-profile" element={<EditProfile />} />
+          <Route path="/masters" element={<Masters />} />
+          <Route
+            path="/calender/:userId"
+            element={<MasterScheduleCalendar />}
+          />
+        </Route>
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/game/:gameId" element={<Game />} />
-        <Route path="/edit-profile" element={<EditProfile />} />
-        <Route path="/masters" element={<Masters />} />
       </Routes>
     </Router>
   );

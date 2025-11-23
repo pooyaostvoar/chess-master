@@ -19,6 +19,15 @@ export const login = async (username: string, password: string) => {
   return response.data;
 };
 
+export const logout = async () => {
+  const response = await axios.post(
+    `${API_URL}/logout`,
+    {},
+    { withCredentials: true }
+  );
+  return response.data;
+};
+
 export const getAuthUser = async () => {
   const response = await axios.get(`${API_URL}/auth-user`, {
     withCredentials: true,

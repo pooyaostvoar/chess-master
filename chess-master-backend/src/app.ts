@@ -12,6 +12,7 @@ const cookieParser = require("cookie-parser");
 import RedisStore from "connect-redis";
 import { createClient } from "redis";
 import { usersRouter } from "./api/user/router";
+import { scheduleRouter } from "./api/schedule/router";
 
 const isTesting = process.env.NODE_ENV === "test";
 
@@ -71,6 +72,7 @@ app.listen(port, () => {
 app.use("", googleRouter);
 app.use("", passwordAuthRouter);
 app.use("/users", usersRouter);
+app.use("/schedule", scheduleRouter);
 app.use(cookieParser());
 
 export default app;

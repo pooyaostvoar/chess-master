@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fullcalendar/daygrid": "^6.1.19",
+    "@fullcalendar/interaction": "^6.1.19",
+    "@fullcalendar/react": "^6.1.19",
+    "@fullcalendar/timegrid": "^6.1.19",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
@@ -41,5 +45,20 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "pnpm": {
+    "overrides": {
+      "eslint-config-react-app": "latest"
+    },
+    "packageExtensions": {
+      "eslint-config-react-app@*": {
+        "dependencies": {
+          "eslint-plugin-react": "*"
+        }
+      }
+    }
+  },
+  "devDependencies": {
+    "eslint-plugin-react": "^7.37.5"
   }
 }

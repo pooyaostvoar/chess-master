@@ -24,25 +24,6 @@ services:
     ports:
       - "6378:6379"
   
-  chess_master:
-    build: ./chess_master
-    container_name: chess_master_app
-    restart: always
-    depends_on:
-      - db
-      - redis
-    environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_USER: chessuser
-      DB_PASSWORD: chesspass
-      DB_NAME: chess_master
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: redis-pass
-    ports:
-      - "8000:8000"
-    command: ["./start_chess_master.sh"]
 
 volumes:
   chess_data:
