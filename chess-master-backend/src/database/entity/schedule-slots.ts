@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
 import { User } from "./user";
+import { SlotStatus } from "./types";
 
 @Entity("schedule_slots")
 export class ScheduleSlot {
@@ -15,6 +16,9 @@ export class ScheduleSlot {
   @Column("timestamptz")
   endTime: Date;
 
-  @Column("boolean", { default: false })
-  isBooked: boolean;
+  @Column("text", { default: SlotStatus.Free })
+  status: SlotStatus;
+
+  @ManyToOne(() => User, { nullable: true })
+  reservedBy: User | null;
 }

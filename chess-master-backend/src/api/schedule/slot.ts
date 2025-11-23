@@ -3,6 +3,7 @@ import { isAuthenticated } from "../../middleware/passport";
 import { AppDataSource } from "../../database/datasource";
 import { ScheduleSlot } from "../../database/entity/schedule-slots";
 import { In } from "typeorm";
+import { SlotStatus } from "../../database/entity/types";
 
 export const slotRouter = Router();
 
@@ -81,4 +82,59 @@ slotRouter.delete("/", isAuthenticated, async (req, res) => {
   } catch (err) {
     return res.status(500).json({ error: "Server error" });
   }
+});
+
+// POST /schedule/slot/:id/reserve
+slotRouter.post("/:id/reserve", isAuthenticated, async (req, res) => {
+  const slotId = Number(req.params.id);
+  const userId = (req.user as any)?.id;
+
+  const repo = AppDataSource.getRepository(ScheduleSlot);
+
+  const slot = await repo.findOne({
+    where: { id: slotId },
+    relations: ["master", "reservedBy"],
+  });
+
+  if (!slot) return res.status(404).json({ error: "Slot not found" });
+
+  if (slot.status !== SlotStatus.Free)
+    return res.status(400).json({ error: "Slot is not available" });
+
+  slot.status = SlotStatus.Reserved;
+  slot.reservedBy = { id: userId } as any;
+
+  await repo.save(slot);
+
+  res.json({ message: "Slot requested", slot });
+});
+
+// PATCH /schedule/slot/:id/status
+slotRouter.patch("/:id/status", async (req, res) => {
+  const slotId = Number(req.params.id);
+  const masterId = (req.user as any).id; // master
+  const { status } = req.body;
+
+  const repo = AppDataSource.getRepository(ScheduleSlot);
+
+  const slot = await repo.findOne({
+    where: { id: slotId, master: { id: masterId } },
+    relations: ["reservedBy", "master"],
+  });
+
+  if (!slot)
+    return res
+      .status(404)
+      .json({ error: "Slot not found or you are not the master" });
+
+  // If making it "Free", clear user
+  if (status === SlotStatus.Free) {
+    slot.reservedBy = null;
+  }
+
+  slot.status = status;
+
+  await repo.save(slot);
+
+  res.json({ message: "Slot status updated", slot });
 });

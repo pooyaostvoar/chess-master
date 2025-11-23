@@ -13,9 +13,42 @@ const MasterScheduleCalendar: React.FC = () => {
   const [events, setEvents] = useState<any[]>([]);
   const { userId } = useParams<{ userId: string }>();
 
-  // Modal state
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null);
+
+  // ------------------------------
+  // MAP STATUS → TITLE + COLOR
+  // ------------------------------
+  const mapStatusToEvent = (slot: any) => {
+    let title = "Unknown";
+    let color = "#777";
+
+    switch (slot.status) {
+      case "free":
+        title = "Available";
+        color = "green";
+        break;
+
+      case "reserved":
+        title = "Reserved";
+        color = "orange";
+        break;
+
+      case "booked":
+        title = "Booked";
+        color = "red";
+        break;
+    }
+
+    return {
+      id: slot.id,
+      title,
+      start: slot.startTime,
+      end: slot.endTime,
+      backgroundColor: color,
+      borderColor: color,
+    };
+  };
 
   // ---------------------------------------------------
   // LOAD EXISTING SLOTS
@@ -28,15 +61,7 @@ const MasterScheduleCalendar: React.FC = () => {
         });
 
         const slots = res.data.slots || [];
-
-        setEvents(
-          slots.map((slot: any) => ({
-            id: slot.id,
-            title: "Available",
-            start: slot.startTime,
-            end: slot.endTime,
-          }))
-        );
+        setEvents(slots.map(mapStatusToEvent));
       } catch (err) {
         console.error("Failed to load slots", err);
       }
@@ -56,21 +81,17 @@ const MasterScheduleCalendar: React.FC = () => {
       const res = await createSlot({ startTime: start, endTime: end });
       const newSlot = res.data.slot;
 
-      setEvents((prev) => [
-        ...prev,
-        { id: newSlot.id, title: "Available", start, end },
-      ]);
+      setEvents((prev) => [...prev, mapStatusToEvent(newSlot)]);
     } catch (err) {
       console.error("Failed to create slot", err);
     }
   };
 
   // ---------------------------------------------------
-  // OPEN MODAL ON CLICK
+  // OPEN MODAL
   // ---------------------------------------------------
   const handleEventClick = (info: any) => {
-    const id = Number(info.event.id);
-    setSelectedSlotId(id);
+    setSelectedSlotId(Number(info.event.id));
     setModalVisible(true);
   };
 
@@ -95,7 +116,7 @@ const MasterScheduleCalendar: React.FC = () => {
   };
 
   // ---------------------------------------------------
-  // RESIZE EVENT UPDATE
+  // RESIZE UPDATE
   // ---------------------------------------------------
   const handleEventResize = async (info: any) => {
     const id = info.event.id;
@@ -114,6 +135,21 @@ const MasterScheduleCalendar: React.FC = () => {
     }
   };
 
+  // ---------------------------------------------------
+  // HANDLE DELETE (FROM MODAL)
+  // ---------------------------------------------------
+  const handleDeleted = (deletedId: number) => {
+    setEvents((prev) => prev.filter((e) => e.id !== deletedId));
+  };
+
+  const handleStatusChange = (updatedSlot: any) => {
+    setEvents((prev) =>
+      prev.map((e) =>
+        e.id === updatedSlot.id ? mapStatusToEvent(updatedSlot) : e
+      )
+    );
+  };
+
   return (
     <div style={styles.container}>
       <FullCalendar
@@ -130,12 +166,12 @@ const MasterScheduleCalendar: React.FC = () => {
         height="90vh"
       />
 
-      {/* MODAL */}
       <SlotModal
         visible={modalVisible}
         slotId={selectedSlotId}
         onClose={() => setModalVisible(false)}
-        onDeleted={(id) => setEvents((prev) => prev.filter((e) => e.id !== id))}
+        onDeleted={handleDeleted}
+        onStatusChange={handleStatusChange}
       />
     </div>
   );

@@ -21,7 +21,25 @@ passwordAuthRouter.post(
     failureMessage: true,
   }),
   (req, res) => {
-    return res.cookie("sessionID", req.sessionID).send({ status: "success" });
+    if (!req.user) {
+      return res
+        .status(401)
+        .send({ status: "error", message: "Invalid credentials" });
+    }
+
+    // Send user info in response
+    const { id, username, email, isMaster, title, rating, bio } =
+      req.user as any;
+
+    res
+      .cookie("sessionID", req.sessionID, {
+        httpOnly: true,
+        sameSite: "lax",
+      })
+      .send({
+        status: "success",
+        user: { id, username, email, isMaster, title, rating, bio },
+      });
   }
 );
 

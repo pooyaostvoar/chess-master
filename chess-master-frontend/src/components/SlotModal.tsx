@@ -8,7 +8,8 @@ interface SlotModalProps {
   visible: boolean;
   onClose: () => void;
   slotId: number | null;
-  onDeleted?: (id: number) => void; // callback to update calendar UI
+  onDeleted?: (id: number) => void;
+  onStatusChange?: (slot: any) => void; // optional UI update callback
 }
 
 const SlotModal: React.FC<SlotModalProps> = ({
@@ -16,6 +17,7 @@ const SlotModal: React.FC<SlotModalProps> = ({
   onClose,
   slotId,
   onDeleted,
+  onStatusChange,
 }) => {
   if (!visible || slotId == null) return null;
 
@@ -27,8 +29,7 @@ const SlotModal: React.FC<SlotModalProps> = ({
 
     try {
       await deleteSlots([slotId]);
-
-      if (onDeleted) onDeleted(slotId);
+      onDeleted?.(slotId);
       onClose();
     } catch (err) {
       console.error(err);
@@ -36,14 +37,28 @@ const SlotModal: React.FC<SlotModalProps> = ({
     }
   };
 
-  // Placeholder actions
-  const handleAccept = () => {
-    alert("Accept clicked (to be implemented)");
+  // -------------------------
+  // UPDATE SLOT STATUS
+  // -------------------------
+  const updateStatus = async (status: "free" | "reserved" | "booked") => {
+    try {
+      const res = await axios.patch(
+        `${API_URL}/schedule/slot/${slotId}/status`,
+        { status },
+        { withCredentials: true }
+      );
+
+      onStatusChange?.(res.data.slot);
+      onClose();
+    } catch (err) {
+      console.error(err);
+      alert("Error updating status");
+    }
   };
 
-  const handleBook = () => {
-    alert("Book clicked (to be implemented)");
-  };
+  const handleAccept = () => updateStatus("reserved");
+  const handleBook = () => updateStatus("booked");
+  const handleFree = () => updateStatus("free");
 
   return (
     <div style={styles.overlay} onClick={onClose}>
@@ -58,11 +73,15 @@ const SlotModal: React.FC<SlotModalProps> = ({
           </button>
 
           <button style={styles.acceptBtn} onClick={handleAccept}>
-            Accept
+            Mark as Reserved
           </button>
 
           <button style={styles.bookBtn} onClick={handleBook}>
-            Book
+            Mark as Booked
+          </button>
+
+          <button style={styles.freeBtn} onClick={handleFree}>
+            Set Free
           </button>
         </div>
 
@@ -112,7 +131,7 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: "pointer",
   },
   acceptBtn: {
-    background: "#27ae60",
+    background: "#f39c12",
     color: "white",
     padding: "8px 10px",
     borderRadius: 6,
@@ -120,7 +139,15 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: "pointer",
   },
   bookBtn: {
-    background: "#2980b9",
+    background: "#c0392b",
+    color: "white",
+    padding: "8px 10px",
+    borderRadius: 6,
+    border: "none",
+    cursor: "pointer",
+  },
+  freeBtn: {
+    background: "#27ae60",
     color: "white",
     padding: "8px 10px",
     borderRadius: 6,
