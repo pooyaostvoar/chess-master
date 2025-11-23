@@ -49,6 +49,7 @@ passwordAuthRouter.post("/logout", (req, res, next) => {
 
     req.session.destroy(() => {
       res.clearCookie("connect.sid");
+      res.clearCookie("sessionID");
       res.json({ message: "Logged out" });
     });
   });

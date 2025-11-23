@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { logout } from '../services/auth';
 import { useUser } from '../contexts/UserContext';
@@ -7,6 +7,13 @@ const Layout: React.FC = () => {
 	const navigate = useNavigate();
 	const { user, loading, setUser } = useUser();
 	const [open, setOpen] = useState(false);
+
+	// Redirect to login if not authenticated
+	useEffect(() => {
+		if (!loading && !user) {
+			navigate('/login', { replace: true });
+		}
+	}, [user, loading, navigate]);
 
 	// Show loading state while user is being fetched
 	if (loading) {
@@ -18,9 +25,8 @@ const Layout: React.FC = () => {
 		);
 	}
 
-	// Redirect to login if not authenticated
+	// Don't render if user is not authenticated (will redirect)
 	if (!user) {
-		navigate('/login');
 		return null;
 	}
 
@@ -31,12 +37,13 @@ const Layout: React.FC = () => {
 	const handleLogout = async () => {
 		try {
 			await logout();
-			setUser(null);
+			// Set user to null and skip auto-reload
+			setUser(null, true);
 			navigate('/login');
 		} catch (err) {
 			console.error('Logout error', err);
-			// Clear user anyway
-			setUser(null);
+			// Clear user anyway and skip auto-reload
+			setUser(null, true);
 			navigate('/login');
 		}
 	};
