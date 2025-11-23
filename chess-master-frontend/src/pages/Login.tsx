@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/auth";
+import { useUser } from "../contexts/UserContext";
 
 const Login: React.FC = () => {
   console.log("Rendering Login component");
@@ -8,7 +9,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
-
+  const { setUser } = useUser();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -16,7 +17,8 @@ const Login: React.FC = () => {
 
       if (data.status === "success") {
         setMessage("Login successful!");
-        navigate("/");
+        setUser(data.user);
+        navigate("/home");
       } else {
         setMessage("Invalid username or password");
       }
