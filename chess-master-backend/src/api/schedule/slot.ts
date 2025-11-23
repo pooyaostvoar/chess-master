@@ -4,6 +4,7 @@ import {
   getRouter,
   deleteRouter,
   reserveRouter,
+  updateRouter,
   updateStatusRouter,
   myBookingsRouter,
   masterBookingsRouter,
@@ -16,6 +17,7 @@ slotRouter.use("", createRouter);
 slotRouter.use("", getRouter);
 slotRouter.use("", deleteRouter);
 slotRouter.use("", reserveRouter);
+slotRouter.use("", updateRouter);
 slotRouter.use("", updateStatusRouter);
 slotRouter.use("", myBookingsRouter);
 slotRouter.use("", masterBookingsRouter);

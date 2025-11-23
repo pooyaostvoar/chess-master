@@ -17,7 +17,10 @@ router.post("", isAuthenticated, async (req, res) => {
     });
 
     res.json({ success: true, slot });
-  } catch (err) {
+  } catch (err: any) {
+    if (err.message === "Cannot create time slots in the past") {
+      return res.status(400).json({ error: err.message });
+    }
     console.error("Error creating slot:", err);
     res.status(500).json({ error: "Internal server error" });
   }

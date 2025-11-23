@@ -41,7 +41,7 @@ export const mapSlotToEvent = (
 		borderColor: color,
 		textColor: '#fff',
 		extendedProps: {
-			slot: slot, // Store full slot data for modal
+			fullSlot: slot, // Store full slot data for modal
 		},
 	};
 };

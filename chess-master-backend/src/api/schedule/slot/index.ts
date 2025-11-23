@@ -2,6 +2,7 @@ export { router as createRouter } from "./create";
 export { router as getRouter } from "./get";
 export { router as deleteRouter } from "./delete";
 export { router as reserveRouter } from "./reserve";
+export { router as updateRouter } from "./update";
 export { router as updateStatusRouter } from "./update-status";
 export { router as myBookingsRouter } from "./my-bookings";
 export { router as masterBookingsRouter } from "./master-bookings";

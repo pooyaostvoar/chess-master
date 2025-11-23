@@ -71,6 +71,12 @@ export function formatSlot(slot: ScheduleSlot): SafeSlot {
  * Create a new schedule slot
  */
 export async function createSlot(data: CreateSlotData): Promise<ScheduleSlot> {
+  // Prevent creating slots in the past
+  const now = new Date();
+  if (new Date(data.startTime) < now) {
+    throw new Error("Cannot create time slots in the past");
+  }
+
   const repo = AppDataSource.getRepository(ScheduleSlot);
   const slot = repo.create({
     master: { id: data.masterId } as User,
@@ -162,6 +168,12 @@ export async function reserveSlot(
     throw new Error("Slot not found");
   }
 
+  // Prevent booking slots in the past
+  const now = new Date();
+  if (new Date(slot.startTime) < now) {
+    throw new Error("Cannot book time slots in the past");
+  }
+
   if (slot.status !== SlotStatus.Free) {
     throw new Error("Slot is not available");
   }
@@ -179,6 +191,48 @@ export async function reserveSlot(
 
   if (!updatedSlot) {
     throw new Error("Slot not found after reservation");
+  }
+
+  return updatedSlot;
+}
+
+/**
+ * Update slot times (start and end)
+ */
+export async function updateSlot(
+  slotId: number,
+  masterId: number,
+  startTime: Date,
+  endTime: Date
+): Promise<ScheduleSlot> {
+  const repo = AppDataSource.getRepository(ScheduleSlot);
+  const slot = await repo.findOne({
+    where: { id: slotId, master: { id: masterId } },
+    relations: ["reservedBy", "master"],
+  });
+
+  if (!slot) {
+    throw new Error("Slot not found or you are not the master");
+  }
+
+  // Prevent updating slots in the past
+  const now = new Date();
+  if (new Date(startTime) < now) {
+    throw new Error("Cannot update slot to a time in the past");
+  }
+
+  slot.startTime = startTime;
+  slot.endTime = endTime;
+  await repo.save(slot);
+
+  // Reload with relations
+  const updatedSlot = await repo.findOne({
+    where: { id: slotId },
+    relations: ["master", "reservedBy"],
+  });
+
+  if (!updatedSlot) {
+    throw new Error("Slot not found after update");
   }
 
   return updatedSlot;

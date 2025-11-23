@@ -19,7 +19,10 @@ router.post("/:id/reserve", isAuthenticated, async (req, res) => {
     ) {
       return res.status(404).json({ error: "Slot not found" });
     }
-    if (err.message === "Slot is not available") {
+    if (
+      err.message === "Slot is not available" ||
+      err.message === "Cannot book time slots in the past"
+    ) {
       return res.status(400).json({ error: err.message });
     }
     console.error("Error reserving slot:", err);

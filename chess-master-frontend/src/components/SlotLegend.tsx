@@ -2,57 +2,23 @@ import React from 'react';
 
 const SlotLegend: React.FC = () => {
 	return (
-		<div style={styles.legend}>
-			<div style={styles.legendItem}>
-				<div
-					style={{
-						...styles.legendColor,
-						background: '#27ae60',
-					}}></div>
-				<span>Available - Click to Book</span>
+		<div className='flex gap-6 mt-6 pt-6 border-t justify-center flex-wrap'>
+			<div className='flex items-center gap-2'>
+				<div className='w-5 h-5 rounded bg-[#27ae60] shadow-sm'></div>
+				<span className='text-sm text-muted-foreground'>
+					Available - Click to Book
+				</span>
 			</div>
-			<div style={styles.legendItem}>
-				<div
-					style={{
-						...styles.legendColor,
-						background: '#f39c12',
-					}}></div>
-				<span>Reserved</span>
+			<div className='flex items-center gap-2'>
+				<div className='w-5 h-5 rounded bg-[#f39c12] shadow-sm'></div>
+				<span className='text-sm text-muted-foreground'>Reserved</span>
 			</div>
-			<div style={styles.legendItem}>
-				<div
-					style={{
-						...styles.legendColor,
-						background: '#e74c3c',
-					}}></div>
-				<span>Booked</span>
+			<div className='flex items-center gap-2'>
+				<div className='w-5 h-5 rounded bg-[#e74c3c] shadow-sm'></div>
+				<span className='text-sm text-muted-foreground'>Booked</span>
 			</div>
 		</div>
 	);
-};
-
-const styles: Record<string, React.CSSProperties> = {
-	legend: {
-		display: 'flex',
-		gap: 24,
-		marginTop: 20,
-		paddingTop: 20,
-		borderTop: '1px solid #e0e0e0',
-		justifyContent: 'center',
-		flexWrap: 'wrap',
-	},
-	legendItem: {
-		display: 'flex',
-		alignItems: 'center',
-		gap: 8,
-		fontSize: '14px',
-		color: '#2c3e50',
-	},
-	legendColor: {
-		width: 20,
-		height: 20,
-		borderRadius: 4,
-	},
 };
 
 export default SlotLegend;

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Badge } from './ui/badge';
 
 interface MasterInfoHeaderProps {
 	masterInfo: {
@@ -10,57 +11,35 @@ interface MasterInfoHeaderProps {
 
 const MasterInfoHeader: React.FC<MasterInfoHeaderProps> = ({ masterInfo }) => {
 	return (
-		<div style={styles.header}>
-			<h2 style={styles.title}>
-				{masterInfo.username}
-				{masterInfo.title && (
-					<span style={styles.titleTag}> {masterInfo.title}</span>
-				)}
-				's Schedule
-			</h2>
+		<div className='mb-8 pb-6 border-b'>
+			<div className='flex items-center gap-3 mb-4'>
+				<h2 className='text-3xl md:text-4xl font-bold'>
+					{masterInfo.username}
+					{masterInfo.title && (
+						<Badge
+							variant='default'
+							className='ml-3'>
+							{masterInfo.title}
+						</Badge>
+					)}
+					<span className='text-muted-foreground font-normal'>
+						's Schedule
+					</span>
+				</h2>
+			</div>
 			{masterInfo.rating && (
-				<p style={styles.rating}>Rating: {masterInfo.rating}</p>
+				<p className='text-muted-foreground mb-2'>
+					Rating:{' '}
+					<span className='font-semibold text-foreground'>
+						{masterInfo.rating}
+					</span>
+				</p>
 			)}
-			<p style={styles.instruction}>
+			<p className='text-primary font-medium'>
 				Click on green "Available" slots to book a session
 			</p>
 		</div>
 	);
-};
-
-const styles: Record<string, React.CSSProperties> = {
-	header: {
-		marginBottom: 24,
-		paddingBottom: 20,
-		borderBottom: '1px solid #e0e0e0',
-	},
-	title: {
-		fontSize: '28px',
-		fontWeight: 700,
-		color: '#2c3e50',
-		marginBottom: 8,
-	},
-	titleTag: {
-		background: 'linear-gradient(135deg, #3498db 0%, #2980b9 100%)',
-		color: 'white',
-		display: 'inline-block',
-		padding: '4px 12px',
-		borderRadius: '6px',
-		fontSize: '14px',
-		fontWeight: 600,
-		marginLeft: 8,
-	},
-	rating: {
-		fontSize: '16px',
-		color: '#7f8c8d',
-		marginBottom: 12,
-	},
-	instruction: {
-		fontSize: '15px',
-		color: '#3498db',
-		fontWeight: 500,
-		marginTop: 8,
-	},
 };
 
 export default MasterInfoHeader;

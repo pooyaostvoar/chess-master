@@ -68,6 +68,21 @@ export const bookSlot = async (
 };
 
 /**
+ * Update slot times (start and end)
+ */
+export const updateSlot = async (
+  slotId: number,
+  data: { startTime: string; endTime: string }
+): Promise<{ message: string; slot: ScheduleSlot }> => {
+  try {
+    const response = await apiClient.patch(`/schedule/slot/${slotId}`, data);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(handleApiError(error));
+  }
+};
+
+/**
  * Update slot status
  */
 export const updateSlotStatus = async (
