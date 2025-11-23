@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import Game from "./pages/Game";
 import EditProfile from "./pages/EditProfile";
 import Masters from "./pages/Masters";
 import MasterScheduleCalendar from "./pages/MasterCalender";
