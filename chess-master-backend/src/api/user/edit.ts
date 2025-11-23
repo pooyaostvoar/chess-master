@@ -17,6 +17,12 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
+    // Verify user can only edit their own profile
+    const authenticatedUserId = (req.user as any)?.id;
+    if (authenticatedUserId !== userId) {
+      return res.status(403).json({ error: "Forbidden: You can only edit your own profile" });
+    }
+
     if (email !== undefined) user.email = email;
     if (username !== undefined) user.username = username;
     if (title !== undefined) user.title = title;
@@ -29,8 +35,23 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
 
     await userRepo.save(user);
 
-    res.json({ status: "success", user });
+    // Return user without sensitive data
+    const formattedUser = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      title: user.title,
+      rating: user.rating,
+      bio: user.bio,
+      isMaster: user.isMaster,
+      profilePicture: user.profilePicture,
+      chesscomUrl: user.chesscomUrl,
+      lichessUrl: user.lichessUrl,
+    };
+
+    res.json({ status: "success", user: formattedUser });
   } catch (err) {
+    console.error("Error updating user:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });

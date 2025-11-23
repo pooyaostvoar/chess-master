@@ -77,10 +77,27 @@ const EditProfile: React.FC = () => {
 			}
 
 			const reader = new FileReader();
+			reader.onerror = () => {
+				setMessage('Error reading image file. Please try again.');
+				setMessageType('error');
+			};
 			reader.onloadend = () => {
-				const base64String = reader.result as string;
-				setPreviewImage(base64String);
-				setFormData({ ...formData, profilePicture: base64String });
+				try {
+					const base64String = reader.result as string;
+					if (!base64String) {
+						throw new Error('Failed to read image');
+					}
+					setPreviewImage(base64String);
+					setFormData({ ...formData, profilePicture: base64String });
+					setMessage('Image loaded successfully');
+					setMessageType('success');
+					// Clear success message after 2 seconds
+					setTimeout(() => setMessage(''), 2000);
+				} catch (err) {
+					console.error('Error processing image:', err);
+					setMessage('Error processing image. Please try again.');
+					setMessageType('error');
+				}
 			};
 			reader.readAsDataURL(file);
 		}
@@ -97,6 +114,16 @@ const EditProfile: React.FC = () => {
 		setMessage('');
 
 		try {
+			// Log the data being sent (without the full base64 string for debugging)
+			console.log('Updating profile with:', {
+				...formData,
+				profilePicture: formData.profilePicture
+					? `${formData.profilePicture.substring(0, 50)}... (${
+							formData.profilePicture.length
+					  } chars)`
+					: null,
+			});
+
 			const data = await updateUser(formData.id, {
 				email: formData.email,
 				username: formData.username,
@@ -113,13 +140,23 @@ const EditProfile: React.FC = () => {
 				setMessage('Profile updated successfully!');
 				setMessageType('success');
 				setUser(data.user);
+				// Update preview image if profile picture was changed
+				if (data.user.profilePicture) {
+					setPreviewImage(data.user.profilePicture);
+				} else {
+					setPreviewImage(null);
+				}
 			} else {
 				setMessage('Something went wrong');
 				setMessageType('error');
 			}
-		} catch (err) {
-			console.error(err);
-			setMessage('Error updating profile');
+		} catch (err: any) {
+			console.error('Error updating profile:', err);
+			const errorMessage =
+				err.response?.data?.error ||
+				err.message ||
+				'Error updating profile. Please try again.';
+			setMessage(errorMessage);
 			setMessageType('error');
 		} finally {
 			setLoading(false);

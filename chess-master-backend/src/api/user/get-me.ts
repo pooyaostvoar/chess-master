@@ -11,7 +11,18 @@ router.get("/me", isAuthenticated, async (req, res) => {
 
     const user = await userRepo.findOne({
       where: { id: userId },
-      select: ["id", "username", "email", "title", "rating", "bio", "isMaster"],
+      select: [
+        "id",
+        "username",
+        "email",
+        "title",
+        "rating",
+        "bio",
+        "isMaster",
+        "profilePicture",
+        "chesscomUrl",
+        "lichessUrl",
+      ],
     });
 
     if (!user) {
