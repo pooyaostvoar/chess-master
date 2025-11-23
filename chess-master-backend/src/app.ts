@@ -13,6 +13,7 @@ import RedisStore from "connect-redis";
 import { createClient } from "redis";
 import { usersRouter } from "./api/user/router";
 import { scheduleRouter } from "./api/schedule/router";
+import { readSecret } from "./utils/secret";
 
 const isTesting = process.env.NODE_ENV === "test";
 
@@ -26,8 +27,8 @@ if (!isTesting) {
 
 const app: Express = express();
 const port = 3004;
-app.use(bodyParser.json({ limit: '10mb' }));
-app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
 
 const corsOptions = {
   origin: [
@@ -42,7 +43,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 const redisClient = createClient({
-  url: process.env.REDIS_URL || "redis://localhost:6378",
+  url:
+    readSecret("/run/secrets/redis_url") ||
+    process.env.REDIS_URL ||
+    "redis://localhost:6378",
 });
 redisClient.connect().catch(console.error);
 

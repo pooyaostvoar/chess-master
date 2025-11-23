@@ -1,5 +1,5 @@
 {
-  "exclude": ["./dist",  "jest.config.js"],
+  "exclude": ["./dist",  "jest.config.js", "node_modules", "src/tests"],
 
   "compilerOptions": {
     

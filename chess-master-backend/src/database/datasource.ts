@@ -3,6 +3,7 @@ import { User } from "./entity/user";
 import { Game } from "./entity/game";
 import { ScheduleSlot } from "./entity/schedule-slots";
 import { MasterPricing } from "./entity/master-pricing";
+import { readSecret } from "../utils/secret";
 
 export const AppDataSource = new DataSource(
   process.env.NODE_ENV === "test"
@@ -18,8 +19,8 @@ export const AppDataSource = new DataSource(
         type: "postgres",
         host: process.env.DB_HOST || "localhost",
         port: Number(process.env.DB_PORT) || 5432,
-        username: "chessuser",
-        password: "chesspass",
+        username: readSecret("/run/secrets/postgres_user") || "chessuser",
+        password: readSecret("/run/secrets/postgres_password") || "chesspass",
         database: "chess_master",
         synchronize: true,
         entities: [User, Game, ScheduleSlot, MasterPricing],

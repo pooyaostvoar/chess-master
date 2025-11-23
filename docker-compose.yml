@@ -1,0 +1,73 @@
+version: "3.9"
+
+services:
+  frontend:
+    image: pooyaos/chess-frontend:latest
+    ports:
+      - "3000:80" # Nginx serves on 80 inside container
+    depends_on:
+      - backend
+    environment:
+      REACT_APP_API_URL: "http://localhost:3004" # adjust if needed
+
+  backend:
+    image: pooyaos/chess-backend:latest
+    ports:
+      - "3004:3004"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      POSTGRES_USER_FILE: /run/secrets/postgres_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_DB: chess_master
+      REDIS_URL_FILE: /run/secrets/redis_url
+    depends_on:
+      - db
+      - redis
+    secrets:
+      - postgres_user
+      - postgres_password
+      - redis_url
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER_FILE: /run/secrets/postgres_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_DB: chess_master
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    secrets:
+      - postgres_user
+      - postgres_password
+
+  redis:
+    image: redis
+    ports:
+      - "6378:6379"
+    secrets:
+      - redis_password
+    environment:
+        REDIS_PASS_FILE: /run/secrets/redis_password
+    command: [
+      "bash", "-c",
+      '
+       docker-entrypoint.sh
+       --requirepass "$$(cat $$REDIS_PASS_FILE)"
+      '
+    ]
+
+secrets:
+  postgres_user:
+    file: ./secrets/postgres_user.txt
+  postgres_password:
+    file: ./secrets/postgres_password.txt
+  redis_url:
+    file: ./secrets/redis_url.txt
+  redis_password:
+    file: ./secrets/redis_password.txt
+
+volumes:
+  db_data:
