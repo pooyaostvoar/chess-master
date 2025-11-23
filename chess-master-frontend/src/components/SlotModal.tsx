@@ -1,6 +1,16 @@
 import React from 'react';
 import axios from 'axios';
 import { deleteSlots } from '../services/schedule';
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from './ui/dialog';
+import { Button } from './ui/button';
+import { Card, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { CheckCircle2, XCircle, Trash2, Circle } from 'lucide-react';
 
 const API_URL = 'http://localhost:3004';
 
@@ -24,7 +34,8 @@ const SlotModal: React.FC<SlotModalProps> = ({
 	if (!visible || slotId == null) return null;
 
 	const isReserved = slot?.status === 'reserved';
-	const reservedBy = slot?.reservedBy;
+	const reservedBy =
+		slot?.extendedProps?.fullSlot?.reservedBy || slot?.reservedBy;
 
 	const handleDelete = async () => {
 		if (!window.confirm('Are you sure you want to delete this slot?'))
@@ -74,281 +85,137 @@ const SlotModal: React.FC<SlotModalProps> = ({
 	};
 
 	return (
-		<div
-			style={styles.overlay}
-			onClick={onClose}>
-			<div
-				style={styles.modal}
-				onClick={(e) => e.stopPropagation()}>
-				<div style={styles.header}>
-					<h3 style={styles.title}>
+		<Dialog
+			open={visible}
+			onOpenChange={onClose}>
+			<DialogContent className='sm:max-w-[500px]'>
+				<DialogHeader>
+					<DialogTitle>
 						{isReserved ? 'Slot Request' : 'Manage Time Slot'}
-					</h3>
-					<button
-						style={styles.closeIcon}
-						onClick={onClose}>
-						×
-					</button>
-				</div>
+					</DialogTitle>
+					<DialogDescription>
+						{isReserved
+							? 'Approve or reject this request'
+							: 'Choose an action for this time slot'}
+					</DialogDescription>
+				</DialogHeader>
 
 				{isReserved && reservedBy && (
-					<div style={styles.requestInfo}>
-						<p style={styles.requestText}>
-							<strong>{reservedBy.username}</strong> has requested
-							this time slot
-						</p>
-						{reservedBy.email && (
-							<p style={styles.requestEmail}>
-								{reservedBy.email}
-							</p>
-						)}
-					</div>
+					<Card className='border-yellow-200 bg-yellow-50'>
+						<CardHeader className='pb-3'>
+							<CardTitle className='text-base'>
+								{reservedBy.username} has requested this time
+								slot
+							</CardTitle>
+							{reservedBy.email && (
+								<CardDescription className='text-sm'>
+									{reservedBy.email}
+								</CardDescription>
+							)}
+						</CardHeader>
+					</Card>
 				)}
 
-				<p style={styles.subtitle}>
-					{isReserved
-						? 'Approve or reject this request'
-						: 'Choose an action for this time slot'}
-				</p>
-
-				<div style={styles.actions}>
+				<div className='flex flex-col gap-3 mt-4'>
 					{isReserved ? (
 						<>
-							<button
-								style={styles.approveBtn}
-								onClick={handleApprove}>
-								<span style={styles.btnIcon}>✅</span>
-								<div style={styles.btnContent}>
-									<div style={styles.btnTitle}>
+							<Button
+								onClick={handleApprove}
+								className='w-full h-auto py-4 justify-start'
+								variant='default'>
+								<CheckCircle2 className='mr-3 h-5 w-5' />
+								<div className='text-left'>
+									<div className='font-semibold'>
 										Approve Request
 									</div>
-									<div style={styles.btnDesc}>
+									<div className='text-sm opacity-80'>
 										Confirm the booking
 									</div>
 								</div>
-							</button>
+							</Button>
 
-							<button
-								style={styles.rejectBtn}
-								onClick={handleReject}>
-								<span style={styles.btnIcon}>❌</span>
-								<div style={styles.btnContent}>
-									<div style={styles.btnTitle}>
+							<Button
+								onClick={handleReject}
+								className='w-full h-auto py-4 justify-start'
+								variant='destructive'>
+								<XCircle className='mr-3 h-5 w-5' />
+								<div className='text-left'>
+									<div className='font-semibold'>
 										Reject Request
 									</div>
-									<div style={styles.btnDesc}>
+									<div className='text-sm opacity-80'>
 										Make slot available again
 									</div>
 								</div>
-							</button>
+							</Button>
 						</>
 					) : (
 						<>
-							<button
-								style={styles.statusBtn}
-								onClick={() => updateStatus('free')}>
-								<span style={styles.btnIcon}>🟢</span>
-								<div style={styles.btnContent}>
-									<div style={styles.btnTitle}>
+							<Button
+								onClick={() => updateStatus('free')}
+								className='w-full h-auto py-4 justify-start'
+								variant='outline'>
+								<Circle className='mr-3 h-5 w-5 text-green-500 fill-green-500' />
+								<div className='text-left'>
+									<div className='font-semibold'>
 										Set as Available
 									</div>
-									<div style={styles.btnDesc}>
+									<div className='text-sm opacity-80'>
 										Open for booking
 									</div>
 								</div>
-							</button>
+							</Button>
 
-							<button
-								style={styles.statusBtn}
-								onClick={() => updateStatus('reserved')}>
-								<span style={styles.btnIcon}>🟠</span>
-								<div style={styles.btnContent}>
-									<div style={styles.btnTitle}>
+							<Button
+								onClick={() => updateStatus('reserved')}
+								className='w-full h-auto py-4 justify-start'
+								variant='outline'>
+								<Circle className='mr-3 h-5 w-5 text-yellow-500 fill-yellow-500' />
+								<div className='text-left'>
+									<div className='font-semibold'>
 										Mark as Reserved
 									</div>
-									<div style={styles.btnDesc}>
+									<div className='text-sm opacity-80'>
 										Pending confirmation
 									</div>
 								</div>
-							</button>
+							</Button>
 
-							<button
-								style={styles.statusBtn}
-								onClick={() => updateStatus('booked')}>
-								<span style={styles.btnIcon}>🔴</span>
-								<div style={styles.btnContent}>
-									<div style={styles.btnTitle}>
+							<Button
+								onClick={() => updateStatus('booked')}
+								className='w-full h-auto py-4 justify-start'
+								variant='outline'>
+								<Circle className='mr-3 h-5 w-5 text-red-500 fill-red-500' />
+								<div className='text-left'>
+									<div className='font-semibold'>
 										Mark as Booked
 									</div>
-									<div style={styles.btnDesc}>
+									<div className='text-sm opacity-80'>
 										Confirmed session
 									</div>
 								</div>
-							</button>
+							</Button>
 
-							<button
-								style={styles.deleteBtn}
-								onClick={handleDelete}>
-								<span style={styles.btnIcon}>🗑️</span>
-								<div style={styles.btnContent}>
-									<div style={styles.btnTitle}>
+							<Button
+								onClick={handleDelete}
+								className='w-full h-auto py-4 justify-start'
+								variant='destructive'>
+								<Trash2 className='mr-3 h-5 w-5' />
+								<div className='text-left'>
+									<div className='font-semibold'>
 										Delete Slot
 									</div>
-									<div style={styles.btnDesc}>
+									<div className='text-sm opacity-80'>
 										Remove permanently
 									</div>
 								</div>
-							</button>
+							</Button>
 						</>
 					)}
 				</div>
-			</div>
-		</div>
+			</DialogContent>
+		</Dialog>
 	);
-};
-
-const styles: Record<string, React.CSSProperties> = {
-	overlay: {
-		position: 'fixed',
-		inset: 0,
-		background: 'rgba(0,0,0,0.6)',
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
-		zIndex: 999,
-		backdropFilter: 'blur(2px)',
-	},
-	modal: {
-		background: 'white',
-		padding: 0,
-		borderRadius: '16px',
-		width: '90%',
-		maxWidth: '420px',
-		boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-		animation: 'slideIn 0.2s ease',
-	},
-	header: {
-		display: 'flex',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		padding: '24px',
-		borderBottom: '1px solid #e0e0e0',
-	},
-	title: {
-		margin: 0,
-		fontSize: '22px',
-		fontWeight: 700,
-		color: '#2c3e50',
-	},
-	closeIcon: {
-		width: '32px',
-		height: '32px',
-		borderRadius: '50%',
-		border: 'none',
-		background: '#f0f0f0',
-		color: '#2c3e50',
-		fontSize: '24px',
-		cursor: 'pointer',
-		display: 'flex',
-		alignItems: 'center',
-		justifyContent: 'center',
-		transition: 'all 0.2s ease',
-		lineHeight: 1,
-	},
-	subtitle: {
-		margin: '16px 24px 24px 24px',
-		fontSize: '15px',
-		color: '#7f8c8d',
-	},
-	actions: {
-		display: 'flex',
-		flexDirection: 'column',
-		gap: '12px',
-		padding: '0 24px 24px 24px',
-	},
-	statusBtn: {
-		display: 'flex',
-		alignItems: 'center',
-		gap: '16px',
-		padding: '16px',
-		background: 'white',
-		border: '2px solid #e0e0e0',
-		borderRadius: '12px',
-		cursor: 'pointer',
-		transition: 'all 0.2s ease',
-		textAlign: 'left',
-	},
-	deleteBtn: {
-		display: 'flex',
-		alignItems: 'center',
-		gap: '16px',
-		padding: '16px',
-		background: '#fee',
-		border: '2px solid #e74c3c',
-		borderRadius: '12px',
-		cursor: 'pointer',
-		transition: 'all 0.2s ease',
-		textAlign: 'left',
-	},
-	btnIcon: {
-		fontSize: '24px',
-		flexShrink: 0,
-	},
-	btnContent: {
-		flex: 1,
-	},
-	btnTitle: {
-		fontSize: '16px',
-		fontWeight: 600,
-		color: '#2c3e50',
-		marginBottom: '4px',
-	},
-	btnDesc: {
-		fontSize: '13px',
-		color: '#7f8c8d',
-	},
-	requestInfo: {
-		padding: '16px 24px',
-		background: '#fff9e6',
-		borderLeft: '4px solid #f39c12',
-		margin: '0 24px',
-		borderRadius: '8px',
-	},
-	requestText: {
-		margin: 0,
-		fontSize: '15px',
-		color: '#2c3e50',
-		marginBottom: '4px',
-	},
-	requestEmail: {
-		margin: 0,
-		fontSize: '13px',
-		color: '#7f8c8d',
-	},
-	approveBtn: {
-		display: 'flex',
-		alignItems: 'center',
-		gap: '16px',
-		padding: '16px',
-		background: '#e8f5e9',
-		border: '2px solid #4caf50',
-		borderRadius: '12px',
-		cursor: 'pointer',
-		transition: 'all 0.2s ease',
-		textAlign: 'left',
-	},
-	rejectBtn: {
-		display: 'flex',
-		alignItems: 'center',
-		gap: '16px',
-		padding: '16px',
-		background: '#ffebee',
-		border: '2px solid #f44336',
-		borderRadius: '12px',
-		cursor: 'pointer',
-		transition: 'all 0.2s ease',
-		textAlign: 'left',
-	},
 };
 
 export default SlotModal;

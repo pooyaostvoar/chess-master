@@ -1,12 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { logout } from '../services/auth';
 import { useUser } from '../contexts/UserContext';
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from './ui/dropdown-menu';
+import { LogOut, User, Calendar, BookOpen } from 'lucide-react';
 
 const Layout: React.FC = () => {
 	const navigate = useNavigate();
 	const { user, loading, setUser } = useUser();
-	const [open, setOpen] = useState(false);
 
 	// Redirect to login if not authenticated
 	useEffect(() => {
@@ -18,9 +26,9 @@ const Layout: React.FC = () => {
 	// Show loading state while user is being fetched
 	if (loading) {
 		return (
-			<div style={styles.loadingContainer}>
-				<div style={styles.spinner}></div>
-				<p>Loading...</p>
+			<div className='flex flex-col items-center justify-center min-h-screen'>
+				<div className='w-10 h-10 border-4 border-gray-200 border-t-primary rounded-full animate-spin mb-5' />
+				<p className='text-muted-foreground'>Loading...</p>
 			</div>
 		);
 	}
@@ -37,128 +45,110 @@ const Layout: React.FC = () => {
 	const handleLogout = async () => {
 		try {
 			await logout();
-			// Set user to null and skip auto-reload
-			setUser(null, true);
+			setUser(null);
 			navigate('/login');
 		} catch (err) {
 			console.error('Logout error', err);
-			// Clear user anyway and skip auto-reload
-			setUser(null, true);
+			setUser(null);
 			navigate('/login');
 		}
 	};
 
 	return (
-		<div style={styles.container}>
-			<nav style={styles.nav}>
-				<div style={styles.navContent}>
-					<div style={styles.logo}>
-						<span style={styles.logoIcon}>♔</span>
-						<span style={styles.logoText}>Chess Master</span>
-					</div>
-
-					<div style={styles.navLinks}>
+		<div className='min-h-screen flex flex-col bg-background'>
+			<nav className='sticky top-0 z-50 w-full border-b bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-sm'>
+				<div className='container mx-auto px-6 py-4'>
+					<div className='flex items-center justify-between'>
 						<Link
 							to='/home'
-							style={styles.link}>
-							Home
+							className='flex items-center gap-3 text-xl font-bold'>
+							<span className='text-3xl'>♔</span>
+							<span>Chess Master</span>
 						</Link>
-						<Link
-							to='/masters'
-							style={styles.link}>
-							Browse Masters
-						</Link>
-					</div>
 
-					<div style={styles.profileWrapper}>
-						<div
-							style={styles.avatar}
-							onClick={() => setOpen(!open)}>
-							{firstLetter}
-						</div>
+						<div className='flex items-center gap-8'>
+							<Link
+								to='/home'
+								className='text-sm font-medium hover:text-primary transition-colors'>
+								Home
+							</Link>
+							<Link
+								to='/masters'
+								className='text-sm font-medium hover:text-primary transition-colors'>
+								Browse Masters
+							</Link>
 
-						{open && (
-							<>
-								<div
-									style={styles.overlay}
-									onClick={() => setOpen(false)}
-								/>
-								<div style={styles.dropdown}>
-									<div style={styles.dropdownHeader}>
-										<div style={styles.dropdownAvatar}>
-											{firstLetter}
-										</div>
-										<div>
-											<div style={styles.dropdownName}>
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<button className='w-11 h-11 rounded-full bg-white text-slate-900 font-bold text-lg flex items-center justify-center hover:ring-2 hover:ring-primary transition-all'>
+										{firstLetter}
+									</button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent
+									align='end'
+									className='w-56'>
+									<DropdownMenuLabel>
+										<div className='flex flex-col space-y-1'>
+											<p className='text-sm font-medium'>
 												{user?.username}
-											</div>
-											<div style={styles.dropdownRole}>
+											</p>
+											<p className='text-xs text-muted-foreground'>
 												{user?.isMaster
 													? 'Master'
 													: 'Player'}
-											</div>
+											</p>
 										</div>
-									</div>
-
-									<div style={styles.divider} />
-
-									<button
-										style={styles.dropdownItem}
-										onClick={() => {
-											setOpen(false);
-											navigate('/edit-profile');
-										}}>
-										<span>👤</span>
+									</DropdownMenuLabel>
+									<DropdownMenuSeparator />
+									<DropdownMenuItem
+										onClick={() =>
+											navigate('/edit-profile')
+										}>
+										<User className='mr-2 h-4 w-4' />
 										<span>Edit Profile</span>
-									</button>
-
+									</DropdownMenuItem>
 									{user?.isMaster && (
-										<button
-											style={styles.dropdownItem}
-											onClick={() => {
-												setOpen(false);
-												navigate(
-													`/calender/${user.id}`
-												);
-											}}>
-											<span>📅</span>
+										<DropdownMenuItem
+											onClick={() =>
+												navigate(`/calendar/${user.id}`)
+											}>
+											<Calendar className='mr-2 h-4 w-4' />
 											<span>My Schedule</span>
-										</button>
+										</DropdownMenuItem>
 									)}
-
-									<div style={styles.divider} />
-
-									<button
-										style={{
-											...styles.dropdownItem,
-											...styles.logoutItem,
-										}}
-										onClick={() => {
-											setOpen(false);
-											handleLogout();
-										}}>
-										<span>🚪</span>
+									<DropdownMenuItem
+										onClick={() => navigate('/bookings')}>
+										<BookOpen className='mr-2 h-4 w-4' />
+										<span>My Bookings</span>
+									</DropdownMenuItem>
+									<DropdownMenuSeparator />
+									<DropdownMenuItem
+										onClick={handleLogout}
+										className='text-destructive'>
+										<LogOut className='mr-2 h-4 w-4' />
 										<span>Logout</span>
-									</button>
-								</div>
-							</>
-						)}
+									</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
+						</div>
 					</div>
 				</div>
 			</nav>
 
-			<main style={styles.main}>
+			<main className='flex-1'>
 				<Outlet />
 			</main>
 
-			<footer style={styles.footer}>
-				<div style={styles.footerContent}>
-					<div>
-						<span style={styles.footerLogo}>♔ Chess Master</span>
-					</div>
-					<div style={styles.footerText}>
-						© {new Date().getFullYear()} Chess Master. All rights
-						reserved.
+			<footer className='border-t bg-slate-900 text-white py-8'>
+				<div className='container mx-auto px-6'>
+					<div className='flex justify-between items-center flex-wrap gap-4'>
+						<span className='text-lg font-bold'>
+							♔ Chess Master
+						</span>
+						<span className='text-sm text-muted-foreground'>
+							© {new Date().getFullYear()} Chess Master. All
+							rights reserved.
+						</span>
 					</div>
 				</div>
 			</footer>
@@ -167,184 +157,3 @@ const Layout: React.FC = () => {
 };
 
 export default Layout;
-
-const styles: Record<string, React.CSSProperties> = {
-	container: {
-		minHeight: '100vh',
-		display: 'flex',
-		flexDirection: 'column',
-		background: '#f5f6fa',
-	},
-	nav: {
-		background: 'linear-gradient(135deg, #2c3e50 0%, #34495e 100%)',
-		boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
-		position: 'sticky',
-		top: 0,
-		zIndex: 100,
-	},
-	navContent: {
-		maxWidth: '1400px',
-		margin: '0 auto',
-		padding: '16px 24px',
-		display: 'flex',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-	},
-	logo: {
-		display: 'flex',
-		alignItems: 'center',
-		gap: '12px',
-		color: 'white',
-		fontSize: '20px',
-		fontWeight: 700,
-	},
-	logoIcon: {
-		fontSize: '28px',
-	},
-	logoText: {
-		letterSpacing: '0.5px',
-	},
-	navLinks: {
-		display: 'flex',
-		gap: '32px',
-		alignItems: 'center',
-	},
-	link: {
-		color: 'white',
-		textDecoration: 'none',
-		fontWeight: 500,
-		fontSize: '15px',
-		transition: 'all 0.2s ease',
-		position: 'relative',
-		padding: '8px 0',
-	},
-	profileWrapper: {
-		position: 'relative',
-	},
-	avatar: {
-		width: '44px',
-		height: '44px',
-		background: 'white',
-		borderRadius: '50%',
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
-		color: '#2c3e50',
-		fontWeight: 700,
-		fontSize: '18px',
-		cursor: 'pointer',
-		userSelect: 'none',
-		transition: 'all 0.2s ease',
-		border: '3px solid transparent',
-	},
-	overlay: {
-		position: 'fixed',
-		inset: 0,
-		zIndex: 98,
-	},
-	dropdown: {
-		position: 'absolute',
-		right: 0,
-		top: '56px',
-		background: '#fff',
-		borderRadius: '12px',
-		boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-		width: '260px',
-		overflow: 'hidden',
-		zIndex: 99,
-	},
-	dropdownHeader: {
-		display: 'flex',
-		alignItems: 'center',
-		gap: '12px',
-		padding: '20px',
-		background: 'linear-gradient(135deg, #3498db 0%, #2980b9 100%)',
-		color: 'white',
-	},
-	dropdownAvatar: {
-		width: '48px',
-		height: '48px',
-		background: 'white',
-		borderRadius: '50%',
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
-		color: '#3498db',
-		fontWeight: 700,
-		fontSize: '20px',
-	},
-	dropdownName: {
-		fontWeight: 600,
-		fontSize: '16px',
-	},
-	dropdownRole: {
-		fontSize: '13px',
-		opacity: 0.9,
-		marginTop: '2px',
-	},
-	divider: {
-		height: '1px',
-		background: '#e0e0e0',
-	},
-	dropdownItem: {
-		padding: '14px 20px',
-		width: '100%',
-		background: 'white',
-		border: 'none',
-		textAlign: 'left',
-		cursor: 'pointer',
-		fontSize: '15px',
-		fontWeight: 500,
-		color: '#2c3e50',
-		display: 'flex',
-		alignItems: 'center',
-		gap: '12px',
-		transition: 'all 0.2s ease',
-	},
-	logoutItem: {
-		color: '#e74c3c',
-	},
-	main: {
-		flex: 1,
-	},
-	footer: {
-		background: '#2c3e50',
-		color: 'white',
-		padding: '32px 24px',
-		marginTop: 'auto',
-	},
-	footerContent: {
-		maxWidth: '1400px',
-		margin: '0 auto',
-		display: 'flex',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		flexWrap: 'wrap',
-		gap: '16px',
-	},
-	footerLogo: {
-		fontSize: '18px',
-		fontWeight: 700,
-	},
-	footerText: {
-		fontSize: '14px',
-		opacity: 0.8,
-	},
-	loadingContainer: {
-		display: 'flex',
-		flexDirection: 'column',
-		alignItems: 'center',
-		justifyContent: 'center',
-		minHeight: '100vh',
-		color: '#7f8c8d',
-	},
-	spinner: {
-		width: '40px',
-		height: '40px',
-		border: '4px solid #e0e0e0',
-		borderTop: '4px solid #3498db',
-		borderRadius: '50%',
-		animation: 'spin 1s linear infinite',
-		marginBottom: '20px',
-	},
-};

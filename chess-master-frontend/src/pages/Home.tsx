@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from '../components/ui/card';
+import { Badge } from '../components/ui/badge';
+import { Calendar, User, BookOpen, BarChart3, Crown } from 'lucide-react';
 
 const Home: React.FC = () => {
 	const navigate = useNavigate();
@@ -20,241 +29,156 @@ const Home: React.FC = () => {
 
 	if (loading) {
 		return (
-			<div style={styles.loadingContainer}>
-				<div style={styles.spinner}></div>
-				<p>Loading...</p>
+			<div className='flex flex-col items-center justify-center min-h-[60vh]'>
+				<div className='w-10 h-10 border-4 border-gray-200 border-t-primary rounded-full animate-spin mb-5' />
+				<p className='text-muted-foreground'>Loading...</p>
 			</div>
 		);
 	}
 
 	return (
-		<div style={styles.container}>
-			<div style={styles.hero}>
-				<h1 style={styles.heroTitle}>
+		<div className='max-w-7xl mx-auto px-5 py-10'>
+			<div className='text-center mb-16'>
+				<h1 className='text-4xl md:text-5xl font-bold mb-4'>
 					Welcome back, {user?.username || 'Chess Player'}!
 				</h1>
-				<p style={styles.heroSubtitle}>
+				<p className='text-lg text-muted-foreground'>
 					{user?.isMaster
 						? 'Manage your schedule and connect with students'
 						: 'Find your perfect chess master and book a session'}
 				</p>
 			</div>
 
-			<div style={styles.grid}>
+			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12'>
 				{user?.isMaster ? (
 					<>
-						<div
-							style={styles.card}
+						<Card
+							className='cursor-pointer hover:shadow-lg transition-shadow'
 							onClick={() => navigate(`/calendar/${user.id}`)}>
-							<div style={styles.cardIcon}>📅</div>
-							<h3 style={styles.cardTitle}>My Schedule</h3>
-							<p style={styles.cardDescription}>
-								Manage your availability and upcoming sessions
-							</p>
-						</div>
+							<CardHeader>
+								<Calendar className='h-12 w-12 text-primary mb-2' />
+								<CardTitle>My Schedule</CardTitle>
+								<CardDescription>
+									Manage your availability and upcoming
+									sessions
+								</CardDescription>
+							</CardHeader>
+						</Card>
 
-						<div
-							style={styles.card}
+						<Card
+							className='cursor-pointer hover:shadow-lg transition-shadow'
 							onClick={() => navigate('/edit-profile')}>
-							<div style={styles.cardIcon}>👤</div>
-							<h3 style={styles.cardTitle}>My Profile</h3>
-							<p style={styles.cardDescription}>
-								Update your profile, rating, and bio
-							</p>
-						</div>
+							<CardHeader>
+								<User className='h-12 w-12 text-primary mb-2' />
+								<CardTitle>My Profile</CardTitle>
+								<CardDescription>
+									Update your profile, rating, and bio
+								</CardDescription>
+							</CardHeader>
+						</Card>
 
-						<div
-							style={styles.card}
+						<Card
+							className='cursor-pointer hover:shadow-lg transition-shadow'
 							onClick={() => navigate('/bookings')}>
-							<div style={styles.cardIcon}>📚</div>
-							<h3 style={styles.cardTitle}>My Bookings</h3>
-							<p style={styles.cardDescription}>
-								View slot requests and confirmed bookings
-							</p>
-						</div>
+							<CardHeader>
+								<BookOpen className='h-12 w-12 text-primary mb-2' />
+								<CardTitle>My Bookings</CardTitle>
+								<CardDescription>
+									View slot requests and confirmed bookings
+								</CardDescription>
+							</CardHeader>
+						</Card>
 
-						<div style={{ ...styles.card, ...styles.disabledCard }}>
-							<div style={styles.cardIcon}>📊</div>
-							<h3 style={styles.cardTitle}>Statistics</h3>
-							<p style={styles.cardDescription}>
-								View your performance metrics
-							</p>
-							<span style={styles.comingSoon}>Coming Soon</span>
-						</div>
+						<Card className='cursor-not-allowed opacity-60 relative'>
+							<Badge
+								className='absolute top-4 right-4'
+								variant='warning'>
+								Coming Soon
+							</Badge>
+							<CardHeader>
+								<BarChart3 className='h-12 w-12 text-muted-foreground mb-2' />
+								<CardTitle>Statistics</CardTitle>
+								<CardDescription>
+									View your performance metrics
+								</CardDescription>
+							</CardHeader>
+						</Card>
 					</>
 				) : (
 					<>
-						<div
-							style={styles.card}
+						<Card
+							className='cursor-pointer hover:shadow-lg transition-shadow'
 							onClick={() => navigate('/masters')}>
-							<div style={styles.cardIcon}>♟️</div>
-							<h3 style={styles.cardTitle}>Browse Masters</h3>
-							<p style={styles.cardDescription}>
-								Discover and book sessions with chess masters
-							</p>
-						</div>
+							<CardHeader>
+								<Crown className='h-12 w-12 text-primary mb-2' />
+								<CardTitle>Browse Masters</CardTitle>
+								<CardDescription>
+									Discover and book sessions with chess
+									masters
+								</CardDescription>
+							</CardHeader>
+						</Card>
 
-						<div
-							style={styles.card}
+						<Card
+							className='cursor-pointer hover:shadow-lg transition-shadow'
 							onClick={() => navigate('/edit-profile')}>
-							<div style={styles.cardIcon}>👤</div>
-							<h3 style={styles.cardTitle}>My Profile</h3>
-							<p style={styles.cardDescription}>
-								View and edit your profile settings
-							</p>
-						</div>
+							<CardHeader>
+								<User className='h-12 w-12 text-primary mb-2' />
+								<CardTitle>My Profile</CardTitle>
+								<CardDescription>
+									View and edit your profile settings
+								</CardDescription>
+							</CardHeader>
+						</Card>
 
-						<div
-							style={styles.card}
+						<Card
+							className='cursor-pointer hover:shadow-lg transition-shadow'
 							onClick={() => navigate('/bookings')}>
-							<div style={styles.cardIcon}>📚</div>
-							<h3 style={styles.cardTitle}>My Bookings</h3>
-							<p style={styles.cardDescription}>
-								View your upcoming and past sessions
-							</p>
-						</div>
+							<CardHeader>
+								<BookOpen className='h-12 w-12 text-primary mb-2' />
+								<CardTitle>My Bookings</CardTitle>
+								<CardDescription>
+									View your upcoming and past sessions
+								</CardDescription>
+							</CardHeader>
+						</Card>
 					</>
 				)}
 			</div>
 
 			{user?.isMaster && (
-				<div style={styles.infoSection}>
-					<h2 style={styles.infoTitle}>Master Dashboard</h2>
-					<div style={styles.stats}>
-						<div style={styles.statCard}>
-							<div style={styles.statValue}>
-								{user.rating || 'Unrated'}
-							</div>
-							<div style={styles.statLabel}>Your Rating</div>
+				<Card className='bg-gradient-to-br from-primary to-primary/80 text-primary-foreground'>
+					<CardHeader>
+						<CardTitle className='text-3xl mb-6'>
+							Master Dashboard
+						</CardTitle>
+						<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+							<Card className='bg-white/15 backdrop-blur-sm'>
+								<CardContent className='pt-6 text-center'>
+									<div className='text-4xl font-bold mb-2'>
+										{user.rating || 'Unrated'}
+									</div>
+									<div className='text-sm opacity-90'>
+										Your Rating
+									</div>
+								</CardContent>
+							</Card>
+							<Card className='bg-white/15 backdrop-blur-sm'>
+								<CardContent className='pt-6 text-center'>
+									<div className='text-4xl font-bold mb-2'>
+										{user.title || 'No Title'}
+									</div>
+									<div className='text-sm opacity-90'>
+										Chess Title
+									</div>
+								</CardContent>
+							</Card>
 						</div>
-						<div style={styles.statCard}>
-							<div style={styles.statValue}>
-								{user.title || 'No Title'}
-							</div>
-							<div style={styles.statLabel}>Chess Title</div>
-						</div>
-					</div>
-				</div>
+					</CardHeader>
+				</Card>
 			)}
 		</div>
 	);
-};
-
-const styles: Record<string, React.CSSProperties> = {
-	container: {
-		maxWidth: '1200px',
-		margin: '0 auto',
-		padding: '40px 20px',
-	},
-	loadingContainer: {
-		display: 'flex',
-		flexDirection: 'column',
-		alignItems: 'center',
-		justifyContent: 'center',
-		minHeight: '60vh',
-		color: '#7f8c8d',
-	},
-	spinner: {
-		width: '40px',
-		height: '40px',
-		border: '4px solid #e0e0e0',
-		borderTop: '4px solid #3498db',
-		borderRadius: '50%',
-		animation: 'spin 1s linear infinite',
-		marginBottom: '20px',
-	},
-	hero: {
-		textAlign: 'center',
-		marginBottom: '60px',
-	},
-	heroTitle: {
-		fontSize: '42px',
-		fontWeight: 700,
-		color: '#2c3e50',
-		marginBottom: '16px',
-		lineHeight: 1.2,
-	},
-	heroSubtitle: {
-		fontSize: '18px',
-		color: '#7f8c8d',
-		lineHeight: 1.6,
-	},
-	grid: {
-		display: 'grid',
-		gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-		gap: '24px',
-		marginBottom: '60px',
-	},
-	card: {
-		background: 'white',
-		padding: '32px',
-		borderRadius: '16px',
-		boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-		cursor: 'pointer',
-		transition: 'all 0.3s ease',
-		position: 'relative',
-	},
-	disabledCard: {
-		cursor: 'not-allowed',
-		opacity: 0.6,
-	},
-	cardIcon: {
-		fontSize: '48px',
-		marginBottom: '16px',
-	},
-	cardTitle: {
-		fontSize: '22px',
-		fontWeight: 600,
-		color: '#2c3e50',
-		marginBottom: '12px',
-	},
-	cardDescription: {
-		fontSize: '15px',
-		color: '#7f8c8d',
-		lineHeight: 1.6,
-	},
-	comingSoon: {
-		position: 'absolute',
-		top: '16px',
-		right: '16px',
-		background: '#f39c12',
-		color: 'white',
-		padding: '4px 12px',
-		borderRadius: '12px',
-		fontSize: '12px',
-		fontWeight: 600,
-	},
-	infoSection: {
-		background: 'linear-gradient(135deg, #3498db 0%, #2980b9 100%)',
-		padding: '40px',
-		borderRadius: '16px',
-		color: 'white',
-	},
-	infoTitle: {
-		fontSize: '28px',
-		fontWeight: 700,
-		marginBottom: '24px',
-	},
-	stats: {
-		display: 'grid',
-		gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-		gap: '20px',
-	},
-	statCard: {
-		background: 'rgba(255,255,255,0.15)',
-		padding: '24px',
-		borderRadius: '12px',
-		textAlign: 'center',
-	},
-	statValue: {
-		fontSize: '32px',
-		fontWeight: 700,
-		marginBottom: '8px',
-	},
-	statLabel: {
-		fontSize: '14px',
-		opacity: 0.9,
-	},
 };
 
 export default Home;
