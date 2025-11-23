@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { API_URL } from '../services/config';
+import { findUsers } from '../services/auth';
+import type { User } from '../services/auth';
 
 export const useMasterInfo = (userId: string | undefined) => {
-	const [masterInfo, setMasterInfo] = useState<any>(null);
+	const [masterInfo, setMasterInfo] = useState<User | null>(null);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
@@ -15,14 +15,9 @@ export const useMasterInfo = (userId: string | undefined) => {
 
 			try {
 				setLoading(true);
-				const res = await axios.get(`${API_URL}/users`, {
-					params: { isMaster: true },
-					withCredentials: true,
-				});
-				const master = res.data.users.find(
-					(u: any) => u.id === Number(userId)
-				);
-				setMasterInfo(master);
+				const res = await findUsers({ isMaster: true });
+				const master = res.users.find((u) => u.id === Number(userId));
+				setMasterInfo(master || null);
 			} catch (err) {
 				console.error('Failed to load master info', err);
 			} finally {

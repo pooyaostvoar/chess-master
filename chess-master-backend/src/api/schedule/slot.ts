@@ -1,265 +1,141 @@
 import { Router } from "express";
 import { isAuthenticated } from "../../middleware/passport";
-import { AppDataSource } from "../../database/datasource";
-import { ScheduleSlot } from "../../database/entity/schedule-slots";
-import { In } from "typeorm";
 import { SlotStatus } from "../../database/entity/types";
+import {
+  createSlot,
+  getSlotsByMaster,
+  deleteSlots,
+  reserveSlot,
+  updateSlotStatus,
+  getUserBookings,
+  getMasterBookings,
+  formatSlot,
+} from "../../services/schedule.service";
 
 export const slotRouter = Router();
 
+// POST /schedule/slot - Create a new slot
 slotRouter.post("", isAuthenticated, async (req, res) => {
   try {
     const { startTime, endTime } = req.body;
+    const masterId = (req.user as any)?.id;
 
-    // if (!req?.user?.isMaster) {
-    //   return res.status(403).json({ error: "Only masters can create slots" });
-    // }
-
-    const repo = AppDataSource.getRepository(ScheduleSlot);
-
-    const slot = repo.create({
-      master: req.user,
+    const slot = await createSlot({
+      masterId,
       startTime: new Date(startTime),
       endTime: new Date(endTime),
     });
 
-    await repo.save(slot);
-
     res.json({ success: true, slot });
   } catch (err) {
+    console.error("Error creating slot:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
+// GET /schedule/slot/user/:userId - Get slots for a master
 slotRouter.get("/user/:userId", async (req, res) => {
   try {
     const userId = parseInt(req.params.userId, 10);
-
-    const repo = AppDataSource.getRepository(ScheduleSlot);
-
-    const slots = await repo
-      .createQueryBuilder("slot")
-      .leftJoinAndSelect("slot.reservedBy", "reservedBy")
-      .where("slot.master = :userId", { userId })
-      .orderBy("slot.startTime", "ASC")
-      .getMany();
-
-    // Format slots to exclude sensitive user data
-    const formattedSlots = slots.map((slot) => {
-      const formatted: any = { ...slot };
-      if (slot.reservedBy) {
-        formatted.reservedBy = {
-          id: slot.reservedBy.id,
-          username: slot.reservedBy.username,
-          email: slot.reservedBy.email,
-          profilePicture: slot.reservedBy.profilePicture,
-        };
-      }
-      return formatted;
-    });
+    const slots = await getSlotsByMaster(userId);
+    const formattedSlots = slots.map(formatSlot);
 
     res.json({ success: true, slots: formattedSlots });
   } catch (err) {
-    console.error(err);
+    console.error("Error fetching slots:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
+// DELETE /schedule/slot - Delete slots
 slotRouter.delete("/", isAuthenticated, async (req, res) => {
   try {
     const ids: number[] = req.body.ids;
     const userId = (req.user as any)?.id;
 
     if (!Array.isArray(ids) || ids.length === 0) {
-      return res.status(400).json({ error: "ids must be a non-empty array" });
+      return res
+        .status(400)
+        .json({ error: "ids must be a non-empty array" });
     }
 
-    const repo = AppDataSource.getRepository(ScheduleSlot);
-
-    // Only delete slots owned by this master
-    const slots = await repo.find({
-      where: {
-        id: In(ids),
-        master: { id: userId },
-      },
-      relations: ["master"],
-    });
-
-    if (slots.length === 0) {
-      return res.status(404).json({ error: "No valid slots found" });
-    }
-
-    await repo.remove(slots);
+    const deletedIds = await deleteSlots(ids, userId);
 
     return res.json({
       success: true,
-      deletedIds: slots.map((s) => s.id),
+      deletedIds,
     });
-  } catch (err) {
+  } catch (err: any) {
+    if (err.message === "No valid slots found") {
+      return res.status(404).json({ error: err.message });
+    }
+    console.error("Error deleting slots:", err);
     return res.status(500).json({ error: "Server error" });
   }
 });
 
-// POST /schedule/slot/:id/reserve
+// POST /schedule/slot/:id/reserve - Reserve a slot
 slotRouter.post("/:id/reserve", isAuthenticated, async (req, res) => {
-  const slotId = Number(req.params.id);
-  const userId = (req.user as any)?.id;
-
-  const repo = AppDataSource.getRepository(ScheduleSlot);
-
-  const slot = await repo.findOne({
-    where: { id: slotId },
-    relations: ["master", "reservedBy"],
-  });
-
-  if (!slot) return res.status(404).json({ error: "Slot not found" });
-
-  if (slot.status !== SlotStatus.Free)
-    return res.status(400).json({ error: "Slot is not available" });
-
-  slot.status = SlotStatus.Reserved;
-  slot.reservedBy = { id: userId } as any;
-
-  await repo.save(slot);
-
-  // Reload with relations to return full user info
-  const updatedSlot = await repo
-    .createQueryBuilder("slot")
-    .leftJoinAndSelect("slot.reservedBy", "reservedBy")
-    .where("slot.id = :slotId", { slotId })
-    .getOne();
-
-  // Format to exclude sensitive user data
-  if (updatedSlot?.reservedBy) {
-    (updatedSlot as any).reservedBy = {
-      id: updatedSlot.reservedBy.id,
-      username: updatedSlot.reservedBy.username,
-      email: updatedSlot.reservedBy.email,
-      profilePicture: updatedSlot.reservedBy.profilePicture,
-    };
-  }
-
-  res.json({ message: "Slot requested", slot: updatedSlot });
-});
-
-// PATCH /schedule/slot/:id/status
-slotRouter.patch("/:id/status", isAuthenticated, async (req, res) => {
-  const slotId = Number(req.params.id);
-  const masterId = (req.user as any).id; // master
-  const { status } = req.body;
-
-  const repo = AppDataSource.getRepository(ScheduleSlot);
-
-  const slot = await repo.findOne({
-    where: { id: slotId, master: { id: masterId } },
-    relations: ["reservedBy", "master"],
-  });
-
-  if (!slot)
-    return res
-      .status(404)
-      .json({ error: "Slot not found or you are not the master" });
-
-  // If making it "Free", clear user
-  if (status === SlotStatus.Free) {
-    slot.reservedBy = null;
-  }
-
-  slot.status = status;
-
-  await repo.save(slot);
-
-  // Reload with relations to return full slot info
-  const updatedSlot = await repo
-    .createQueryBuilder("slot")
-    .leftJoinAndSelect("slot.reservedBy", "reservedBy")
-    .where("slot.id = :slotId", { slotId })
-    .getOne();
-
-  // Format to exclude sensitive user data
-  if (updatedSlot?.reservedBy) {
-    (updatedSlot as any).reservedBy = {
-      id: updatedSlot.reservedBy.id,
-      username: updatedSlot.reservedBy.username,
-      email: updatedSlot.reservedBy.email,
-      profilePicture: updatedSlot.reservedBy.profilePicture,
-    };
-  }
-
-  res.json({ message: "Slot status updated", slot: updatedSlot });
-});
-
-// GET /schedule/slot/my-bookings - Get bookings for regular users (slots they reserved)
-slotRouter.get("/my-bookings", isAuthenticated, async (req, res) => {
   try {
+    const slotId = Number(req.params.id);
     const userId = (req.user as any)?.id;
 
-    const repo = AppDataSource.getRepository(ScheduleSlot);
-
-    const slots = await repo
-      .createQueryBuilder("slot")
-      .leftJoinAndSelect("slot.master", "master")
-      .where("slot.reservedBy = :userId", { userId })
-      .orderBy("slot.startTime", "ASC")
-      .getMany();
-
-    // Format to exclude sensitive user data
-    const formattedSlots = slots.map((slot) => {
-      const formatted: any = { ...slot };
-      if (slot.master) {
-        formatted.master = {
-          id: slot.master.id,
-          username: slot.master.username,
-          email: slot.master.email,
-          title: slot.master.title,
-          rating: slot.master.rating,
-          profilePicture: slot.master.profilePicture,
-          chesscomUrl: slot.master.chesscomUrl,
-          lichessUrl: slot.master.lichessUrl,
-        };
-      }
-      return formatted;
-    });
-
-    res.json({ success: true, bookings: formattedSlots });
-  } catch (err) {
-    console.error(err);
+    const slot = await reserveSlot(slotId, userId);
+    res.json({ message: "Slot requested", slot: formatSlot(slot) });
+  } catch (err: any) {
+    if (err.message === "Slot not found" || err.message === "Slot not found after reservation") {
+      return res.status(404).json({ error: "Slot not found" });
+    }
+    if (err.message === "Slot is not available") {
+      return res.status(400).json({ error: err.message });
+    }
+    console.error("Error reserving slot:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
-// GET /schedule/slot/master-bookings - Get bookings for masters (slots reserved by others)
-slotRouter.get("/master-bookings", isAuthenticated, async (req, res) => {
+// PATCH /schedule/slot/:id/status - Update slot status
+slotRouter.patch("/:id/status", isAuthenticated, async (req, res) => {
   try {
-    const masterId = (req.user as any)?.id;
+    const slotId = Number(req.params.id);
+    const masterId = (req.user as any).id;
+    const { status } = req.body;
 
-    const repo = AppDataSource.getRepository(ScheduleSlot);
+    const slot = await updateSlotStatus(slotId, masterId, status as SlotStatus);
+    res.json({ message: "Slot status updated", slot: formatSlot(slot) });
+  } catch (err: any) {
+    if (err.message === "Slot not found or you are not the master" || err.message === "Slot not found after update") {
+      return res.status(404).json({ error: "Slot not found or you are not the master" });
+    }
+    console.error("Error updating slot status:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
-    const slots = await repo
-      .createQueryBuilder("slot")
-      .leftJoinAndSelect("slot.reservedBy", "reservedBy")
-      .where("slot.master = :masterId", { masterId })
-      .andWhere("slot.reservedBy IS NOT NULL")
-      .orderBy("slot.startTime", "ASC")
-      .getMany();
-
-    // Format to exclude sensitive user data
-    const formattedSlots = slots.map((slot) => {
-      const formatted: any = { ...slot };
-      if (slot.reservedBy) {
-        formatted.reservedBy = {
-          id: slot.reservedBy.id,
-          username: slot.reservedBy.username,
-          email: slot.reservedBy.email,
-          profilePicture: slot.reservedBy.profilePicture,
-        };
-      }
-      return formatted;
-    });
+// GET /schedule/slot/my-bookings - Get bookings for regular users
+slotRouter.get("/my-bookings", isAuthenticated, async (req, res) => {
+  try {
+    const userId = (req.user as any)?.id;
+    const slots = await getUserBookings(userId);
+    const formattedSlots = slots.map(formatSlot);
 
     res.json({ success: true, bookings: formattedSlots });
   } catch (err) {
-    console.error(err);
+    console.error("Error fetching user bookings:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// GET /schedule/slot/master-bookings - Get bookings for masters
+slotRouter.get("/master-bookings", isAuthenticated, async (req, res) => {
+  try {
+    const masterId = (req.user as any)?.id;
+    const slots = await getMasterBookings(masterId);
+    const formattedSlots = slots.map(formatSlot);
+
+    res.json({ success: true, bookings: formattedSlots });
+  } catch (err) {
+    console.error("Error fetching master bookings:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });

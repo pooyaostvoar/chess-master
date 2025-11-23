@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import { getMyBookings, getMasterBookings } from '../services/bookings';
+import type { Booking } from '../services/bookings';
 
 const MyBookings: React.FC = () => {
 	const { user } = useUser();
 	const navigate = useNavigate();
-	const [bookings, setBookings] = useState<any[]>([]);
+	const [bookings, setBookings] = useState<Booking[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
@@ -17,7 +18,7 @@ const MyBookings: React.FC = () => {
 				const res = user?.isMaster
 					? await getMasterBookings()
 					: await getMyBookings();
-				setBookings(res.data.bookings || []);
+				setBookings(res.bookings || []);
 				setError(null);
 			} catch (err) {
 				console.error('Failed to load bookings', err);

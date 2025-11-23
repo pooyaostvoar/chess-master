@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { API_URL } from '../services/config';
 import {
 	Card,
 	CardContent,
@@ -14,10 +12,12 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Badge } from '../components/ui/badge';
 import { ExternalLink, Search, X } from 'lucide-react';
+import { findUsers } from '../services/auth';
+import type { User } from '../services/auth';
 
 const Masters: React.FC = () => {
-	const [masters, setMasters] = useState<any[]>([]);
-	const [filteredMasters, setFilteredMasters] = useState<any[]>([]);
+	const [masters, setMasters] = useState<User[]>([]);
+	const [filteredMasters, setFilteredMasters] = useState<User[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState('');
 	const [searchTerm, setSearchTerm] = useState('');
@@ -28,13 +28,9 @@ const Masters: React.FC = () => {
 	useEffect(() => {
 		const loadMasters = async () => {
 			try {
-				const response = await axios.get(`${API_URL}/users`, {
-					params: { isMaster: true },
-					withCredentials: true,
-				});
-
-				setMasters(response.data.users);
-				setFilteredMasters(response.data.users);
+				const response = await findUsers({ isMaster: true });
+				setMasters(response.users);
+				setFilteredMasters(response.users);
 			} catch (err) {
 				console.error(err);
 				setError('Failed to load masters');

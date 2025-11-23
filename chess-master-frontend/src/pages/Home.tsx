@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
-import axios from 'axios';
-import { API_URL } from '../services/config';
 import {
 	Card,
 	CardContent,
@@ -22,32 +20,29 @@ import {
 	Clock,
 } from 'lucide-react';
 import { getMyBookings, getMasterBookings } from '../services/bookings';
+import { findUsers } from '../services/auth';
 import moment from 'moment';
+import type { Booking } from '../services/bookings';
+import type { User } from '../services/auth';
 
 const Home: React.FC = () => {
 	const navigate = useNavigate();
 	const { user } = useUser();
-	const [topMasters, setTopMasters] = useState<any[]>([]);
-	const [recommendedMasters, setRecommendedMasters] = useState<any[]>([]);
-	const [recentBookings, setRecentBookings] = useState<any[]>([]);
+	const [topMasters, setTopMasters] = useState<User[]>([]);
+	const [recommendedMasters, setRecommendedMasters] = useState<User[]>([]);
+	const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [bookingsLoading, setBookingsLoading] = useState(false);
 
 	useEffect(() => {
 		const loadData = async () => {
 			try {
-				const response = await axios.get(`${API_URL}/users`, {
-					params: { isMaster: true },
-					withCredentials: true,
-				});
-
-				const allMasters = response.data.users.filter(
-					(m: any) => m.rating
-				);
+				const response = await findUsers({ isMaster: true });
+				const allMasters = response.users.filter((m) => m.rating);
 
 				// Sort by rating (highest first) and take top 5
 				const sorted = allMasters
-					.sort((a: any, b: any) => (b.rating || 0) - (a.rating || 0))
+					.sort((a, b) => (b.rating || 0) - (a.rating || 0))
 					.slice(0, 5);
 
 				setTopMasters(sorted);
@@ -56,10 +51,7 @@ const Home: React.FC = () => {
 				if (user) {
 					// Shuffle and take 6 different masters, or all if less than 6
 					const shuffled = [...allMasters]
-						.filter(
-							(m: any) =>
-								!sorted.some((top: any) => top.id === m.id)
-						)
+						.filter((m) => !sorted.some((top) => top.id === m.id))
 						.sort(() => Math.random() - 0.5)
 						.slice(0, 6);
 					setRecommendedMasters(shuffled);
@@ -70,14 +62,12 @@ const Home: React.FC = () => {
 						const bookingsRes = user.isMaster
 							? await getMasterBookings()
 							: await getMyBookings();
-						const bookings = bookingsRes.data.bookings || [];
+						const bookings = bookingsRes.bookings || [];
 						// Get upcoming bookings (next 3)
 						const upcoming = bookings
-							.filter(
-								(b: any) => new Date(b.startTime) > new Date()
-							)
+							.filter((b) => new Date(b.startTime) > new Date())
 							.sort(
-								(a: any, b: any) =>
+								(a, b) =>
 									new Date(a.startTime).getTime() -
 									new Date(b.startTime).getTime()
 							)

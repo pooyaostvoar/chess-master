@@ -19,7 +19,7 @@ const Login: React.FC = () => {
 		try {
 			const data = await login(username, password);
 
-			if (data.status === 'success') {
+			if (data.user) {
 				setUser(data.user);
 				navigate('/home');
 			} else {

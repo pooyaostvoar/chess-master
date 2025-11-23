@@ -1,6 +1,5 @@
 import React from 'react';
-import axios from 'axios';
-import { deleteSlots } from '../services/schedule';
+import { deleteSlots, updateSlotStatus } from '../services/schedule';
 import {
 	Dialog,
 	DialogContent,
@@ -11,8 +10,6 @@ import {
 import { Button } from './ui/button';
 import { Card, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { CheckCircle2, XCircle, Trash2, Circle } from 'lucide-react';
-
-const API_URL = 'http://localhost:3004';
 
 interface SlotModalProps {
 	visible: boolean;
@@ -53,13 +50,8 @@ const SlotModal: React.FC<SlotModalProps> = ({
 
 	const updateStatus = async (status: 'free' | 'reserved' | 'booked') => {
 		try {
-			const res = await axios.patch(
-				`${API_URL}/schedule/slot/${slotId}/status`,
-				{ status },
-				{ withCredentials: true }
-			);
-
-			onStatusChange?.(res.data.slot);
+			const res = await updateSlotStatus(slotId, status);
+			onStatusChange?.(res.slot);
 			onClose();
 		} catch (err) {
 			console.error(err);

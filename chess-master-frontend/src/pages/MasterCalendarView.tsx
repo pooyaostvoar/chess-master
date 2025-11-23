@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
 import { createSlot } from '../services/schedule';
-import { API_URL } from '../services/config';
 import { useScheduleSlots } from '../hooks/useScheduleSlots';
 import { mapSlotToEvent } from '../utils/slotUtils';
 import ScheduleCalendar from '../components/ScheduleCalendar';
@@ -24,7 +22,7 @@ const MasterCalendarView: React.FC = () => {
 
 		try {
 			const res = await createSlot({ startTime: start, endTime: end });
-			const newSlot = res.data.slot;
+			const newSlot = res.slot;
 			setEvents((prev) => [...prev, mapSlotToEvent(newSlot)]);
 		} catch (err) {
 			console.error('Failed to create slot', err);
@@ -38,40 +36,16 @@ const MasterCalendarView: React.FC = () => {
 		setModalVisible(true);
 	};
 
-	// Drag & drop update
+	// Drag & drop update (Note: This endpoint doesn't exist yet, keeping for future implementation)
 	const handleEventDrop = async (info: any) => {
-		const id = info.event.id;
-
-		try {
-			await axios.patch(
-				`${API_URL}/schedule/${id}`,
-				{
-					startTime: info.event.start,
-					endTime: info.event.end,
-				},
-				{ withCredentials: true }
-			);
-		} catch (err) {
-			console.error('Failed to update slot', err);
-		}
+		// TODO: Implement slot update endpoint
+		console.log('Drag & drop update not yet implemented', info);
 	};
 
-	// Resize update
+	// Resize update (Note: This endpoint doesn't exist yet, keeping for future implementation)
 	const handleEventResize = async (info: any) => {
-		const id = info.event.id;
-
-		try {
-			await axios.patch(
-				`${API_URL}/schedule/${id}`,
-				{
-					startTime: info.event.start,
-					endTime: info.event.end,
-				},
-				{ withCredentials: true }
-			);
-		} catch (err) {
-			console.error('Failed to resize slot', err);
-		}
+		// TODO: Implement slot update endpoint
+		console.log('Resize update not yet implemented', info);
 	};
 
 	// Handle delete from modal
@@ -131,4 +105,3 @@ const styles: Record<string, React.CSSProperties> = {
 };
 
 export default MasterCalendarView;
-

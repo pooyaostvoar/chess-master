@@ -48,4 +48,3 @@ const ScheduleCalendar: React.FC<ScheduleCalendarProps> = ({
 };
 
 export default ScheduleCalendar;
-

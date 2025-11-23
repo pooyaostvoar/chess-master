@@ -39,7 +39,8 @@ const BookCalendarView: React.FC = () => {
 		} catch (err: any) {
 			console.error('Failed to book slot', err);
 			alert(
-				err.response?.data?.error || 'Failed to book slot. Please try again.'
+				err.response?.data?.error ||
+					'Failed to book slot. Please try again.'
 			);
 		}
 	};
@@ -73,4 +74,3 @@ const styles: Record<string, React.CSSProperties> = {
 };
 
 export default BookCalendarView;
-

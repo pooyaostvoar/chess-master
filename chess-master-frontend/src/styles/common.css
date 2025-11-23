@@ -1,0 +1,179 @@
+/* Common utility classes */
+
+.loading-spinner {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 60vh;
+}
+
+.spinner {
+	width: 2.5rem;
+	height: 2.5rem;
+	border: 4px solid rgb(229 231 235);
+	border-top-color: hsl(var(--primary));
+	border-radius: 9999px;
+	animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.error-message {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 60vh;
+}
+
+.empty-state {
+	text-align: center;
+	padding: 3rem 1.25rem;
+}
+
+/* Card hover effects */
+.card-hover {
+	cursor: pointer;
+	transition: box-shadow 0.2s ease-in-out;
+}
+
+.card-hover:hover {
+	box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+		0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* Profile picture styles */
+.profile-picture {
+	width: 4rem;
+	height: 4rem;
+	border-radius: 9999px;
+	object-fit: cover;
+	border: 2px solid hsl(var(--primary));
+}
+
+.profile-picture-small {
+	width: 2rem;
+	height: 2rem;
+	border-radius: 9999px;
+	object-fit: cover;
+}
+
+.profile-picture-large {
+	width: 8rem;
+	height: 8rem;
+	border-radius: 9999px;
+	object-fit: cover;
+	border: 4px solid hsl(var(--primary));
+}
+
+.profile-avatar {
+	border-radius: 9999px;
+	background: linear-gradient(
+		to bottom right,
+		hsl(var(--primary)),
+		hsl(var(--primary) / 0.8)
+	);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-weight: 700;
+}
+
+.profile-avatar-small {
+	width: 2rem;
+	height: 2rem;
+	font-size: 0.875rem;
+}
+
+.profile-avatar-medium {
+	width: 4rem;
+	height: 4rem;
+	font-size: 1.5rem;
+}
+
+.profile-avatar-large {
+	width: 8rem;
+	height: 8rem;
+	font-size: 2.25rem;
+}
+
+/* Status badges */
+.status-badge {
+	display: inline-flex;
+	align-items: center;
+	border-radius: 9999px;
+	padding: 0.25rem 0.75rem;
+	font-size: 0.75rem;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+/* Section spacing */
+.section-spacing {
+	margin-bottom: 3rem;
+}
+
+.section-spacing-large {
+	margin-bottom: 4rem;
+}
+
+/* Container */
+.container-max {
+	max-width: 80rem;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 1.25rem;
+	padding-right: 1.25rem;
+}
+
+/* Grid layouts */
+.grid-responsive {
+	display: grid;
+	grid-template-columns: repeat(1, minmax(0, 1fr));
+	gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+	.grid-responsive {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 1024px) {
+	.grid-responsive {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+/* Text utilities */
+.text-gradient {
+	background: linear-gradient(
+		to right,
+		hsl(var(--primary)),
+		hsl(var(--primary) / 0.8)
+	);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+}
+
+/* Link styles */
+.external-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	font-size: 0.75rem;
+	color: hsl(var(--primary));
+	text-decoration: none;
+	transition: text-decoration 0.2s;
+}
+
+.external-link:hover {
+	text-decoration: underline;
+}

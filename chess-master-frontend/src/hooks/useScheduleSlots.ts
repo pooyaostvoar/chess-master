@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { API_URL } from '../services/config';
+import { getSlotsByMaster } from '../services/schedule';
 import { mapSlotToEvent } from '../utils/slotUtils';
+import type { ScheduleSlot } from '../services/schedule';
 
 interface UseScheduleSlotsOptions {
 	showBookingHint?: boolean;
@@ -25,16 +25,10 @@ export const useScheduleSlots = (
 
 			try {
 				setLoading(true);
-				const res = await axios.get(
-					`${API_URL}/schedule/slot/user/${userId}`,
-					{
-						withCredentials: true,
-					}
-				);
-
-				const slots = res.data.slots || [];
+				const res = await getSlotsByMaster(Number(userId));
+				const slots = res.slots || [];
 				setEvents(
-					slots.map((slot: any) =>
+					slots.map((slot: ScheduleSlot) =>
 						mapSlotToEvent(slot, {
 							showBookingHint: options?.showBookingHint,
 							isMasterView: options?.isMasterView,
@@ -57,16 +51,10 @@ export const useScheduleSlots = (
 		if (!userId) return;
 
 		try {
-			const res = await axios.get(
-				`${API_URL}/schedule/slot/user/${userId}`,
-				{
-					withCredentials: true,
-				}
-			);
-
-			const slots = res.data.slots || [];
+			const res = await getSlotsByMaster(Number(userId));
+			const slots = res.slots || [];
 			setEvents(
-				slots.map((slot: any) =>
+				slots.map((slot: ScheduleSlot) =>
 					mapSlotToEvent(slot, {
 						showBookingHint: options?.showBookingHint,
 						isMasterView: options?.isMasterView,
