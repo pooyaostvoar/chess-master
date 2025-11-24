@@ -6,7 +6,7 @@ FROM node:20 AS builder
 WORKDIR /app
 
 # Install pnpm globally
-RUN npm install -g pnpm
+RUN npm install -g pnpm@10.22.0
 
 # Copy package files first (for caching)
 COPY package.json pnpm-lock.yaml ./
