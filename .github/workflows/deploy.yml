@@ -51,6 +51,6 @@ jobs:
           key: ${{ env.VPS_SSH_KEY }}
           script: |
             cd /root
-            docker-compose pull
-            docker-compose up -d --remove-orphans
+            docker compose pull
+            docker compose up -d --remove-orphans
             docker system prune -f
