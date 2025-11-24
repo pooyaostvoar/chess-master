@@ -1,0 +1,56 @@
+name: CI/CD Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      FRONTEND_IMAGE: pooyaos/chess-frontend:latest
+      BACKEND_IMAGE: pooyaos/chess-backend:latest
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+      VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      # -------------------------
+      # Build & push frontend
+      # -------------------------
+      - name: Build and push frontend image
+        run: |
+          docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+          docker build -t $FRONTEND_IMAGE ./chess-master-frontend
+          docker push $FRONTEND_IMAGE
+
+      # -------------------------
+      # Build & push backend
+      # -------------------------
+      - name: Build and push backend image
+        run: |
+          docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+          docker build -t $BACKEND_IMAGE ./chess-master-backend
+          docker push $BACKEND_IMAGE
+
+      # -------------------------
+      # SSH to VPS and deploy
+      # -------------------------
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ env.VPS_HOST }}
+          username: ${{ env.VPS_USER }}
+          key: ${{ env.VPS_SSH_KEY }}
+          script: |
+            cd /root
+            docker-compose pull
+            docker-compose up -d --remove-orphans
+            docker system prune -f
