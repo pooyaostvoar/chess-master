@@ -9,7 +9,7 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({ user }) => {
   return (
     <div className="mb-12">
       <h1 className="text-4xl md:text-5xl font-bold mb-4">
-        Welcome back, {user.username}!!
+        Welcome back, {user.username}!
       </h1>
       <p className="text-lg text-muted-foreground">
         {user.isMaster
