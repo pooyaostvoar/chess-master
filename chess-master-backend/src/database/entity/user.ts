@@ -1,4 +1,10 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn, OneToOne } from "typeorm";
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  OneToOne,
+} from "typeorm";
 import { ScheduleSlot } from "./schedule-slots";
 import { MasterPricing } from "./master-pricing";
 
@@ -10,7 +16,7 @@ export class User {
   @Column("text")
   email: string;
 
-  @Column("text")
+  @Column({ type: "text", unique: true })
   username: string;
 
   @Column("boolean", { default: false })
