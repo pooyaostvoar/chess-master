@@ -34,11 +34,11 @@ chess-master/
 In your frontend Dockerfile (`chess-master-frontend/Dockerfile.prod`), make sure to set:
 
 ```dockerfile
-ENV REACT_APP_API_URL=https://loclhost:3004
+ENV REACT_APP_API_URL=https://localhost:3004
 ```
 
 - This ensures the frontend connects to the backend container inside the Docker network.
-- If using a domain, replace `http://loclhost:3004` with `https://yourdomain.com/api`.
+- If using a domain, replace `http://localhost:3004` with `https://yourdomain.com/api`.
 
 ---
 
