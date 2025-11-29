@@ -49,6 +49,7 @@ jobs:
         run: corepack enable && corepack prepare pnpm@latest --activate
 
       - name: Install dependencies
+        working-directory: ./chess-master-backend
         run: pnpm install
 
       - name: Set environment variables
@@ -73,4 +74,5 @@ jobs:
           done
 
       - name: Run tests
+        working-directory: ./chess-master-backend
         run: pnpm test
