@@ -1,6 +1,6 @@
-import { AppDataSource } from "../src/database/datasource";
-import { User } from "../src/database/entity/user";
-import { unauthAgent, authAgent } from "./setup";
+import { AppDataSource } from "../../src/database/datasource";
+import { User } from "../../src/database/entity/user";
+import { unauthAgent, authAgent } from "../setup";
 
 describe("GET /me", () => {
   it("should return 401 if not authenticated", async () => {

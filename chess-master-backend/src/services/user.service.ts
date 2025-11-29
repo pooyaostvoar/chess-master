@@ -1,6 +1,6 @@
 import { AppDataSource } from "../database/datasource";
 import { User } from "../database/entity/user";
-import { formatPricing } from "./pricing.service";
+import { formatPricing, updatePricing } from "./pricing.service";
 
 export interface UpdateUserData {
   email?: string;
@@ -94,7 +94,9 @@ export async function getUserById(userId: number): Promise<User | null> {
 /**
  * Get authenticated user with safe fields
  */
-export async function getAuthenticatedUser(userId: number): Promise<SafeUser | null> {
+export async function getAuthenticatedUser(
+  userId: number
+): Promise<SafeUser | null> {
   const userRepo = AppDataSource.getRepository(User);
   const user = await userRepo.findOne({
     where: { id: userId },
@@ -124,7 +126,7 @@ export async function updateUser(
   data: UpdateUserData
 ): Promise<SafeUser> {
   const userRepo = AppDataSource.getRepository(User);
-  const user = await userRepo.findOne({ 
+  const user = await userRepo.findOne({
     where: { id: userId },
     relations: ["pricing"],
   });
@@ -140,24 +142,24 @@ export async function updateUser(
   if (data.rating !== undefined) user.rating = data.rating;
   if (data.bio !== undefined) user.bio = data.bio;
   if (data.isMaster !== undefined) user.isMaster = data.isMaster;
-  if (data.profilePicture !== undefined) user.profilePicture = data.profilePicture;
+  if (data.profilePicture !== undefined)
+    user.profilePicture = data.profilePicture;
   if (data.chesscomUrl !== undefined) user.chesscomUrl = data.chesscomUrl;
   if (data.lichessUrl !== undefined) user.lichessUrl = data.lichessUrl;
 
   // Update pricing if provided
+
+  await userRepo.save(user);
   if (data.pricing !== undefined) {
-    const { updatePricing } = await import("./pricing.service");
     await updatePricing(userId, data.pricing);
   }
 
-  await userRepo.save(user);
-  
   // Reload with pricing relation
   const updatedUser = await userRepo.findOne({
     where: { id: userId },
     relations: ["pricing"],
   });
-  
+
   return formatUser(updatedUser || user);
 }
 
@@ -166,7 +168,8 @@ export async function updateUser(
  */
 export async function findUsers(filters: UserFilters): Promise<User[]> {
   const repo = AppDataSource.getRepository(User);
-  let qb = repo.createQueryBuilder("user")
+  let qb = repo
+    .createQueryBuilder("user")
     .leftJoinAndSelect("user.pricing", "pricing");
 
   if (filters.username) {
@@ -205,4 +208,3 @@ export async function findUsers(filters: UserFilters): Promise<User[]> {
 
   return await qb.getMany();
 }
-
