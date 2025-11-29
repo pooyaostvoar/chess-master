@@ -10,8 +10,6 @@ services:
       - "3000:3000"
     volumes:
       - ./chess-master-frontend:/app
-      - /app/node_modules
-      - /app/.pnpm-store
     environment:
       - CHOKIDAR_USEPOLLING=true
     depends_on:
@@ -26,8 +24,6 @@ services:
       - "3004:3004"
     volumes:
       - ./chess-master-backend:/app
-      - /app/node_modules
-      - /app/.pnpm-store
     environment:
       - NODE_ENV=development
       - DB_HOST=db
