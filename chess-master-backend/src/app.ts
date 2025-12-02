@@ -14,6 +14,10 @@ import { createClient } from "redis";
 import { usersRouter } from "./api/user/router";
 import { scheduleRouter } from "./api/schedule/router";
 import { readSecret } from "./utils/secret";
+import { adminAuthRouter } from "./api/admin-auth";
+import { adminUsersRouter } from "./api/admin-users";
+import { adminStatsRouter } from "./api/admin-stats";
+import { adminActivityRouter } from "./api/admin-activity";
 
 export function createApp() {
   const isTesting = process.env.NODE_ENV === "test";
@@ -35,9 +39,11 @@ export function createApp() {
   const corsOptions = {
     origin: [
       "http://localhost:3000",
+      "http://localhost:3001",
       "http://localhost:3003",
       "http://localhost:3004",
       "http://185.141.61.15:3000",
+      "http://185.141.61.15:3001",
       "http://185.141.61.15:3003",
       "http://185.141.61.15:3004",
     ],
@@ -75,6 +81,10 @@ export function createApp() {
   app.use(passport.session());
   app.use("", googleRouter);
   app.use("", passwordAuthRouter);
+  app.use("/admin", adminAuthRouter);
+  app.use("/admin/users", adminUsersRouter);
+  app.use("/admin/stats", adminStatsRouter);
+  app.use("/admin/activity", adminActivityRouter);
   app.use("/users", usersRouter);
   app.use("/schedule", scheduleRouter);
   app.use(cookieParser());
