@@ -62,7 +62,7 @@ Example config:
 ```nginx
 server {
     listen 80;
-    server_name 185.141.61.15;
+    server_name <IP>;
 
     location / {
         proxy_pass http://127.0.0.1:3000;
