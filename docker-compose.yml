@@ -68,6 +68,7 @@ secrets:
     file: ./secrets/redis_url.txt
   redis_password:
     file: ./secrets/redis_password.txt
-
+  notif:
+    file: ./secrets/email_notification_url.txt
 volumes:
   db_data:

@@ -68,14 +68,14 @@ const Signup: React.FC = () => {
 
           <form onSubmit={handleSubmit} style={styles.form}>
             <div style={styles.inputGroup}>
-              <label style={styles.label}>Username</label>
+              <label style={styles.label}>Email</label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 style={styles.input}
-                placeholder="Choose a username"
+                placeholder="Email"
               />
             </div>
 
@@ -121,7 +121,9 @@ const Signup: React.FC = () => {
               style={{
                 ...styles.message,
                 color: message.includes("successfully") ? "#27ae60" : "#e74c3c",
-                background: message.includes("successfully") ? "#e8f8f5" : "#fee",
+                background: message.includes("successfully")
+                  ? "#e8f8f5"
+                  : "#fee",
               }}
             >
               {message}

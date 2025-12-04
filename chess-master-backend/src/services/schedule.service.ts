@@ -4,6 +4,7 @@ import { SlotStatus } from "../database/entity/types";
 import { User } from "../database/entity/user";
 import { In } from "typeorm";
 import { formatUserMinimal } from "./user.service";
+import { sendNotificationEmail } from "./notification.service";
 
 export interface CreateSlotData {
   masterId: number;
@@ -90,7 +91,9 @@ export async function createSlot(data: CreateSlotData): Promise<ScheduleSlot> {
 /**
  * Get slots for a specific master
  */
-export async function getSlotsByMaster(userId: number): Promise<ScheduleSlot[]> {
+export async function getSlotsByMaster(
+  userId: number
+): Promise<ScheduleSlot[]> {
   const repo = AppDataSource.getRepository(ScheduleSlot);
 
   return await repo
@@ -104,7 +107,9 @@ export async function getSlotsByMaster(userId: number): Promise<ScheduleSlot[]> 
 /**
  * Get slot by ID with relations
  */
-export async function getSlotById(slotId: number): Promise<ScheduleSlot | null> {
+export async function getSlotById(
+  slotId: number
+): Promise<ScheduleSlot | null> {
   const repo = AppDataSource.getRepository(ScheduleSlot);
   return await repo.findOne({
     where: { id: slotId },
@@ -187,6 +192,12 @@ export async function reserveSlot(
   const updatedSlot = await repo.findOne({
     where: { id: slotId },
     relations: ["master", "reservedBy"],
+  });
+
+  // Send notification email
+  await sendNotificationEmail({
+    master: updatedSlot?.master?.username ?? "",
+    reservedBy: updatedSlot?.reservedBy?.username ?? "",
   });
 
   if (!updatedSlot) {
@@ -297,7 +308,9 @@ export async function getUserBookings(userId: number): Promise<ScheduleSlot[]> {
 /**
  * Get bookings for a master (slots reserved by others)
  */
-export async function getMasterBookings(masterId: number): Promise<ScheduleSlot[]> {
+export async function getMasterBookings(
+  masterId: number
+): Promise<ScheduleSlot[]> {
   const repo = AppDataSource.getRepository(ScheduleSlot);
 
   return await repo
@@ -311,4 +324,3 @@ export async function getMasterBookings(masterId: number): Promise<ScheduleSlot[
     .orderBy("slot.startTime", "ASC")
     .getMany();
 }
-

@@ -32,6 +32,7 @@ services:
       - DB_PASS=chesspass
       - DB_NAME=chess_master
       - REDIS_URL=redis://:redis-pass@redis:6379
+      - EMAIL_NOTIFICATION_URL=https://script.google.com/macros/s/AKfycbymKePXvohmD14G48p2b61zY3485xsvf6jpU71NVywVfRzUM6Z-szNB9dHY34xVqkMo/exec
     depends_on:
       - db
       - redis

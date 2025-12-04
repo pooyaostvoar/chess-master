@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import { AppDataSource } from "../database/datasource";
 import { passport } from "../middleware/passport";
 import { User } from "../database/entity/user";
@@ -70,9 +70,9 @@ passwordAuthRouter.post("/signup", async function (req, res, next) {
       try {
         await AppDataSource.getRepository(User).save({
           username: req.body.username,
+          email: req.body.username,
           password: hashedPassword,
           salt,
-          email: "",
         });
         res.send({ status: "success" });
       } catch (err) {
