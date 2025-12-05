@@ -1,6 +1,5 @@
 import React, { useRef } from "react";
 import { useParams } from "react-router-dom";
-import { bookSlot } from "../services/schedule";
 import { useScheduleSlots } from "../hooks/useScheduleSlots";
 import { useMasterInfo } from "../hooks/useMasterInfo";
 import ScheduleCalendar, {
@@ -10,10 +9,14 @@ import MiniCalendar from "../components/calendar/MiniCalendar";
 import MasterInfoHeader from "../components/MasterInfoHeader";
 import SlotLegend from "../components/SlotLegend";
 import { useIsMobile } from "../hooks/useIsMobile";
+import BookingModal from "../components/BookingModal";
 
 const BookCalendarView: React.FC = () => {
   const isMobile = useIsMobile();
   const { userId } = useParams<{ userId: string }>();
+  const [selectedSlotId, setSelectedSlotId] = React.useState<number | null>(
+    null
+  );
   const { events, refreshSlots } = useScheduleSlots(userId, {
     showBookingHint: true,
   });
@@ -64,42 +67,19 @@ const BookCalendarView: React.FC = () => {
 
   // Book a slot
   const handleEventClick = async (info: any) => {
-    const slotId = Number(info.event.id);
-    const slotStart = new Date(info.event.start);
     const now = new Date();
-
-    // Prevent booking slots in the past
+    const slotStart = new Date(info.event.start);
     if (slotStart < now) {
       alert(
         "Cannot book time slots in the past. Please select a future date and time."
       );
       return;
     }
-
-    // Only allow booking free slots (green color)
     if (info.event.backgroundColor !== "#27ae60") {
       return;
     }
 
-    if (
-      !window.confirm(
-        `Request this time slot?\n${info.event.startStr} - ${info.event.endStr}\n\nThe master will need to approve your request.`
-      )
-    ) {
-      return;
-    }
-
-    try {
-      await bookSlot(slotId);
-      // Reload slots to update the UI
-      await refreshSlots();
-      alert("Slot request sent! The master will review your request.");
-    } catch (err: any) {
-      console.error("Failed to book slot", err);
-      alert(
-        err.response?.data?.error || "Failed to book slot. Please try again."
-      );
-    }
+    setSelectedSlotId(Number(info.event.id));
   };
 
   return (
@@ -132,6 +112,17 @@ const BookCalendarView: React.FC = () => {
           <SlotLegend />
         </div>
       </div>
+      <BookingModal
+        visible={Boolean(selectedSlotId)}
+        onClose={() => {
+          setSelectedSlotId(null);
+        }}
+        onBooked={() => {
+          refreshSlots();
+          setSelectedSlotId(null);
+        }}
+        slotId={selectedSlotId}
+      />
     </div>
   );
 };
