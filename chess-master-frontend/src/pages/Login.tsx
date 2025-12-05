@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/auth";
 import { useUser } from "../contexts/UserContext";
+import { useIsMobile } from "../hooks/useIsMobile";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const isMobile = useIsMobile();
   const navigate = useNavigate();
   const { setUser } = useUser();
 
@@ -35,28 +37,30 @@ const Login: React.FC = () => {
 
   return (
     <div style={styles.container}>
-      <div style={styles.leftPanel}>
-        <div style={styles.branding}>
-          <h1 style={styles.brandTitle}>Chess Master</h1>
-          <p style={styles.brandSubtitle}>
-            Connect with world-class chess masters and elevate your game
-          </p>
-          <div style={styles.features}>
-            <div style={styles.feature}>
-              <span style={styles.checkmark}>✓</span>
-              <span>Book sessions with top masters</span>
-            </div>
-            <div style={styles.feature}>
-              <span style={styles.checkmark}>✓</span>
-              <span>Flexible scheduling</span>
-            </div>
-            <div style={styles.feature}>
-              <span style={styles.checkmark}>✓</span>
-              <span>Personalized training</span>
+      {!isMobile && (
+        <div style={styles.leftPanel}>
+          <div style={styles.branding}>
+            <h1 style={styles.brandTitle}>Chess Master</h1>
+            <p style={styles.brandSubtitle}>
+              Connect with world-class chess masters and elevate your game
+            </p>
+            <div style={styles.features}>
+              <div style={styles.feature}>
+                <span style={styles.checkmark}>✓</span>
+                <span>Book sessions with top masters</span>
+              </div>
+              <div style={styles.feature}>
+                <span style={styles.checkmark}>✓</span>
+                <span>Flexible scheduling</span>
+              </div>
+              <div style={styles.feature}>
+                <span style={styles.checkmark}>✓</span>
+                <span>Personalized training</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div style={styles.rightPanel}>
         <div style={styles.card}>

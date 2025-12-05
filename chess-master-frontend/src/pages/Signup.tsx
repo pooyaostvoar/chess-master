@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signup } from "../services/auth";
+import { useIsMobile } from "../hooks/useIsMobile";
 
 const Signup: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -8,6 +9,7 @@ const Signup: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const isMobile = useIsMobile();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,28 +40,30 @@ const Signup: React.FC = () => {
 
   return (
     <div style={styles.container}>
-      <div style={styles.leftPanel}>
-        <div style={styles.branding}>
-          <h1 style={styles.brandTitle}>Chess Master</h1>
-          <p style={styles.brandSubtitle}>
-            Join our community and start your journey to mastery
-          </p>
-          <div style={styles.features}>
-            <div style={styles.feature}>
-              <span style={styles.checkmark}>✓</span>
-              <span>Learn from the best</span>
-            </div>
-            <div style={styles.feature}>
-              <span style={styles.checkmark}>✓</span>
-              <span>Track your progress</span>
-            </div>
-            <div style={styles.feature}>
-              <span style={styles.checkmark}>✓</span>
-              <span>Improve your rating</span>
+      {!isMobile && (
+        <div style={styles.leftPanel}>
+          <div style={styles.branding}>
+            <h1 style={styles.brandTitle}>Chess Master</h1>
+            <p style={styles.brandSubtitle}>
+              Join our community and start your journey to mastery
+            </p>
+            <div style={styles.features}>
+              <div style={styles.feature}>
+                <span style={styles.checkmark}>✓</span>
+                <span>Learn from the best</span>
+              </div>
+              <div style={styles.feature}>
+                <span style={styles.checkmark}>✓</span>
+                <span>Track your progress</span>
+              </div>
+              <div style={styles.feature}>
+                <span style={styles.checkmark}>✓</span>
+                <span>Improve your rating</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div style={styles.rightPanel}>
         <div style={styles.card}>
