@@ -55,12 +55,14 @@ const Layout: React.FC = () => {
             </Link>
 
             <div className="flex items-center gap-8">
-              <Link
-                to="/home"
-                className="text-sm font-medium hover:text-primary transition-colors"
-              >
-                Home
-              </Link>
+              {!isMobile && (
+                <Link
+                  to="/home"
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                >
+                  Home
+                </Link>
+              )}
               <Link
                 to="/masters"
                 className="text-sm font-medium hover:text-primary transition-colors"
@@ -135,15 +137,14 @@ const Layout: React.FC = () => {
                   >
                     Log In
                   </Button>
-                  {!isMobile && (
-                    <Button
-                      size="sm"
-                      onClick={() => navigate("/signup")}
-                      className="bg-white text-slate-900 hover:bg-white/90"
-                    >
-                      Sign Up
-                    </Button>
-                  )}
+
+                  <Button
+                    size="sm"
+                    onClick={() => navigate("/signup")}
+                    className="bg-white text-slate-900 hover:bg-white/90"
+                  >
+                    Sign Up
+                  </Button>
                 </div>
               )}
             </div>
