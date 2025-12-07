@@ -1,0 +1,31 @@
+FROM node:20
+
+WORKDIR /app
+
+# Enable pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Copy workspace files
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Copy all package.json files
+COPY chess-master-frontend/package.json chess-master-frontend/
+COPY packages/utils/package.json packages/utils/
+
+# Install all dependencies from root
+RUN pnpm install
+
+# Copy source code
+COPY packages/utils packages/utils
+COPY chess-master-frontend chess-master-frontend
+
+# Build utils first (if frontend uses it)
+WORKDIR /app/packages/utils
+RUN pnpm exec tsc
+
+# Set working directory to frontend
+WORKDIR /app/chess-master-frontend
+
+EXPOSE 3000
+
+CMD ["pnpm", "start"]

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/app.ts"
+    "dev": "nodemon --exec ts-node --project tsconfig.json -r tsconfig-paths/register src/app.ts"
   },
   "author": "",
   "license": "ISC",

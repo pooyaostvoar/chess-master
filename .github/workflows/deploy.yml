@@ -28,7 +28,7 @@ jobs:
       - name: Build and push frontend image
         run: |
           docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
-          docker build -t $FRONTEND_IMAGE ./chess-master-frontend
+          docker build -f Dockerfile.frontend -t $FRONTEND_IMAGE .
           docker push $FRONTEND_IMAGE
 
       # -------------------------

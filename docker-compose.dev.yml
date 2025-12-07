@@ -3,13 +3,15 @@ version: "3.9"
 services:
   frontend:
     build:
-      context: ./chess-master-frontend
-      dockerfile: Dockerfile.dev
+      context: ./
+      dockerfile: Dockerfile.frontend.dev
     container_name: chess_frontend_dev
     ports:
       - "3000:3000"
     volumes:
-      - ./chess-master-frontend/src:/app/src
+      # Mount source for hot reload
+      - ./chess-master-frontend/src:/app/chess-master-frontend/src
+      - ./packages/utils/src:/app/packages/utils/src
     environment:
       - CHOKIDAR_USEPOLLING=true
     depends_on:
@@ -18,7 +20,7 @@ services:
   backend:
     build:
       context: ./
-      dockerfile: Dockerfile.beckend.dev
+      dockerfile: Dockerfile.backend.dev
     container_name: chess_backend_dev
     ports:
       - "3004:3004"

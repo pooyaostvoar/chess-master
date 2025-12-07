@@ -132,6 +132,9 @@ importers:
 
   chess-master-frontend:
     dependencies:
+      '@chess-master/utils':
+        specifier: workspace:*
+        version: link:../packages/utils
       '@fullcalendar/daygrid':
         specifier: ^6.1.19
         version: 6.1.19(@fullcalendar/core@6.1.19)
