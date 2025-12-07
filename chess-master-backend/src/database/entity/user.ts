@@ -4,6 +4,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   OneToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { ScheduleSlot } from "./schedule-slots";
 import { MasterPricing } from "./master-pricing";
@@ -53,4 +55,10 @@ export class User {
 
   @OneToMany(() => ScheduleSlot, (slot) => slot.master)
   schedule: ScheduleSlot[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

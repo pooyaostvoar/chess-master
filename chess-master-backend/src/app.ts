@@ -16,6 +16,8 @@ import { scheduleRouter } from "./api/schedule/router";
 import { readSecret } from "./utils/secret";
 import { adminAuthRouter } from "./api/admin-auth";
 import { adminUsersRouter } from "./api/admin-users";
+import { adminStatsRouter } from "./api/admin-stats";
+import { adminActivityRouter } from "./api/admin-activity";
 
 const isTesting = process.env.NODE_ENV === "test";
 
@@ -84,6 +86,8 @@ app.use("", googleRouter);
 app.use("", passwordAuthRouter);
 app.use("/admin", adminAuthRouter);
 app.use("/admin/users", adminUsersRouter);
+app.use("/admin/stats", adminStatsRouter);
+app.use("/admin/activity", adminActivityRouter);
 app.use("/users", usersRouter);
 app.use("/schedule", scheduleRouter);
 app.use(cookieParser());

@@ -16,11 +16,22 @@ type Props = {
   activeKey: string;
   onNavigate: (key: string) => void;
   onLogout: () => void;
+  pageTitle: string;
 };
 
-const navItems: NavItem[] = [{ key: "users", label: "Users" }];
+const navItems: NavItem[] = [
+  { key: "dashboard", label: "Dashboard" },
+  { key: "users", label: "Users" },
+];
 
-export function AdminLayout({ admin, children, activeKey, onNavigate, onLogout }: Props) {
+export function AdminLayout({
+  admin,
+  children,
+  activeKey,
+  onNavigate,
+  onLogout,
+  pageTitle,
+}: Props) {
   return (
     <Layout className="ant-shell">
       <Sider width={240} className="ant-sider">
@@ -42,9 +53,8 @@ export function AdminLayout({ admin, children, activeKey, onNavigate, onLogout }
       </Sider>
       <Layout>
         <Header className="ant-header">
-          <div className="eyebrow">Backoffice</div>
           <Title level={4} style={{ color: "#0f172a", margin: 0 }}>
-            User Management
+            {pageTitle}
           </Title>
         </Header>
         <Content className="ant-content">{children}</Content>

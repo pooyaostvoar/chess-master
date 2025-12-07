@@ -2,6 +2,8 @@ import express from "express";
 import { AppDataSource } from "../database/datasource";
 import { User } from "../database/entity/user";
 import { isAdmin } from "../middleware/passport";
+import { ScheduleSlot } from "../database/entity/schedule-slots";
+import { SlotStatus } from "../database/entity/types";
 
 export const adminUsersRouter = express.Router();
 
@@ -51,11 +53,53 @@ adminUsersRouter.get("/:id", async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const repo = AppDataSource.getRepository(User);
-    const user = await repo.findOne({ where: { id } });
+    const user = await repo.findOne({ where: { id }, relations: ["pricing"] });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     res.json(trimUser(user));
+  } catch (err) {
+    next(err);
+  }
+});
+
+adminUsersRouter.get("/:id/sessions", async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const page = Math.max(parseInt((req.query.page as string) || "1", 10), 1);
+    const pageSize = Math.min(
+      Math.max(parseInt((req.query.pageSize as string) || "10", 10), 1),
+      100
+    );
+
+    const repo = AppDataSource.getRepository(ScheduleSlot);
+
+    const qb = repo
+      .createQueryBuilder("slot")
+      .leftJoinAndSelect("slot.master", "master")
+      .leftJoinAndSelect("slot.reservedBy", "reservedBy")
+      .where("master.id = :id OR reservedBy.id = :id", { id })
+      .orderBy("slot.startTime", "DESC")
+      .skip((page - 1) * pageSize)
+      .take(pageSize);
+
+    const [items, total] = await qb.getManyAndCount();
+
+    res.json({
+      items: items.map((slot) => ({
+        id: slot.id,
+        startTime: slot.startTime,
+        endTime: slot.endTime,
+        status: slot.status,
+        master: slot.master ? { id: slot.master.id, username: slot.master.username } : null,
+        customer: slot.reservedBy
+          ? { id: slot.reservedBy.id, username: slot.reservedBy.username }
+          : null,
+      })),
+      total,
+      page,
+      pageSize,
+    });
   } catch (err) {
     next(err);
   }
@@ -111,5 +155,15 @@ function trimUser(user: User) {
     profilePicture: user.profilePicture,
     chesscomUrl: user.chesscomUrl,
     lichessUrl: user.lichessUrl,
+    pricing: user.pricing
+      ? {
+          price5min: user.pricing.price5min,
+          price10min: user.pricing.price10min,
+          price15min: user.pricing.price15min,
+          price30min: user.pricing.price30min,
+          price45min: user.pricing.price45min,
+          price60min: user.pricing.price60min,
+        }
+      : null,
   };
 }

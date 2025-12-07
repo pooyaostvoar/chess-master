@@ -1,51 +1,23 @@
 import { useMemo, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { AdminUsersApi, type AdminUser } from "../api";
-import {
-  Button,
-  Divider,
-  Drawer,
-  Form,
-  Input,
-  Select,
-  Space,
-  Table,
-  Tag,
-  Typography,
-  message,
-} from "antd";
+import { Input, Select, Space, Table, Tag, Typography } from "antd";
 
 const { Title, Text } = Typography;
 
-export function UsersPage() {
-  const queryClient = useQueryClient();
+type Props = {
+  onSelectUser: (user: AdminUser) => void;
+};
+
+export function UsersPage({ onSelectUser }: Props) {
   const [search, setSearch] = useState("");
   const [role, setRole] = useState<"master" | "user" | undefined>();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [form] = Form.useForm<AdminUser>();
 
   const usersQuery = useQuery({
     queryKey: ["admin-users", { page, pageSize, search, role }],
     queryFn: () => AdminUsersApi.list({ page, pageSize, q: search || undefined, role }),
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: (payload: Partial<AdminUser>) => {
-      if (!selectedUser) throw new Error("No user selected");
-      return AdminUsersApi.update(selectedUser.id, payload);
-    },
-    onSuccess: (updated) => {
-      message.success("User updated");
-      setSelectedUser(updated);
-      form.setFieldsValue(updated as any);
-      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-    },
-    onError: (err: any) => {
-      message.error(err.message || "Update failed");
-    },
   });
 
   const columns = useMemo(
@@ -79,34 +51,9 @@ export function UsersPage() {
         key: "title",
         render: (val: string | null) => val || "—",
       },
-      {
-        title: "Actions",
-        key: "actions",
-        render: (_: unknown, record: AdminUser) => (
-          <Button
-            size="small"
-            onClick={() => {
-              setSelectedUser(record);
-              form.setFieldsValue(record as any);
-              setDrawerOpen(true);
-            }}
-          >
-            Edit
-          </Button>
-        ),
-      },
     ],
-    [form]
+    []
   );
-
-  const handleSave = () => {
-    form
-      .validateFields()
-      .then((values) => {
-        updateMutation.mutate(values);
-      })
-      .catch(() => {});
-  };
 
   return (
     <div className="page">
@@ -151,6 +98,10 @@ export function UsersPage() {
         loading={usersQuery.isLoading}
         dataSource={usersQuery.data?.items}
         columns={columns}
+        onRow={(record) => ({
+          onClick: () => onSelectUser(record),
+          style: { cursor: "pointer" },
+        })}
         pagination={{
           current: page,
           pageSize,
@@ -163,54 +114,6 @@ export function UsersPage() {
         }}
       />
 
-      <Drawer
-        title={selectedUser ? `Edit ${selectedUser.username}` : "Edit user"}
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        width={420}
-        destroyOnClose
-        footer={
-          <Space style={{ justifyContent: "flex-end", width: "100%" }}>
-            <Button onClick={() => setDrawerOpen(false)}>Cancel</Button>
-            <Button type="primary" onClick={handleSave} loading={updateMutation.isPending}>
-              Save
-            </Button>
-          </Space>
-        }
-      >
-        <Form layout="vertical" form={form} initialValues={selectedUser as any}>
-          <Form.Item label="Username" name="username" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item label="Email" name="email">
-            <Input type="email" />
-          </Form.Item>
-          <Form.Item label="Role" name="isMaster">
-            <Select
-              options={[
-                { value: true, label: "Master" },
-                { value: false, label: "Normal user" },
-              ]}
-            />
-          </Form.Item>
-          <Divider />
-          <Form.Item label="Title" name="title">
-            <Input />
-          </Form.Item>
-          <Form.Item label="Rating" name="rating">
-            <Input type="number" />
-          </Form.Item>
-          <Form.Item label="Bio" name="bio">
-            <Input.TextArea rows={3} />
-          </Form.Item>
-          <Form.Item label="Chess.com URL" name="chesscomUrl">
-            <Input />
-          </Form.Item>
-          <Form.Item label="Lichess URL" name="lichessUrl">
-            <Input />
-          </Form.Item>
-        </Form>
-      </Drawer>
     </div>
   );
 }
