@@ -17,7 +17,8 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "@chess-master/utils": ["../packages/utils/dist"]
+      "@chess-master/utils": ["../packages/utils/dist"],
+      "@chess-master/schemas": ["../packages/schemas/dist"]
     }
   }
 }

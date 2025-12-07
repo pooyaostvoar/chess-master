@@ -3,26 +3,17 @@
 
   "compilerOptions": {
     "paths": {
-      "@chess-master/utils": ["../packages/utils/src"]
+      "@chess-master/utils": ["../packages/utils/src"],
+      "@chess-master/schemas": ["../packages/schemas/src"]
     },
-
-    "target": "es2016",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
-    
-    "experimentalDecorators": true,                   /* Enable experimental support for legacy experimental decorators. */
-    
-    "module": "commonjs",                                /* Specify what module code is generated. */
-    
-    "outDir": "./dist",                                   /* Specify an output folder for all emitted files. */
-    
-    "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
-    // "preserveSymlinks": true,                         /* Disable resolving symlinks to their realpath. This correlates to the same flag in node. */
-    "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
-
-    /* Type Checking */
-    "strict": true,                                      /* Enable all strict type-checking options. */
-    
-    "strictPropertyInitialization": false,             /* Check for class properties that are declared but not set in the constructor. */
-    
+    "target": "es2016",                               
+    "experimentalDecorators": true,                   
+    "module": "commonjs",                                
+    "outDir": "./dist",                                  
+    "esModuleInterop": true,                             
+    "forceConsistentCasingInFileNames": true,            
+    "strict": true,                                    
+    "strictPropertyInitialization": false,             
     "skipLibCheck": true     
   },
   

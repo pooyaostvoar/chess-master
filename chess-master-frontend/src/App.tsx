@@ -9,10 +9,8 @@ import Masters from "./pages/Masters";
 import MasterScheduleCalendar from "./pages/MasterCalender";
 import MyBookings from "./pages/MyBookings";
 import Layout from "./components/Layout";
-import { testUtil } from "@chess-master/utils";
 
 const App: React.FC = () => {
-  console.log(testUtil(), "aa!!");
   return (
     <Router>
       <Routes>

@@ -14,9 +14,7 @@ import { createClient } from "redis";
 import { usersRouter } from "./api/user/router";
 import { scheduleRouter } from "./api/schedule/router";
 import { readSecret } from "./utils/secret";
-import { testUtil } from "@chess-master/utils";
 
-console.log(testUtil(), "bb!!");
 export function createApp() {
   const isTesting = process.env.NODE_ENV === "test";
 
