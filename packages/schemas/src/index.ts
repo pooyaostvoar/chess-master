@@ -14,9 +14,9 @@ export const masterPricingSchema = z.object({
 export const userSchemaBase = z.object({
   id: z.number().int().positive(),
 
-  email: z.email(),
+  email: z.string(),
 
-  username: z.string().min(3),
+  username: z.string(),
 
   isMaster: z.boolean().default(false),
 
@@ -28,9 +28,9 @@ export const userSchemaBase = z.object({
 
   profilePicture: z.url().nullable(),
 
-  chesscomUrl: z.url().nullable(),
+  chesscomUrl: z.string().nullable(),
 
-  lichessUrl: z.url().nullable(),
+  lichessUrl: z.string().nullable(),
 
   pricing: masterPricingSchema.nullable(),
 
