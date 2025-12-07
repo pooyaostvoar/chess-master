@@ -40,7 +40,7 @@ export function LoginPanel({ onLogin }: Props) {
               className="input"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="admin"
+              placeholder="username"
               required
             />
           </label>
