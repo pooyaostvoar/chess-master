@@ -37,7 +37,7 @@ jobs:
       - name: Build and push backend image
         run: |
           docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
-          docker build -t $BACKEND_IMAGE ./chess-master-backend
+          docker build -f Dockerfile.backend -t $BACKEND_IMAGE .
           docker push $BACKEND_IMAGE
 
       # -------------------------

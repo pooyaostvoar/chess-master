@@ -1,0 +1,4 @@
+packages:
+  - "packages/*"
+  - "chess-master-backend"
+  - "chess-master-frontend"

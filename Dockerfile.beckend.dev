@@ -1,0 +1,31 @@
+# Use lightweight Node.js image
+FROM node:20-alpine
+
+# Enable pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Set workspace root
+WORKDIR /app
+
+# Copy pnpm metadata first for caching
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Copy backend package.json so pnpm sees its dependencies
+COPY chess-master-backend/package.json chess-master-backend/
+
+COPY packages/utils/package.json packages/utils/
+
+# Install all dependencies (workspace + backend)
+RUN pnpm install
+
+# Copy the full repository
+COPY . .
+
+# Set working directory to backend
+WORKDIR /app/chess-master-backend
+
+# Expose backend port
+EXPOSE 3004
+
+# Start dev server with nodemon + ts-node
+CMD ["pnpm", "dev"]

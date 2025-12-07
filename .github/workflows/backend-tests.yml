@@ -46,11 +46,14 @@ jobs:
         with:
           node-version: 20
           cache: "pnpm"
-          cache-dependency-path: "./chess-master-backend/pnpm-lock.yaml"
+          cache-dependency-path: "pnpm-lock.yaml"
 
-      - name: Install dependencies
-        working-directory: ./chess-master-backend
+      - name: Install dependencies (workspace root)
         run: pnpm install
+
+      - name: Build utils package
+        working-directory: ./packages/utils
+        run: pnpm exec tsc
 
       - name: Set environment variables
         run: |

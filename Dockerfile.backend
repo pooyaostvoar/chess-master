@@ -1,0 +1,54 @@
+# ---------- BUILD STAGE ----------
+FROM node:20 AS builder
+WORKDIR /app
+
+# Enable pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Copy workspace configuration
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Copy package.json files for all workspace packages
+COPY chess-master-backend/package.json chess-master-backend/
+COPY packages/utils/package.json packages/utils/
+
+# Install ALL workspace dependencies from root
+RUN pnpm install
+
+# Copy source code
+COPY packages/utils packages/utils
+COPY chess-master-backend chess-master-backend
+
+# Build utils first (backend depends on it)
+WORKDIR /app/packages/utils
+RUN pnpm exec tsc
+
+# Build backend
+WORKDIR /app/chess-master-backend
+RUN pnpm exec tsc --project tsconfig.build.json
+
+# ---------- PRODUCTION STAGE ----------
+FROM node:20-slim
+WORKDIR /app
+
+# Copy root node_modules (hoisted dependencies like express)
+COPY --from=builder /app/node_modules ./node_modules
+
+# Copy backend's node_modules (includes symlink to @chess-master/utils)
+COPY --from=builder /app/chess-master-backend/node_modules ./chess-master-backend/node_modules
+
+# Copy the actual utils dist that the symlink points to
+COPY --from=builder /app/packages/utils/dist ./packages/utils/dist
+COPY --from=builder /app/packages/utils/package.json ./packages/utils/package.json
+
+# Copy backend build
+COPY --from=builder /app/chess-master-backend/dist ./chess-master-backend/dist
+
+# Copy backend package.json
+COPY --from=builder /app/chess-master-backend/package.json ./chess-master-backend/
+
+# Expose backend port
+EXPOSE 3004
+
+# Run backend
+CMD ["node", "chess-master-backend/dist/app.js"]

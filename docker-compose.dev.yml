@@ -17,13 +17,14 @@ services:
 
   backend:
     build:
-      context: ./chess-master-backend
-      dockerfile: Dockerfile.dev
+      context: ./
+      dockerfile: Dockerfile.beckend.dev
     container_name: chess_backend_dev
     ports:
       - "3004:3004"
     volumes:
-      - ./chess-master-backend/src:/app/src
+      - ./chess-master-backend/src:/app/chess-master-backend/src
+      - ./packages/utils/src:/app/packages/utils/src
     environment:
       - NODE_ENV=development
       - DB_HOST=db
