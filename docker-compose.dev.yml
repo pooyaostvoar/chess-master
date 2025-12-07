@@ -28,6 +28,7 @@ services:
       - ./chess-master-backend/src:/app/chess-master-backend/src
       - ./packages/utils/src:/app/packages/utils/src
     environment:
+      - CHOKIDAR_USEPOLLING=true
       - NODE_ENV=development
       - DB_HOST=db
       - DB_PORT=5432

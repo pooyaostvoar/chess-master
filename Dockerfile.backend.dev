@@ -10,10 +10,11 @@ WORKDIR /app
 # Copy pnpm metadata first for caching
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Copy package.json files
+# Copy all packages structure (gets all package.json files automatically)
+COPY packages packages
+
+# Copy backend package.json
 COPY chess-master-backend/package.json chess-master-backend/
-COPY packages/utils/package.json packages/utils/
-COPY packages/utils/tsconfig.json packages/utils/
 
 # Install all dependencies (workspace + backend)
 RUN pnpm install
@@ -21,9 +22,8 @@ RUN pnpm install
 # Copy the full repository
 COPY . .
 
-# Build utils package with declarations
-WORKDIR /app/packages/utils
-RUN pnpm exec tsc --declaration --outDir dist
+# Build all workspace packages that have a build script
+RUN pnpm -r --filter './packages/**' run build || true
 
 # Set working directory to backend
 WORKDIR /app/chess-master-backend

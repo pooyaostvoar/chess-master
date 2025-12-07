@@ -1,0 +1,6 @@
+{
+  "watch": ["src", "../packages/utils/src"],
+  "ext": "ts,json",
+  "ignore": ["**/*.test.ts", "**/*.spec.ts"],
+  "delay": 1000
+}

@@ -5,23 +5,14 @@ WORKDIR /app
 # Enable pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Copy workspace files
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# Copy everything (dockerignore handles exclusions)
+COPY . .
 
-# Copy all package.json files
-COPY chess-master-frontend/package.json chess-master-frontend/
-COPY packages/utils/package.json packages/utils/
-
-# Install all dependencies from root
+# Install all dependencies
 RUN pnpm install
 
-# Copy source code
-COPY packages/utils packages/utils
-COPY chess-master-frontend chess-master-frontend
-
-# Build utils first (if frontend uses it)
-WORKDIR /app/packages/utils
-RUN pnpm exec tsc
+# Build all workspace packages
+RUN pnpm -r --filter './packages/**' run build || true
 
 # Set working directory to frontend
 WORKDIR /app/chess-master-frontend

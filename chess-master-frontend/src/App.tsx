@@ -12,7 +12,7 @@ import Layout from "./components/Layout";
 import { testUtil } from "@chess-master/utils";
 
 const App: React.FC = () => {
-  console.log(testUtil(), "aaaaaaaaa");
+  console.log(testUtil(), "aa!!");
   return (
     <Router>
       <Routes>
