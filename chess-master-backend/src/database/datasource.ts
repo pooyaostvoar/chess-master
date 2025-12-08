@@ -19,7 +19,10 @@ const defaultConfig: DataSourceOptions = {
     readSecret("/run/secrets/postgres_password") ||
     "chesspass",
   database: process.env.DB_NAME || "chess_master",
-  migrations: ["src/database/migrations/**/*.ts"],
+  migrations:
+    process.env.ENV === "production"
+      ? ["database/migrations/**/*.js"]
+      : ["src/database/migrations/**/*.ts"],
   synchronize: true,
   entities: [User, Game, ScheduleSlot, MasterPricing],
 };
