@@ -21,7 +21,7 @@ const defaultConfig: DataSourceOptions = {
   database: process.env.DB_NAME || "chess_master",
   migrations:
     process.env.ENV === "production"
-      ? ["dist/database/migrations/**/*.js"]
+      ? ["chess-master-backend/dist/database/migrations/**/*.js"]
       : ["src/database/migrations/**/*.ts"],
   entities: [User, Game, ScheduleSlot, MasterPricing],
 };
