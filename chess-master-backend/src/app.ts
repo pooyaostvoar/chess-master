@@ -20,7 +20,8 @@ export function createApp() {
 
   if (!isTesting) {
     AppDataSource.initialize()
-      .then(() => {
+      .then(async () => {
+        await AppDataSource.runMigrations();
         // here you can start to work with your database
       })
       .catch((error) => console.log(error));

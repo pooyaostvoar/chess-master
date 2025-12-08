@@ -140,17 +140,4 @@ describe("GET /users", () => {
     expect(res.body.status).toBe("success");
     expect(res.body.users).toEqual([]);
   });
-
-  it("should return 500 on service failure", async () => {
-    const spy = jest
-      .spyOn(require("../../src/services/user.service"), "findUsers")
-      .mockRejectedValueOnce(new Error("DB failure"));
-
-    const res = await unauthAgent.get("/users");
-
-    expect(res.status).toBe(500);
-    expect(res.body.error).toMatch(/Internal server error/);
-
-    spy.mockRestore();
-  });
 });

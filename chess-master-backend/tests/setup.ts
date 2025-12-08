@@ -22,6 +22,9 @@ beforeEach(async () => {
   if (!AppDataSource.isInitialized) {
     await AppDataSource.initialize();
   }
+
+  await AppDataSource.runMigrations();
+
   unauthAgent = request(app);
   authAgent = request.agent(app);
 
@@ -38,11 +41,6 @@ beforeEach(async () => {
 
 afterEach(async () => {
   await authAgent.post("/logout");
-  dropTestDatabase(dbName);
-});
-
-afterAll(async () => {
-  if (AppDataSource.isInitialized) {
-    await AppDataSource.destroy();
-  }
+  await AppDataSource.destroy();
+  await dropTestDatabase(dbName);
 });

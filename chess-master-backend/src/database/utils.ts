@@ -10,7 +10,7 @@ export async function ensureTestDatabase(databaseName: string) {
   });
 
   await client.connect();
-  await client.query(`CREATE DATABASE ${databaseName}`).catch(() => {});
+  await client.query(`CREATE DATABASE ${databaseName}`);
   await client.end();
 }
 
@@ -24,6 +24,6 @@ export async function dropTestDatabase(databaseName: string) {
   });
 
   await client.connect();
-  await client.query(`DROP DATABASE ${databaseName}`).catch(() => {});
+  await client.query(`DROP DATABASE ${databaseName}`);
   await client.end();
 }

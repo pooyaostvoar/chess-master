@@ -5,13 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "dev": "nodemon --exec ts-node --project tsconfig.json -r tsconfig-paths/register src/app.ts"
+    "dev": "nodemon --exec ts-node --project tsconfig.json -r tsconfig-paths/register src/app.ts",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "migration:generate": "pnpm run typeorm -d src/database/datasource.ts migration:generate",
+    "migration:run": "pnpm run typeorm -d src/database/datasource.ts migration:run",
+    "migration:revert": "pnpm run typeorm -d src/database/datasource.ts migration:revert",
+    "migration:create": "pnpm run typeorm migration:create"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@chess-master/utils": "workspace:*",
     "@chess-master/schemas": "workspace:*",
+    "@chess-master/utils": "workspace:*",
     "@types/multer": "^1.4.11",
     "body-parser": "^2.2.0",
     "connect-redis": "^7.1.1",
