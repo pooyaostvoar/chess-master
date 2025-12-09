@@ -38,9 +38,7 @@ const Home: React.FC = () => {
           setBookingsLoading(true);
           let bookings: Booking[] = [];
           try {
-            const bookingsRes = user.isMaster
-              ? await getMasterBookings()
-              : await getMyBookings();
+            const bookingsRes = await getMyBookings();
             bookings = bookingsRes.bookings || [];
             const upcoming = bookings
               .filter((b) => new Date(b.startTime) > new Date())

@@ -289,7 +289,7 @@ export async function updateSlotStatus(
 }
 
 /**
- * Get bookings for a regular user (slots they reserved)
+ * Get all bookings for any user
  */
 export async function getUserBookings(userId: number): Promise<ScheduleSlot[]> {
   const repo = AppDataSource.getRepository(ScheduleSlot);
@@ -297,7 +297,7 @@ export async function getUserBookings(userId: number): Promise<ScheduleSlot[]> {
   return await repo
     .createQueryBuilder("slot")
     .leftJoinAndSelect("slot.master", "master")
-    .where("slot.reservedBy = :userId", { userId })
+    .where("slot.reservedBy = :userId or slot.masterId = :userId", { userId })
     .andWhere("slot.status IN (:...statuses)", {
       statuses: [SlotStatus.Reserved, SlotStatus.Booked],
     })

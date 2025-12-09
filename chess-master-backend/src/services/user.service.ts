@@ -115,7 +115,7 @@ export async function getAuthenticatedUser(
     ],
   });
 
-  return user ? formatUser(user) : null;
+  return user;
 }
 
 /**
