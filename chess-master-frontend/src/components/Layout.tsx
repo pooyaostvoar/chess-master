@@ -51,7 +51,9 @@ const Layout: React.FC = () => {
               className="flex items-center gap-3 text-xl font-bold"
             >
               <span className="text-3xl">♔</span>
-              <span>Chess Master</span>
+              <span className={user ? "" : "hidden sm:inline"}>
+                Chess Master
+              </span>
             </Link>
 
             <div className="flex items-center gap-8">
