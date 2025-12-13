@@ -1,19 +1,31 @@
 import { Router } from "express";
-import { getSlotsByMaster, formatSlot } from "../../../services/schedule.service";
+import { isAuthenticated } from "../../../middleware/passport";
+import { getSlotById } from "../../../services/schedule.service";
 
 export const router = Router();
 
-// GET /schedule/slot/user/:userId - Get slots for a master
-router.get("/user/:userId", async (req, res) => {
+/**
+ * GET /schedule/slot/:id
+ */
+router.get("/:id", isAuthenticated, async (req, res) => {
+  console.log("GET /schedule/slot/:id called");
   try {
-    const userId = parseInt(req.params.userId, 10);
-    const slots = await getSlotsByMaster(userId);
-    const formattedSlots = slots.map(formatSlot);
+    const slotId = Number(req.params.id);
 
-    res.json({ success: true, slots: formattedSlots });
-  } catch (err) {
-    console.error("Error fetching slots:", err);
-    res.status(500).json({ error: "Internal server error" });
+    if (isNaN(slotId)) {
+      return res.status(400).json({ message: "Invalid slot id" });
+    }
+
+    const slot = await getSlotById(slotId);
+
+    if (slot?.master.id !== (req.user as any).id) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    res.json(slot);
+  } catch (error: any) {
+    res.status(404).json({
+      message: error.message || "Slot not found",
+    });
   }
 });
-

@@ -19,6 +19,12 @@ export class ScheduleSlot {
   @Column("text", { default: SlotStatus.Free })
   status: SlotStatus;
 
+  @Column("text", { nullable: true })
+  title: SlotStatus | null;
+
+  @Column("text", { nullable: true })
+  youtubeId: SlotStatus | null;
+
   @ManyToOne(() => User, { nullable: true })
   reservedBy: User | null;
 }

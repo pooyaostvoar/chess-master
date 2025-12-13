@@ -9,6 +9,8 @@ import Masters from "./pages/Masters";
 import MasterScheduleCalendar from "./pages/MasterCalender";
 import MyBookings from "./pages/MyBookings";
 import Layout from "./components/Layout";
+import FinishedEvents from "./pages/FinishedEvents";
+import EditSlot from "./pages/EditSlot";
 
 const App: React.FC = () => {
   return (
@@ -25,6 +27,8 @@ const App: React.FC = () => {
             element={<MasterScheduleCalendar />}
           />
           <Route path="/bookings" element={<MyBookings />} />
+          <Route path="/events" element={<FinishedEvents />} />
+          <Route path="/events/:id/edit" element={<EditSlot />} />
         </Route>
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />

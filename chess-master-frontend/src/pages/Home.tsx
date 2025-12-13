@@ -12,6 +12,7 @@ import { RecommendedMastersSection } from "../components/home/RecommendedMasters
 import { UpcomingSessionsSection } from "../components/home/UpcomingSessionsSection";
 import { CTASection } from "../components/home/CTASection";
 import { WelcomeSection } from "../components/home/WelcomeSection";
+import { FinishedEventsSection } from "../components/event/FinishedEventsSection";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -105,7 +106,8 @@ const Home: React.FC = () => {
     <div className="min-h-screen">
       {user ? (
         <div className="max-w-7xl mx-auto px-5 py-10">
-          <WelcomeSection user={user} />
+          {/* <WelcomeSection user={user} /> */}
+
           <UpcomingSessionsSection
             bookings={recentBookings}
             loading={bookingsLoading}
@@ -116,6 +118,7 @@ const Home: React.FC = () => {
             loading={loading}
             onViewSchedule={handleViewSchedule}
           />
+          <FinishedEventsSection />
         </div>
       ) : (
         <>

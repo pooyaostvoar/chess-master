@@ -213,8 +213,12 @@ export async function reserveSlot(
 export async function updateSlot(
   slotId: number,
   masterId: number,
-  startTime: Date,
-  endTime: Date
+  data: {
+    strartTime?: Date;
+    endTime?: Date;
+    title?: string;
+    youtubeId?: string;
+  }
 ): Promise<ScheduleSlot> {
   const repo = AppDataSource.getRepository(ScheduleSlot);
   const slot = await repo.findOne({
@@ -227,14 +231,8 @@ export async function updateSlot(
   }
 
   // Prevent updating slots in the past
-  const now = new Date();
-  if (new Date(startTime) < now) {
-    throw new Error("Cannot update slot to a time in the past");
-  }
 
-  slot.startTime = startTime;
-  slot.endTime = endTime;
-  await repo.save(slot);
+  await repo.save({ ...slot, ...data } as ScheduleSlot);
 
   // Reload with relations
   const updatedSlot = await repo.findOne({

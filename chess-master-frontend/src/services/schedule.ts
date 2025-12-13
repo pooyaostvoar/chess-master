@@ -6,5 +6,6 @@ export {
   bookSlot,
   updateSlot,
   updateSlotStatus,
-} from './api/schedule.api';
-export type { CreateSlotData, ScheduleSlot } from './api/schedule.api';
+  getSlotById,
+} from "./api/schedule.api";
+export type { CreateSlotData, ScheduleSlot } from "./api/schedule.api";

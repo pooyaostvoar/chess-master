@@ -8,6 +8,7 @@ import {
   updateStatusRouter,
   myBookingsRouter,
   masterBookingsRouter,
+  getSlotByIdRouter,
 } from "./slot/index";
 
 export const slotRouter = Router();
@@ -21,3 +22,4 @@ slotRouter.use("", updateRouter);
 slotRouter.use("", updateStatusRouter);
 slotRouter.use("", myBookingsRouter);
 slotRouter.use("", masterBookingsRouter);
+slotRouter.use("", getSlotByIdRouter);

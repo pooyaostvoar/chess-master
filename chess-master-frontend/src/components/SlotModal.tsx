@@ -9,7 +9,8 @@ import {
 } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { CheckCircle2, XCircle, Trash2, Circle } from "lucide-react";
+import { CheckCircle2, XCircle, Trash2, Circle, Pencil } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface SlotModalProps {
   visible: boolean;
@@ -28,6 +29,7 @@ const SlotModal: React.FC<SlotModalProps> = ({
   onDeleted,
   onStatusChange,
 }) => {
+  const navigate = useNavigate();
   if (!visible || slotId == null) return null;
 
   const isReserved = slot?.status === "reserved";
@@ -170,7 +172,19 @@ const SlotModal: React.FC<SlotModalProps> = ({
                   <div className="text-sm opacity-80">Confirmed session</div>
                 </div>
               </Button>
-
+              <Button
+                onClick={() => navigate(`/events/${slotId}/edit`)}
+                className="w-full h-auto py-4 justify-start"
+                variant="outline"
+              >
+                <Pencil className="mr-3 h-5 w-5" />
+                <div className="text-left">
+                  <div className="font-semibold">Edit Slot</div>
+                  <div className="text-sm opacity-80">
+                    Update time, title, or video
+                  </div>
+                </div>
+              </Button>
               <Button
                 onClick={handleDelete}
                 className="w-full h-auto py-4 justify-start"
