@@ -133,7 +133,7 @@ const Home: React.FC = () => {
             />
           </HomeSectionWrapper>
           <HomeSectionWrapper
-            title="Finished Events"
+            title="Events Archive"
             description="Watch recordings of past master sessions"
             path="/events"
             buttonText="View All Events"
@@ -159,7 +159,7 @@ const Home: React.FC = () => {
               />
             </HomeSectionWrapper>
             <HomeSectionWrapper
-              title="Event Archive"
+              title="Events Archive"
               description="Watch recordings of past master sessions"
               path="/events"
               buttonText="View All Events"
