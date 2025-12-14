@@ -109,7 +109,7 @@ adminUsersRouter.patch("/:id", async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const repo = AppDataSource.getRepository(User);
-    const user = await repo.findOne({ where: { id } });
+    const user = await repo.findOne({ where: { id }, relations: ["pricing"] });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
