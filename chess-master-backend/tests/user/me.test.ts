@@ -18,13 +18,13 @@ describe("GET /me", () => {
     expect(res.body.user.username).toBe("seeduser");
   });
 
-  it("should return 404 if authenticated user no longer exists", async () => {
+  it("should return 401 if authenticated user no longer exists", async () => {
     const repo = AppDataSource.getRepository(User);
     await repo.delete({ username: "seeduser" });
 
     const res = await authAgent.get("/users/me");
 
-    expect(res.status).toBe(404);
-    expect(res.body).toEqual({ error: "User not found" });
+    expect(res.status).toBe(401);
+    expect(res.body).toEqual({ error: "Unauthorized" });
   });
 });

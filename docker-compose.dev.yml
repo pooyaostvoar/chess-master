@@ -17,6 +17,22 @@ services:
     depends_on:
       - backend
 
+  backoffice:
+    build:
+      context: ./chess-master-backoffice
+      dockerfile: Dockerfile.dev
+    container_name: chess_backoffice_dev
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./chess-master-backoffice:/app
+      - /app/node_modules
+      - /app/.pnpm-store
+    environment:
+      - VITE_API_URL=http://localhost:3004
+    depends_on:
+      - backend
+
   backend:
     build:
       context: ./

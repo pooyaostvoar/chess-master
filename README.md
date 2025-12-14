@@ -157,3 +157,28 @@ docker compose -f docker-compose.yml down
 # View logs
 docker compose -f docker-compose.yml logs -f
 ```
+
+---
+
+## Admin (backoffice) access
+
+### Create an admin user (manual)
+Passwords must be hashed before inserting into Postgres. Store them as `bytea` using `decode()`.
+
+1) Generate salt + hash with Node:
+```bash
+node -e "const crypto=require('crypto');const pwd='YOUR_PASSWORD';const salt=crypto.randomBytes(16);crypto.pbkdf2(pwd,salt,310000,32,'sha256',(e,h)=>{if(e)throw e;console.log('salt_hex',salt.toString('hex'));console.log('hash_hex',h.toString('hex'));});"
+```
+
+2) Insert (replace placeholders):
+```sql
+-- insert
+INSERT INTO admin_users (username, email, password, salt, status)
+VALUES (
+  'admin',
+  'admin@example.com',
+  decode('<hash_hex>','hex'),
+  decode('<salt_hex>','hex'),
+  'active'
+);
+```

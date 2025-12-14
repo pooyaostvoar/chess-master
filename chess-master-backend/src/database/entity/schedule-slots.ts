@@ -20,10 +20,10 @@ export class ScheduleSlot {
   status: SlotStatus;
 
   @Column("text", { nullable: true })
-  title: SlotStatus | null;
+  title: string | null;
 
   @Column("text", { nullable: true })
-  youtubeId: SlotStatus | null;
+  youtubeId: string | null;
 
   @ManyToOne(() => User, { nullable: true })
   reservedBy: User | null;

@@ -1,0 +1,17 @@
+FROM node:20
+
+WORKDIR /app
+
+# Enable pnpm via corepack
+RUN corepack enable
+
+# Install deps
+COPY package.json ./
+RUN pnpm install --no-frozen-lockfile
+
+# Copy source
+COPY . .
+
+EXPOSE 3001
+
+CMD ["pnpm", "dev"]

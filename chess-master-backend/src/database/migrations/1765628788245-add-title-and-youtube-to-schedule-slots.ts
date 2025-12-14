@@ -6,16 +6,20 @@ export class AddTitleAndYoutubeToScheduleSlots1765628788245
   name = "AddTitleAndYoutubeToScheduleSlots1765628788245";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`ALTER TABLE "schedule_slots" ADD "title" text`);
     await queryRunner.query(
-      `ALTER TABLE "schedule_slots" ADD "youtubeId" text`
+      `ALTER TABLE "schedule_slots" ADD COLUMN IF NOT EXISTS "title" text`
+    );
+    await queryRunner.query(
+      `ALTER TABLE "schedule_slots" ADD COLUMN IF NOT EXISTS "youtubeId" text`
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `ALTER TABLE "schedule_slots" DROP COLUMN "youtubeId"`
+      `ALTER TABLE "schedule_slots" DROP COLUMN IF EXISTS "youtubeId"`
     );
-    await queryRunner.query(`ALTER TABLE "schedule_slots" DROP COLUMN "title"`);
+    await queryRunner.query(
+      `ALTER TABLE "schedule_slots" DROP COLUMN IF EXISTS "title"`
+    );
   }
 }

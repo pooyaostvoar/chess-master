@@ -1,5 +1,6 @@
 import { AppDataSource } from "../database/datasource";
 import { User } from "../database/entity/user";
+import { AdminUser } from "../database/entity/admin-user";
 import { Request, Response, NextFunction } from "express";
 
 export const passport = require("passport");
@@ -47,16 +48,89 @@ passport.use(
   })
 );
 
-passport.serializeUser(function (user: User, cb: any) {
+passport.use(
+  "admin-local",
+  new LocalStrategy(async function verify(
+    username: string,
+    password: string,
+    cb: any
+  ) {
+    let admin: any;
+    try {
+      admin = await AppDataSource.getRepository(AdminUser).findOne({
+        where: { username },
+      });
+      if (
+        !admin ||
+        admin.status !== "active" ||
+        !admin.password ||
+        !admin.salt ||
+        !Buffer.isBuffer(admin.password) ||
+        !Buffer.isBuffer(admin.salt)
+      ) {
+        return cb(null, false, {
+          message: "Incorrect username or password.",
+        });
+      }
+    } catch (err) {
+      return cb(err);
+    }
+
+    crypto.pbkdf2(
+      password,
+      admin.salt,
+      310000,
+      32,
+      "sha256",
+      function (err: any, hashedPassword: Buffer) {
+        if (err) {
+          return cb(err);
+        }
+        const stored = admin.password;
+        // Ensure same length before timingSafeEqual to avoid runtime errors.
+        if (
+          !stored ||
+          !Buffer.isBuffer(stored) ||
+          stored.length !== hashedPassword.length
+        ) {
+          return cb(null, false, {
+            message: "Incorrect username or password.",
+          });
+        }
+        if (!crypto.timingSafeEqual(stored, hashedPassword)) {
+          return cb(null, false, {
+            message: "Incorrect username or password.",
+          });
+        }
+        return cb(null, admin);
+      }
+    );
+  })
+);
+
+passport.serializeUser(function (user: User | AdminUser, cb: any) {
   process.nextTick(function () {
-    cb(null, { id: user.id, username: user.username });
+    const kind = user instanceof AdminUser ? "admin" : "user";
+    cb(null, { id: user.id, username: user.username, kind });
   });
 });
 
-passport.deserializeUser(function (user: User, cb: any) {
-  process.nextTick(function () {
-    return cb(null, user);
-  });
+passport.deserializeUser(async function (user: any, cb: any) {
+  try {
+    if (user.kind === "admin") {
+      const admin = await AppDataSource.getRepository(AdminUser).findOne({
+        where: { id: user.id },
+      });
+      return cb(null, admin || false);
+    }
+
+    const normalUser = await AppDataSource.getRepository(User).findOne({
+      where: { id: user.id },
+    });
+    return cb(null, normalUser || false);
+  } catch (err) {
+    return cb(err);
+  }
 });
 
 export const isAuthenticated = (
@@ -69,4 +143,18 @@ export const isAuthenticated = (
   }
 
   res.status(401).json({ error: "Unauthorized" });
+};
+
+export const isAdmin = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    const user: any = req.user;
+    if (user && user instanceof AdminUser) {
+      return next();
+    }
+  }
+  res.status(403).json({ error: "Forbidden" });
 };

@@ -1,5 +1,6 @@
 import { DataSource, DataSourceOptions } from "typeorm";
 import { User } from "./entity/user";
+import { AdminUser } from "./entity/admin-user";
 import { Game } from "./entity/game";
 import { ScheduleSlot } from "./entity/schedule-slots";
 import { MasterPricing } from "./entity/master-pricing";
@@ -23,7 +24,7 @@ const defaultConfig: DataSourceOptions = {
     process.env.ENV === "production"
       ? ["chess-master-backend/dist/database/migrations/**/*.js"]
       : ["src/database/migrations/**/*.ts"],
-  entities: [User, Game, ScheduleSlot, MasterPricing],
+  entities: [User, AdminUser, Game, ScheduleSlot, MasterPricing],
 };
 
 export let AppDataSource = new DataSource(defaultConfig);
