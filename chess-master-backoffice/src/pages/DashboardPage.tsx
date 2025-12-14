@@ -48,7 +48,10 @@ export function DashboardPage() {
         {isLoading ? (
           <Skeleton active paragraph={false} title={{ width: "40%" }} />
         ) : (
-          <Statistic value={data ? (data[def.key] as number) : "—"} valueStyle={{ fontSize: 26 }} />
+          <Statistic
+            value={data ? (data[def.key] as number) : "—"}
+            valueStyle={{ fontSize: 26 }}
+          />
         )}
       </Card>
     </Col>
@@ -58,13 +61,16 @@ export function DashboardPage() {
     <Space direction="vertical" size={16} style={{ width: "100%" }}>
       <Card
         bordered={false}
-        style={{ borderRadius: 14, boxShadow: "0 10px 30px rgba(15,23,42,0.08)" }}
+        style={{
+          borderRadius: 14,
+          boxShadow: "0 10px 30px rgba(15,23,42,0.08)",
+        }}
         bodyStyle={{ padding: 20 }}
       >
         <Title level={3} style={{ margin: 0 }}>
           Overview
         </Title>
-        <Text type="secondary">Key metrics to keep you informed.</Text>
+        <Text type="secondary">Key metrics to keep you informed!</Text>
         <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
           {statDefs.map(renderStat)}
         </Row>
@@ -74,7 +80,10 @@ export function DashboardPage() {
         <Col xs={24} md={14}>
           <Card
             bordered={false}
-            style={{ borderRadius: 14, boxShadow: "0 10px 30px rgba(15,23,42,0.08)" }}
+            style={{
+              borderRadius: 14,
+              boxShadow: "0 10px 30px rgba(15,23,42,0.08)",
+            }}
             bodyStyle={{ padding: 20 }}
           >
             <Space direction="vertical" style={{ width: "100%" }}>
@@ -96,7 +105,10 @@ export function DashboardPage() {
         <Col xs={24} md={10}>
           <Card
             bordered={false}
-            style={{ borderRadius: 14, boxShadow: "0 10px 30px rgba(15,23,42,0.08)" }}
+            style={{
+              borderRadius: 14,
+              boxShadow: "0 10px 30px rgba(15,23,42,0.08)",
+            }}
             bodyStyle={{ padding: 20 }}
           >
             <Space direction="vertical" style={{ width: "100%" }}>
@@ -115,7 +127,9 @@ export function DashboardPage() {
                         title={item.username}
                         description={
                           <Space>
-                            {item.title ? <Tag color="blue">{item.title}</Tag> : null}
+                            {item.title ? (
+                              <Tag color="blue">{item.title}</Tag>
+                            ) : null}
                             <Text type="secondary">
                               Rating: {item.rating !== null ? item.rating : "—"}
                             </Text>
@@ -170,5 +184,9 @@ function ActivityTimeline({ activity }: { activity: AdminActivity }) {
     return <Empty description="No activity yet" />;
   }
 
-  return <Timeline items={items.map((i) => ({ color: i.color, children: i.label }))} />;
+  return (
+    <Timeline
+      items={items.map((i) => ({ color: i.color, children: i.label }))}
+    />
+  );
 }
