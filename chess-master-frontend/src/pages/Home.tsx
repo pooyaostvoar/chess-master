@@ -107,7 +107,7 @@ const Home: React.FC = () => {
     <div className="min-h-screen">
       {user ? (
         <div className="max-w-7xl mx-auto px-5 py-10">
-          <WelcomeSection user={user} />
+          {/* <WelcomeSection user={user} /> */}
 
           <HomeSectionWrapper
             title="Upcoming Sessions"
