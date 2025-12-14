@@ -14,6 +14,7 @@ jobs:
 
     env:
       FRONTEND_IMAGE: pooyaos/chess-frontend
+      BACKOFFICE_IMAGE: pooyaos/chess-backoffice
       BACKEND_IMAGE: pooyaos/chess-backend
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
@@ -66,6 +67,22 @@ jobs:
 
           docker push $FRONTEND_IMAGE:$VERSION
           docker push $FRONTEND_IMAGE:latest
+
+      - name: Build and push backoffice image
+        run: |
+          VERSION=${{ steps.version.outputs.new_tag }}
+          VERSION=${VERSION#v}
+
+          docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+
+          docker build \
+            -f Dockerfile.backoffice \
+            -t $BACKOFFICE_IMAGE:$VERSION \
+            -t $BACKOFFICE_IMAGE:latest \
+            .
+
+          docker push $BACKOFFICE_IMAGE:$VERSION
+          docker push $BACKOFFICE_IMAGE:latest
 
       # -------------------------
       # Build & push backend

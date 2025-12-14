@@ -10,6 +10,7 @@ on:
         options:
           - frontend
           - backend
+          - backoffice
 
       tag:
         description: "Docker image tag (e.g. 1.0.3)"
@@ -48,6 +49,8 @@ jobs:
               IMAGE="pooyaos/chess-frontend"
             elif [ "$SERVICE" = "backend" ]; then
               IMAGE="pooyaos/chess-backend"
+            elif [ "$SERVICE" = "backoffice" ]; then
+              IMAGE="pooyaos/chess-backoffice"
             else
               echo "Unknown service"
               exit 1

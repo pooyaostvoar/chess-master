@@ -9,6 +9,15 @@ services:
       - backend
     environment:
       REACT_APP_API_URL: "http://185.141.61.15:3004" # adjust if needed
+  
+  backoffice:
+    image: pooyaos/chess-backoffice:latest
+    ports:
+      - "3001:80"
+    depends_on:
+      - backend
+    environment:
+      REACT_APP_API_URL: "http://185.141.61.15:3004"
 
   backend:
     image: pooyaos/chess-backend:latest
