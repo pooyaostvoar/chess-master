@@ -17,7 +17,7 @@ import { HomeSectionWrapper } from "../components/home/HomeSectionWrapper";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, loading: isUserloading } = useUser();
   const [topMasters, setTopMasters] = useState<User[]>([]);
   const [recommendedMasters, setRecommendedMasters] = useState<User[]>([]);
   const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
@@ -32,7 +32,7 @@ const Home: React.FC = () => {
 
         const sorted = mastersWithRating
           .sort((a, b) => (b.rating || 0) - (a.rating || 0))
-          .slice(0, 5);
+          .slice(0, 3);
 
         setTopMasters(sorted);
 
@@ -102,7 +102,9 @@ const Home: React.FC = () => {
       navigate("/login");
     }
   };
-
+  if (isUserloading) {
+    return null;
+  }
   return (
     <div className="min-h-screen">
       {user ? (

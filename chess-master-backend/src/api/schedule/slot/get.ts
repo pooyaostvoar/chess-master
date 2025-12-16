@@ -8,7 +8,6 @@ export const router = Router();
  * GET /schedule/slot/:id
  */
 router.get("/:id", isAuthenticated, async (req, res) => {
-  console.log("GET /schedule/slot/:id called");
   try {
     const slotId = Number(req.params.id);
 

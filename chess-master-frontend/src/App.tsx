@@ -11,6 +11,7 @@ import MyBookings from "./pages/MyBookings";
 import Layout from "./components/Layout";
 import FinishedEvents from "./pages/FinishedEvents";
 import EditSlot from "./pages/EditSlot";
+import { UpcomingEventsPage } from "./pages/UpcomingEvents";
 
 const App: React.FC = () => {
   return (
@@ -29,6 +30,7 @@ const App: React.FC = () => {
           <Route path="/bookings" element={<MyBookings />} />
           <Route path="/events" element={<FinishedEvents />} />
           <Route path="/events/:id/edit" element={<EditSlot />} />
+          <Route path="/upcoming-events" element={<UpcomingEventsPage />} />
         </Route>
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />

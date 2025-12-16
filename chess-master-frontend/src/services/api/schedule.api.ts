@@ -105,11 +105,20 @@ export const updateSlotStatus = async (
 };
 
 export const getFinishedEvents = async () => {
-  console.log("Fetching finished events...");
   try {
     const response = await apiClient.get(`/schedule/finished-events`);
-    console.log(response.data);
+
     return response.data;
+  } catch (error: any) {
+    throw new Error(handleApiError(error));
+  }
+};
+
+export const getUpcomingEvents = async () => {
+  try {
+    const response = await apiClient.get(`/schedule/upcoming-events`);
+
+    return response.data.events;
   } catch (error: any) {
     throw new Error(handleApiError(error));
   }
