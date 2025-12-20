@@ -47,10 +47,10 @@ export class User {
   })
   pricing: MasterPricing | null;
 
-  @Column("bytea")
+  @Column("bytea", { nullable: true })
   password: Buffer;
 
-  @Column("bytea")
+  @Column("bytea", { nullable: true })
   salt: Buffer;
 
   @OneToMany(() => ScheduleSlot, (slot) => slot.master)
@@ -61,4 +61,7 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Column("text", { nullable: true })
+  googleId?: string;
 }

@@ -53,6 +53,11 @@ services:
       - DB_NAME=chess_master
       - REDIS_URL=redis://:redis-pass@redis:6379
       - EMAIL_NOTIFICATION_URL=https://script.google.com/macros/s/AKfycbymKePXvohmD14G48p2b61zY3485xsvf6jpU71NVywVfRzUM6Z-szNB9dHY34xVqkMo/exec
+    secrets:
+      - google_client_id
+      - google_client_secret
+      - session_secret
+      
     depends_on:
       - db
       - redis
@@ -92,7 +97,13 @@ services:
       - ./pgadmin/servers.json:/pgadmin4/servers.json
     depends_on:
       - db
-
+secrets:
+  google_client_id:
+    file: ./secrets/google_client_id.txt
+  google_client_secret:
+    file: ./secrets/google_client_secret.txt
+  session_secret:
+    file: ./secrets/session_secret.txt
 volumes:
   postgres_data:
   redis_data:

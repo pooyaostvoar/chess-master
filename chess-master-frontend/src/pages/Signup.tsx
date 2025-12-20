@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signup } from "../services/auth";
 import { useIsMobile } from "../hooks/useIsMobile";
+import { API_URL } from "../services/config";
 
 const Signup: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -37,7 +38,9 @@ const Signup: React.FC = () => {
       setLoading(false);
     }
   };
-
+  const handleGoogleLogin = () => {
+    window.location.href = `${API_URL}/auth/google`;
+  };
   return (
     <div style={styles.container}>
       {!isMobile && (
@@ -119,6 +122,17 @@ const Signup: React.FC = () => {
               {loading ? "Creating account..." : "Create Account"}
             </button>
           </form>
+          <button
+            style={{
+              ...styles.button,
+              opacity: loading ? 0.7 : 1,
+              width: "100%",
+              cursor: loading ? "not-allowed" : "pointer",
+            }}
+            onClick={handleGoogleLogin}
+          >
+            Continue with Google
+          </button>
 
           {message && (
             <p
