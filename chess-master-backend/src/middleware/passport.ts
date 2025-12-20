@@ -167,7 +167,7 @@ passport.use(
       clientID: getGoogleCleintID(),
       clientSecret: getGoogleClientSecret(),
       callbackURL:
-        process.env.NODE_ENV === "production"
+        process.env.ENV === "production"
           ? "https://chesswithmasters.com/api/auth/google/callback"
           : "http://localhost:3004/auth/google/callback",
     },
