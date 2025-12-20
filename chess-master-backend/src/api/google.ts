@@ -1,21 +1,25 @@
-import express, { Request, Response } from "express";
-import { AppDataSource } from "../database/datasource";
+import express from "express";
 import { passport } from "../middleware/passport";
 
 export const googleRouter = express.Router();
 
-googleRouter.get(
-  "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/" }),
-  (req, res) => {
-    // Successful authentication, redirect home.
-    // res.redirect("/");
-    res.send({ ok: "done" });
-  }
-);
-
+// Start login
 googleRouter.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
-googleRouter.get("/login/federated/google", passport.authenticate("google"));
+
+// Callback
+googleRouter.get(
+  "/google/callback",
+  passport.authenticate("google", { failureRedirect: "/" }),
+  (req, res) => {
+    // console.log("Google login successful redirect to home");
+    // Successful login
+    const redirectUrl =
+      process.env.NODE_ENV === "production"
+        ? "https://chesswithmasters.com/home"
+        : "http://localhost:3000/home";
+    res.redirect(redirectUrl); // or redirect to your frontend
+  }
+);

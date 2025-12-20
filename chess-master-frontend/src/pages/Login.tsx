@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { login } from "../services/auth";
 import { useUser } from "../contexts/UserContext";
 import { useIsMobile } from "../hooks/useIsMobile";
+import { API_URL } from "../services/config";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -34,7 +35,9 @@ const Login: React.FC = () => {
       setLoading(false);
     }
   };
-
+  const handleGoogleLogin = () => {
+    window.location.href = `${API_URL}/auth/google`;
+  };
   return (
     <div style={styles.container}>
       {!isMobile && (
@@ -104,6 +107,17 @@ const Login: React.FC = () => {
               {loading ? "Signing in..." : "Sign In"}
             </button>
           </form>
+          <button
+            style={{
+              ...styles.button,
+              opacity: loading ? 0.7 : 1,
+              width: "100%",
+              cursor: loading ? "not-allowed" : "pointer",
+            }}
+            onClick={handleGoogleLogin}
+          >
+            Continue with Google
+          </button>
 
           {message && <p style={styles.message}>{message}</p>}
 

@@ -39,6 +39,9 @@ services:
       - postgres_password
       - redis_url
       - email_notification_url
+      - google_client_id
+      - google_client_secret
+      - session_secret
 
   db:
     image: postgres:15-alpine
@@ -81,5 +84,11 @@ secrets:
     file: ./secrets/redis_password.txt
   email_notification_url:
     file: ./secrets/email_notification_url.txt
+  google_client_id:
+    file: ./secrets/google_client_id.txt
+  google_client_secret:
+    file: ./secrets/google_client_secret.txt
+  session_secret:
+    file: ./secrets/session_secret.txt
 volumes:
   db_data:

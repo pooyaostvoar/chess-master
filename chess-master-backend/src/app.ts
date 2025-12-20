@@ -69,17 +69,21 @@ export function createApp() {
   app.use(
     session({
       store: redisStore,
-      secret: "keyboard cat",
+      //Todo change this
+      secret: readSecret("/run/secrets/session_secret") ?? "keyboard cat",
       resave: false,
       saveUninitialized: false,
-      // Configure other options as needed
+      cookie: {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+      },
     })
   );
 
-  // Initialize Passport middleware
   app.use(passport.initialize());
   app.use(passport.session());
-  app.use("", googleRouter);
+  app.use("/auth", googleRouter);
   app.use("", passwordAuthRouter);
   app.use("/admin", adminAuthRouter);
   app.use("/admin/users", adminUsersRouter);

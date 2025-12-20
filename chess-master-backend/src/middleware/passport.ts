@@ -2,6 +2,12 @@ import { AppDataSource } from "../database/datasource";
 import { User } from "../database/entity/user";
 import { AdminUser } from "../database/entity/admin-user";
 import { Request, Response, NextFunction } from "express";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import {
+  getGoogleCleintID,
+  getGoogleClientSecret,
+  readSecret,
+} from "../utils/secret";
 
 export const passport = require("passport");
 var LocalStrategy = require("passport-local");
@@ -145,11 +151,7 @@ export const isAuthenticated = (
   res.status(401).json({ error: "Unauthorized" });
 };
 
-export const isAdmin = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const isAdmin = (req: Request, res: Response, next: NextFunction) => {
   if (req.isAuthenticated && req.isAuthenticated()) {
     const user: any = req.user;
     if (user && user instanceof AdminUser) {
@@ -158,3 +160,45 @@ export const isAdmin = (
   }
   res.status(403).json({ error: "Forbidden" });
 };
+
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: getGoogleCleintID(),
+      clientSecret: getGoogleClientSecret(),
+      callbackURL:
+        process.env.NODE_ENV === "production"
+          ? "https://chesswithmasters.com/api/auth/google/callback"
+          : "http://localhost:3004/auth/google/callback",
+    },
+    async (accessToken: any, refreshToken: any, profile: any, cb: any) => {
+      try {
+        //console.log("Google profileeeeeeee:", profile);
+        const email = profile.emails?.[0]?.value;
+        if (!email) return cb(null, false);
+
+        const userRepo = AppDataSource.getRepository(User);
+
+        let user = await userRepo.findOne({ where: { email } });
+
+        if (!user) {
+          // Create new user if not exist
+          user = userRepo.create({
+            email,
+            username: email,
+            googleId: profile.id,
+          });
+          await userRepo.save(user);
+        } else if (!user.googleId) {
+          // Link Google account to existing user
+          user.googleId = profile.id;
+          await userRepo.save(user);
+        }
+
+        return cb(null, user);
+      } catch (err) {
+        return cb(err);
+      }
+    }
+  )
+);

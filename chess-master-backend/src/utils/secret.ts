@@ -7,3 +7,27 @@ export const readSecret = (filePath: string) => {
     return undefined;
   }
 };
+
+let googleClientIDCache: string | undefined = undefined;
+export function getGoogleCleintID() {
+  if (googleClientIDCache) {
+    return googleClientIDCache;
+  }
+  googleClientIDCache = readSecret("/run/secrets/google_client_id");
+  if (!googleClientIDCache) {
+    throw new Error("Google Client ID not found in secrets");
+  }
+  return googleClientIDCache;
+}
+
+let secretCache: string | undefined = undefined;
+export function getGoogleClientSecret() {
+  if (secretCache) {
+    return secretCache;
+  }
+  secretCache = readSecret("/run/secrets/google_client_secret");
+  if (!secretCache) {
+    throw new Error("Google Client Secret not found in secrets");
+  }
+  return secretCache;
+}
