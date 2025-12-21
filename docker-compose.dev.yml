@@ -57,6 +57,8 @@ services:
       - google_client_id
       - google_client_secret
       - session_secret
+      - telegram_token
+      - telegram_chat_id
       
     depends_on:
       - db
@@ -104,6 +106,10 @@ secrets:
     file: ./secrets/google_client_secret.txt
   session_secret:
     file: ./secrets/session_secret.txt
+  telegram_token:
+    file: ./secrets/telegram_token.txt
+  telegram_chat_id:
+    file: ./secrets/telegram_chat_id.txt
 volumes:
   postgres_data:
   redis_data:

@@ -4,7 +4,10 @@ import { SlotStatus } from "../database/entity/types";
 import { User } from "../database/entity/user";
 import { In } from "typeorm";
 import { formatUserMinimal } from "./user.service";
-import { sendNotificationEmail } from "./notification.service";
+import {
+  sendNotificationEmail,
+  sendNotificationToTelegram,
+} from "./notification.service";
 
 export interface CreateSlotData {
   masterId: number;
@@ -195,10 +198,14 @@ export async function reserveSlot(
   });
 
   // Send notification email
-  await sendNotificationEmail({
+  const input = {
     master: updatedSlot?.master?.username ?? "",
     reservedBy: updatedSlot?.reservedBy?.username ?? "",
-  });
+  };
+  await Promise.all([
+    sendNotificationEmail(input),
+    sendNotificationToTelegram(input),
+  ]);
 
   if (!updatedSlot) {
     throw new Error("Slot not found after reservation");
