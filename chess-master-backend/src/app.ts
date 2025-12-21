@@ -73,11 +73,6 @@ export function createApp() {
       secret: readSecret("/run/secrets/session_secret") ?? "keyboard cat",
       resave: false,
       saveUninitialized: false,
-      cookie: {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.ENV === "production",
-      },
     })
   );
 

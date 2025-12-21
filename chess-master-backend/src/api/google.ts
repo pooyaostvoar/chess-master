@@ -14,7 +14,7 @@ googleRouter.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
-    // console.log("Google login successful redirect to home");
+    console.log("Google login successful redirect to home");
     // Successful login
     const redirectUrl =
       process.env.ENV === "production"
