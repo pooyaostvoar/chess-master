@@ -33,7 +33,10 @@ export function UserDetailPage({ userId, onBack }: Props) {
   const [totalSessions, setTotalSessions] = useState(0);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [lastSavedSnapshot, setLastSavedSnapshot] = useState<Record<string, any> | null>(null);
+  const [lastSavedSnapshot, setLastSavedSnapshot] = useState<Record<
+    string,
+    any
+  > | null>(null);
   const [form] = Form.useForm<AdminUser>();
 
   const toComparable = (data: Partial<AdminUser>) => ({
@@ -55,7 +58,9 @@ export function UserDetailPage({ userId, onBack }: Props) {
       setHasChanges(false);
       return;
     }
-    setHasChanges(JSON.stringify(toComparable(values)) !== JSON.stringify(lastSavedSnapshot));
+    setHasChanges(
+      JSON.stringify(toComparable(values)) !== JSON.stringify(lastSavedSnapshot)
+    );
   };
 
   const loadUser = async () => {
@@ -75,7 +80,10 @@ export function UserDetailPage({ userId, onBack }: Props) {
 
   const loadSessions = async (p = page, ps = pageSize) => {
     try {
-      const data = await AdminUsersApi.sessions(userId, { page: p, pageSize: ps });
+      const data = await AdminUsersApi.sessions(userId, {
+        page: p,
+        pageSize: ps,
+      });
       setSessions(data.items);
       setTotalSessions(data.total);
       setPage(data.page);
@@ -142,7 +150,11 @@ export function UserDetailPage({ userId, onBack }: Props) {
         ← Back to users
       </Button>
 
-      <Card loading={loading} style={{ borderRadius: 12 }} bodyStyle={{ padding: 16 }}>
+      <Card
+        loading={loading}
+        style={{ borderRadius: 12 }}
+        bodyStyle={{ padding: 16 }}
+      >
         {user ? (
           <Row gutter={[16, 16]}>
             <Col xs={24} md={16}>
@@ -150,9 +162,15 @@ export function UserDetailPage({ userId, onBack }: Props) {
                 layout="vertical"
                 form={form}
                 onFinish={handleSave}
-                onValuesChange={(_, values) => updateDirtyFlag(values as Partial<AdminUser>)}
+                onValuesChange={(_, values) =>
+                  updateDirtyFlag(values as Partial<AdminUser>)
+                }
               >
-                <Form.Item label="Username" name="username" rules={[{ required: true }]}>
+                <Form.Item
+                  label="Username"
+                  name="username"
+                  rules={[{ required: true }]}
+                >
                   <Input />
                 </Form.Item>
                 <Form.Item label="Email" name="email">
@@ -178,13 +196,22 @@ export function UserDetailPage({ userId, onBack }: Props) {
                   <Input />
                 </Form.Item>
                 <Space align="center">
-                  <Button type="primary" htmlType="submit" loading={saving} disabled={!hasChanges}>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={saving}
+                    disabled={!hasChanges}
+                  >
                     Save changes
                   </Button>
                   {hasChanges ? (
-                    <Typography.Text type="secondary">Unsaved changes</Typography.Text>
+                    <Typography.Text type="secondary">
+                      Unsaved changes
+                    </Typography.Text>
                   ) : (
-                    <Typography.Text type="secondary">All changes saved</Typography.Text>
+                    <Typography.Text type="secondary">
+                      All changes saved
+                    </Typography.Text>
                   )}
                 </Space>
               </Form>
@@ -192,23 +219,19 @@ export function UserDetailPage({ userId, onBack }: Props) {
             <Col xs={24} md={8}>
               <Card bordered style={{ borderRadius: 12 }}>
                 <Space direction="vertical" style={{ width: "100%" }}>
-                  <Statistic title="Role" valueRender={() => (user.isMaster ? <Tag color="blue">Master</Tag> : <Tag>Normal</Tag>)} />
+                  <Statistic
+                    title="Role"
+                    valueRender={() =>
+                      user.isMaster ? (
+                        <Tag color="blue">Master</Tag>
+                      ) : (
+                        <Tag>Normal</Tag>
+                      )
+                    }
+                  />
                   <Statistic title="Rating" value={user.rating ?? "—"} />
                   <Statistic title="Title" value={user.title ?? "—"} />
                 </Space>
-                {user.isMaster && user.pricing ? (
-                  <>
-                    <Divider />
-                    <Descriptions title="Pricing" column={1} size="small" bordered>
-                      <Descriptions.Item label="5 min">{user.pricing.price5min ?? "—"}</Descriptions.Item>
-                      <Descriptions.Item label="10 min">{user.pricing.price10min ?? "—"}</Descriptions.Item>
-                      <Descriptions.Item label="15 min">{user.pricing.price15min ?? "—"}</Descriptions.Item>
-                      <Descriptions.Item label="30 min">{user.pricing.price30min ?? "—"}</Descriptions.Item>
-                      <Descriptions.Item label="45 min">{user.pricing.price45min ?? "—"}</Descriptions.Item>
-                      <Descriptions.Item label="60 min">{user.pricing.price60min ?? "—"}</Descriptions.Item>
-                    </Descriptions>
-                  </>
-                ) : null}
               </Card>
             </Col>
           </Row>
@@ -220,11 +243,31 @@ export function UserDetailPage({ userId, onBack }: Props) {
           rowKey="id"
           dataSource={sessions}
           columns={[
-            { title: "Start", dataIndex: "startTime", render: (v: string) => new Date(v).toLocaleString() },
-            { title: "End", dataIndex: "endTime", render: (v: string) => new Date(v).toLocaleString() },
-            { title: "Status", dataIndex: "status", render: (v: string) => <Tag>{v}</Tag> },
-            { title: "Master", dataIndex: ["master", "username"], render: (v: string | null) => v || "—" },
-            { title: "Customer", dataIndex: ["customer", "username"], render: (v: string | null) => v || "—" },
+            {
+              title: "Start",
+              dataIndex: "startTime",
+              render: (v: string) => new Date(v).toLocaleString(),
+            },
+            {
+              title: "End",
+              dataIndex: "endTime",
+              render: (v: string) => new Date(v).toLocaleString(),
+            },
+            {
+              title: "Status",
+              dataIndex: "status",
+              render: (v: string) => <Tag>{v}</Tag>,
+            },
+            {
+              title: "Master",
+              dataIndex: ["master", "username"],
+              render: (v: string | null) => v || "—",
+            },
+            {
+              title: "Customer",
+              dataIndex: ["customer", "username"],
+              render: (v: string | null) => v || "—",
+            },
           ]}
           pagination={{
             current: page,

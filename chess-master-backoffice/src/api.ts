@@ -20,14 +20,6 @@ export type AdminUser = {
   chesscomUrl: string | null;
   lichessUrl: string | null;
   profilePicture: string | null;
-  pricing: {
-    price5min: number | null;
-    price10min: number | null;
-    price15min: number | null;
-    price30min: number | null;
-    price45min: number | null;
-    price60min: number | null;
-  } | null;
 };
 
 export type AdminUserListResponse = {
@@ -43,12 +35,22 @@ export type AdminStats = {
   upcomingSlots: number;
   bookedSlots: number;
   totalGames: number;
-  masters: { id: number; username: string; title: string | null; rating: number | null }[];
+  masters: {
+    id: number;
+    username: string;
+    title: string | null;
+    rating: number | null;
+  }[];
   asOf: string;
 };
 
 export type AdminActivity = {
-  signups: { id: number; username: string; isMaster: boolean; createdAt: string | null }[];
+  signups: {
+    id: number;
+    username: string;
+    isMaster: boolean;
+    createdAt: string | null;
+  }[];
   bookings: {
     id: number;
     startTime: string;
@@ -96,7 +98,12 @@ export const AdminApi = {
 };
 
 export const AdminUsersApi = {
-  list: (params: { page: number; pageSize: number; q?: string; role?: "master" | "user" }) => {
+  list: (params: {
+    page: number;
+    pageSize: number;
+    q?: string;
+    role?: "master" | "user";
+  }) => {
     const search = new URLSearchParams();
     search.set("page", String(params.page));
     search.set("pageSize", String(params.pageSize));

@@ -53,7 +53,7 @@ adminUsersRouter.get("/:id", async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const repo = AppDataSource.getRepository(User);
-    const user = await repo.findOne({ where: { id }, relations: ["pricing"] });
+    const user = await repo.findOne({ where: { id } });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -91,7 +91,9 @@ adminUsersRouter.get("/:id/sessions", async (req, res, next) => {
         startTime: slot.startTime,
         endTime: slot.endTime,
         status: slot.status,
-        master: slot.master ? { id: slot.master.id, username: slot.master.username } : null,
+        master: slot.master
+          ? { id: slot.master.id, username: slot.master.username }
+          : null,
         customer: slot.reservedBy
           ? { id: slot.reservedBy.id, username: slot.reservedBy.username }
           : null,
@@ -109,7 +111,7 @@ adminUsersRouter.patch("/:id", async (req, res, next) => {
   try {
     const id = Number(req.params.id);
     const repo = AppDataSource.getRepository(User);
-    const user = await repo.findOne({ where: { id }, relations: ["pricing"] });
+    const user = await repo.findOne({ where: { id } });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -155,15 +157,5 @@ function trimUser(user: User) {
     profilePicture: user.profilePicture,
     chesscomUrl: user.chesscomUrl,
     lichessUrl: user.lichessUrl,
-    pricing: user.pricing
-      ? {
-          price5min: user.pricing.price5min,
-          price10min: user.pricing.price10min,
-          price15min: user.pricing.price15min,
-          price30min: user.pricing.price30min,
-          price45min: user.pricing.price45min,
-          price60min: user.pricing.price60min,
-        }
-      : null,
   };
 }

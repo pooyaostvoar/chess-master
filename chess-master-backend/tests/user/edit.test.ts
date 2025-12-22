@@ -31,36 +31,4 @@ describe("PATCH /users/:id", () => {
     expect(res.status).toBe(403);
     expect(res.body.error).toMatch(/Forbidden/);
   });
-
-  it("should update existing pricing by calling updatePricing twice", async () => {
-    await authAgent.patch("/users/1").send({
-      username: "updateduser",
-      title: "CM",
-      rating: 2200,
-      bio: "Updated bio",
-      isMaster: true,
-      pricing: { price5min: 10 },
-    });
-
-    let updatedUser = await AppDataSource.getRepository(User).findOne({
-      where: { id: 1 },
-      relations: ["pricing"],
-    });
-    expect(updatedUser?.pricing?.price5min).toBe(10);
-
-    await authAgent.patch("/users/1").send({
-      username: "updateduser",
-      title: "CM",
-      rating: 2200,
-      bio: "Updated bio",
-      isMaster: true,
-      pricing: { price10min: 20 },
-    });
-    updatedUser = await AppDataSource.getRepository(User).findOne({
-      where: { id: 1 },
-      relations: ["pricing"],
-    });
-    expect(updatedUser?.pricing?.price5min).toBe(10);
-    expect(updatedUser?.pricing?.price10min).toBe(20);
-  });
 });

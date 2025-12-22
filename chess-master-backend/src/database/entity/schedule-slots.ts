@@ -27,4 +27,16 @@ export class ScheduleSlot {
 
   @ManyToOne(() => User, { nullable: true })
   reservedBy: User | null;
+
+  @Column({
+    type: "decimal",
+    precision: 10,
+    scale: 2,
+    nullable: true,
+    transformer: {
+      to: (value: number | null) => value,
+      from: (value: string | null) => (value === null ? null : Number(value)),
+    },
+  })
+  price: number | null;
 }

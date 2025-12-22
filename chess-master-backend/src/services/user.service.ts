@@ -1,6 +1,5 @@
 import { AppDataSource } from "../database/datasource";
 import { User } from "../database/entity/user";
-import { formatPricing, updatePricing } from "./pricing.service";
 
 export interface UpdateUserData {
   email?: string;
@@ -12,14 +11,7 @@ export interface UpdateUserData {
   profilePicture?: string | null;
   chesscomUrl?: string | null;
   lichessUrl?: string | null;
-  pricing?: {
-    price5min?: number | null;
-    price10min?: number | null;
-    price15min?: number | null;
-    price30min?: number | null;
-    price45min?: number | null;
-    price60min?: number | null;
-  };
+  hourlyRate?: number | null;
 }
 
 export interface UserFilters {
@@ -42,14 +34,7 @@ export interface SafeUser {
   profilePicture: string | null;
   chesscomUrl: string | null;
   lichessUrl: string | null;
-  pricing: {
-    price5min: number | null;
-    price10min: number | null;
-    price15min: number | null;
-    price30min: number | null;
-    price45min: number | null;
-    price60min: number | null;
-  } | null;
+  hourlyRate: number | null;
 }
 
 /**
@@ -67,7 +52,7 @@ export function formatUser(user: User): SafeUser {
     profilePicture: user.profilePicture,
     chesscomUrl: user.chesscomUrl,
     lichessUrl: user.lichessUrl,
-    pricing: formatPricing(user.pricing),
+    hourlyRate: user.hourlyRate,
   };
 }
 
@@ -100,7 +85,6 @@ export async function getAuthenticatedUser(
   const userRepo = AppDataSource.getRepository(User);
   const user = await userRepo.findOne({
     where: { id: userId },
-    relations: ["pricing"],
     select: [
       "id",
       "username",
@@ -112,6 +96,7 @@ export async function getAuthenticatedUser(
       "profilePicture",
       "chesscomUrl",
       "lichessUrl",
+      "hourlyRate",
     ],
   });
 
@@ -128,7 +113,6 @@ export async function updateUser(
   const userRepo = AppDataSource.getRepository(User);
   const user = await userRepo.findOne({
     where: { id: userId },
-    relations: ["pricing"],
   });
 
   if (!user) {
@@ -146,18 +130,14 @@ export async function updateUser(
     user.profilePicture = data.profilePicture;
   if (data.chesscomUrl !== undefined) user.chesscomUrl = data.chesscomUrl;
   if (data.lichessUrl !== undefined) user.lichessUrl = data.lichessUrl;
-
-  // Update pricing if provided
-
-  await userRepo.save(user);
-  if (data.pricing !== undefined) {
-    await updatePricing(userId, data.pricing);
+  if (data.hourlyRate !== undefined) {
+    user.hourlyRate = data.hourlyRate;
   }
 
-  // Reload with pricing relation
+  await userRepo.save(user);
+
   const updatedUser = await userRepo.findOne({
     where: { id: userId },
-    relations: ["pricing"],
   });
 
   return formatUser(updatedUser || user);
@@ -168,9 +148,7 @@ export async function updateUser(
  */
 export async function findUsers(filters: UserFilters): Promise<User[]> {
   const repo = AppDataSource.getRepository(User);
-  let qb = repo
-    .createQueryBuilder("user")
-    .leftJoinAndSelect("user.pricing", "pricing");
+  let qb = repo.createQueryBuilder("user");
 
   if (filters.username) {
     qb = qb.andWhere("user.username ILIKE :username", {

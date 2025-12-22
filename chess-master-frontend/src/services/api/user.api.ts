@@ -1,4 +1,4 @@
-import { apiClient, handleApiError } from './client';
+import { apiClient, handleApiError } from "./client";
 
 export interface UpdateUserData {
   email?: string;
@@ -10,14 +10,7 @@ export interface UpdateUserData {
   profilePicture?: string | null;
   chesscomUrl?: string | null;
   lichessUrl?: string | null;
-  pricing?: {
-    price5min?: number | null;
-    price10min?: number | null;
-    price15min?: number | null;
-    price30min?: number | null;
-    price45min?: number | null;
-    price60min?: number | null;
-  };
+  hourlyRate?: number | null;
 }
 
 export interface User {
@@ -31,14 +24,7 @@ export interface User {
   profilePicture?: string | null;
   chesscomUrl?: string | null;
   lichessUrl?: string | null;
-  pricing?: {
-    price5min?: number | null;
-    price10min?: number | null;
-    price15min?: number | null;
-    price30min?: number | null;
-    price45min?: number | null;
-    price60min?: number | null;
-  } | null;
+  hourlyRate?: number | null;
 }
 
 /**
@@ -46,7 +32,7 @@ export interface User {
  */
 export const getMe = async (): Promise<{ user: User }> => {
   try {
-    const response = await apiClient.get('/users/me');
+    const response = await apiClient.get("/users/me");
     return response.data;
   } catch (error: any) {
     throw new Error(handleApiError(error));
@@ -79,10 +65,9 @@ export const findUsers = async (filters: {
   title?: string;
 }): Promise<{ status: string; users: User[] }> => {
   try {
-    const response = await apiClient.get('/users', { params: filters });
+    const response = await apiClient.get("/users", { params: filters });
     return response.data;
   } catch (error: any) {
     throw new Error(handleApiError(error));
   }
 };
-

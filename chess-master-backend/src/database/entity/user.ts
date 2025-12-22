@@ -3,12 +3,10 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
-  OneToOne,
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { ScheduleSlot } from "./schedule-slots";
-import { MasterPricing } from "./master-pricing";
 
 @Entity("users")
 export class User {
@@ -42,11 +40,6 @@ export class User {
   @Column("text", { nullable: true })
   lichessUrl: string | null;
 
-  @OneToOne(() => MasterPricing, (pricing) => pricing.master, {
-    cascade: true,
-  })
-  pricing: MasterPricing | null;
-
   @Column("bytea", { nullable: true })
   password: Buffer;
 
@@ -63,5 +56,17 @@ export class User {
   updatedAt: Date;
 
   @Column("text", { nullable: true })
-  googleId?: string;
+  googleId?: string | null;
+
+  @Column({
+    type: "decimal",
+    precision: 10,
+    scale: 2,
+    nullable: true,
+    transformer: {
+      to: (value: number | null) => value,
+      from: (value: string | null) => (value === null ? null : Number(value)),
+    },
+  })
+  hourlyRate: number | null;
 }
