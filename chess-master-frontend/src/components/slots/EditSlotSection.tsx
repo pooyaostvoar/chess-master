@@ -31,14 +31,28 @@ const EditSlotSection: React.FC<Props> = ({ id }: Props) => {
     "success"
   );
 
+  const isoToDateTimeLocal = (iso: string) => {
+    if (!iso) return "";
+
+    const date = new Date(iso);
+
+    if (isNaN(date.getTime())) return "";
+
+    const pad = (n: number) => String(n).padStart(2, "0");
+
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+      date.getDate()
+    )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  };
+
   useEffect(() => {
     const loadSlot = async () => {
       try {
         const slot = await getSlotById(Number(id));
 
         setFormData({
-          startTime: slot.startTime.slice(0, 16),
-          endTime: slot.endTime.slice(0, 16),
+          startTime: isoToDateTimeLocal(slot.startTime),
+          endTime: isoToDateTimeLocal(slot.endTime),
           title: slot.title || "",
           youtubeId: slot.youtubeId || "",
           price: slot.price || "0.00",
