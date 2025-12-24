@@ -72,6 +72,17 @@ server {
         rewrite ^/api/?(.*)$ /$1 break;
         proxy_pass http://127.0.0.1:3004;
     }
+
+    location /socket.io/ {
+        proxy_pass http://127.0.0.1:3004;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
 }
 ```
 
@@ -163,14 +174,17 @@ docker compose -f docker-compose.yml logs -f
 ## Admin (backoffice) access
 
 ### Create an admin user (manual)
+
 Passwords must be hashed before inserting into Postgres. Store them as `bytea` using `decode()`.
 
-1) Generate salt + hash with Node:
+1. Generate salt + hash with Node:
+
 ```bash
 node -e "const crypto=require('crypto');const pwd='YOUR_PASSWORD';const salt=crypto.randomBytes(16);crypto.pbkdf2(pwd,salt,310000,32,'sha256',(e,h)=>{if(e)throw e;console.log('salt_hex',salt.toString('hex'));console.log('hash_hex',h.toString('hex'));});"
 ```
 
-2) Insert (replace placeholders):
+2. Insert (replace placeholders):
+
 ```sql
 -- insert
 INSERT INTO admin_users (username, email, password, salt, status)
