@@ -31,6 +31,7 @@ WORKDIR /app/chess-master-frontend
 
 # Set API URL for production
 ENV REACT_APP_API_URL=https://chesswithmasters.com/api
+ENV REACT_APP_SOCKET_URL=https://chesswithmasters.com/socket.io
 
 # Build React app (outputs 'build' folder)
 RUN pnpm build

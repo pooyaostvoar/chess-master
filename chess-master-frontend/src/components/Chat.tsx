@@ -34,7 +34,9 @@ const Chat: React.FC<ChatProps> = ({ otherUserId, userId }) => {
   }, [messages]);
 
   useEffect(() => {
+    console.log("Connecting to socket...");
     const socket = io(API_URL, { withCredentials: true });
+    console.log("Socket connected:");
     socketRef.current = socket;
 
     socket.emit("join-chat", { otherUserId });
