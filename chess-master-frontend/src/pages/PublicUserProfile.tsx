@@ -170,7 +170,13 @@ const PublicUserProfile: React.FC = () => {
           )}
           {/* ACTION BUTTONS */}
           <div className="flex flex-wrap justify-center gap-3 px-6 pb-6">
-            <Button onClick={() => {}}>Send Message</Button>
+            <Button
+              onClick={() => {
+                navigate(`/chat/${user.id}`);
+              }}
+            >
+              Send Message
+            </Button>
 
             {user.isMaster && (
               <>

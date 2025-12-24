@@ -5,6 +5,7 @@ import { Game } from "./entity/game";
 import { ScheduleSlot } from "./entity/schedule-slots";
 import { readSecret } from "../utils/secret";
 import { ensureTestDatabase } from "./utils";
+import { Message } from "./entity/message";
 
 const defaultConfig: DataSourceOptions = {
   type: "postgres",
@@ -23,7 +24,7 @@ const defaultConfig: DataSourceOptions = {
     process.env.ENV === "production"
       ? ["chess-master-backend/dist/database/migrations/**/*.js"]
       : ["src/database/migrations/**/*.ts"],
-  entities: [User, AdminUser, Game, ScheduleSlot],
+  entities: [User, AdminUser, Game, ScheduleSlot, Message],
 };
 
 export let AppDataSource = new DataSource(defaultConfig);

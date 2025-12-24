@@ -13,6 +13,7 @@ import FinishedEvents from "./pages/FinishedEvents";
 import EditSlot from "./pages/EditSlot";
 import { UpcomingEventsPage } from "./pages/UpcomingEvents";
 import PublicUserProfile from "./pages/PublicUserProfile";
+import ChatPage from "./pages/ChatPage";
 
 const App: React.FC = () => {
   return (
@@ -33,6 +34,7 @@ const App: React.FC = () => {
           <Route path="/events/:id/edit" element={<EditSlot />} />
           <Route path="/upcoming-events" element={<UpcomingEventsPage />} />
           <Route path="/users/:id" element={<PublicUserProfile />} />
+          <Route path="/chat/:otherUserId" element={<ChatPage />} />
         </Route>
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />

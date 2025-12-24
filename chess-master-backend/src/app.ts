@@ -1,5 +1,5 @@
 import express, { Express } from "express";
-import session from "express-session";
+// import session from "express-session";
 //typeorm
 import "reflect-metadata";
 import bodyParser from "body-parser";
@@ -9,15 +9,18 @@ import { passwordAuthRouter } from "./api/auth-password";
 import cors from "cors";
 import { passport } from "./middleware/passport";
 const cookieParser = require("cookie-parser");
-import RedisStore from "connect-redis";
-import { createClient } from "redis";
+// import RedisStore from "connect-redis";
+// import { createClient } from "redis";
 import { usersRouter } from "./api/user/router";
 import { scheduleRouter } from "./api/schedule/router";
-import { readSecret } from "./utils/secret";
+// import { readSecret } from "./utils/secret";
 import { adminAuthRouter } from "./api/admin-auth";
 import { adminUsersRouter } from "./api/admin-users";
 import { adminStatsRouter } from "./api/admin-stats";
 import { adminActivityRouter } from "./api/admin-activity";
+import { sessionMiddleware } from "./middleware/session";
+import http from "http";
+import { initSocket } from "./socket";
 
 export function createApp() {
   const isTesting = process.env.NODE_ENV === "test";
@@ -53,28 +56,27 @@ export function createApp() {
 
   app.use(cors(corsOptions));
 
-  const redisClient = createClient({
-    url:
-      readSecret("/run/secrets/redis_url") ||
-      process.env.REDIS_URL ||
-      "redis://localhost:6378",
-  });
-  redisClient.connect().catch(console.error);
+  // const redisClient = createClient({
+  //   url:
+  //     readSecret("/run/secrets/redis_url") ||
+  //     process.env.REDIS_URL ||
+  //     "redis://localhost:6378",
+  // });
+  // redisClient.connect().catch(console.error);
 
-  const redisStore = new RedisStore({
-    client: redisClient,
-    prefix: "myapp:",
-  });
+  // const redisStore = new RedisStore({
+  //   client: redisClient,
+  //   prefix: "myapp:",
+  // });
 
-  app.use(
-    session({
-      store: redisStore,
-      //Todo change this
-      secret: readSecret("/run/secrets/session_secret") ?? "keyboard cat",
-      resave: false,
-      saveUninitialized: false,
-    })
-  );
+  // export const sessionMiddleware = session({
+  //   store: redisStore,
+  //   secret: readSecret("/run/secrets/session_secret") ?? "keyboard cat",
+  //   resave: false,
+  //   saveUninitialized: false,
+  // });
+
+  app.use(sessionMiddleware);
 
   app.use(passport.initialize());
   app.use(passport.session());
@@ -93,7 +95,12 @@ export function createApp() {
 if (process.env.NODE_ENV !== "test") {
   const port = 3004;
   const app = createApp();
-  app.listen(port, () => {
+  const server = http.createServer(app);
+
+  // Attach Socket.IO
+  const io = initSocket(server);
+
+  server.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);
   });
 }
