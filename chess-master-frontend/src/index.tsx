@@ -1,22 +1,28 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import './styles/common.css';
-import './styles/layout.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import { UserProvider } from './contexts/UserContext';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import "./styles/common.css";
+import "./styles/layout.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import { UserProvider } from "./contexts/UserContext";
 
 const root = ReactDOM.createRoot(
-	document.getElementById('root') as HTMLElement
+  document.getElementById("root") as HTMLElement
 );
 root.render(
-	<React.StrictMode>
-		<UserProvider>
-			<App />
-		</UserProvider>
-	</React.StrictMode>
+  <React.StrictMode>
+    <UserProvider>
+      <App />
+    </UserProvider>
+  </React.StrictMode>
 );
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/service-worker.js").catch(console.error);
+  });
+}
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

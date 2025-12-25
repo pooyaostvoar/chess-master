@@ -12,7 +12,9 @@ const ChatPage: React.FC = () => {
     navigate("/login");
     return null;
   }
-  return <Chat userId={user?.id!} otherUserId={Number(otherUserId)} />;
+  return user?.id ? (
+    <Chat userId={user?.id!} otherUserId={Number(otherUserId)} />
+  ) : null;
 };
 
 export default ChatPage;

@@ -6,6 +6,9 @@ import passport from "passport";
 import { sessionMiddleware } from "../middleware/session";
 import { AppDataSource } from "../database/datasource";
 import { Message } from "../database/entity/message";
+import { sendPushToUser } from "../services/push";
+
+const pendingPushes = new Map<number, NodeJS.Timeout>();
 
 /**
  * Shape of authenticated user
@@ -28,6 +31,7 @@ interface SocketData {
 interface ClientToServerEvents {
   "join-chat": (payload: { otherUserId: number }) => void;
   message: (payload: { otherUserId: number; text: string }) => void;
+  "message:seen": (payload: { messageId: number }) => void;
 }
 
 /**
@@ -38,7 +42,7 @@ interface ServerToClientEvents {
     id?: number;
     from: number;
     text: string;
-    createAt: Date;
+    createdAt: Date;
     isSeen: boolean;
   }) => void;
 }
@@ -143,7 +147,7 @@ export function initSocket(server: HttpServer) {
                 id: msg.id,
                 from: msg.fromUserId,
                 text: msg.text,
-                createAt: msg.createdAt,
+                createdAt: msg.createdAt,
                 isSeen: msg.isSeen,
               });
             });
@@ -182,9 +186,31 @@ export function initSocket(server: HttpServer) {
               id: newMessage.id,
               from: newMessage.fromUserId,
               text: newMessage.text,
-              createAt: newMessage.createdAt,
+              createdAt: newMessage.createdAt,
               isSeen: newMessage.isSeen,
             });
+
+            const timeout = setTimeout(async () => {
+              const link =
+                process.env.ENV === "production"
+                  ? `https://chesswithmasters.com/chat/${newMessage.fromUserId}`
+                  : `http://localhost:3000/chat/${newMessage.fromUserId}`;
+              const msg = await messageRepo.findOne({
+                where: { id: newMessage.id },
+              });
+
+              if (msg && !msg.isSeen) {
+                await sendPushToUser(msg.toUserId, {
+                  title: "New message",
+                  body: msg.text,
+                  data: { link },
+                });
+              }
+
+              pendingPushes.delete(newMessage.id);
+            }, 8000);
+
+            pendingPushes.set(newMessage.id, timeout);
 
             console.log("Message sent:", text, "room:", room);
           } catch (err) {
@@ -192,6 +218,18 @@ export function initSocket(server: HttpServer) {
           }
         }
       );
+
+      socket.on("message:seen", async ({ messageId }) => {
+        await AppDataSource.getRepository(Message).update(messageId, {
+          isSeen: true,
+        });
+
+        const timeout = pendingPushes.get(messageId);
+        if (timeout) {
+          clearTimeout(timeout);
+          pendingPushes.delete(messageId);
+        }
+      });
 
       socket.on("disconnect", () => {
         console.log(`Socket disconnected: user=${userId}`);

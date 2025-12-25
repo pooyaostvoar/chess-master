@@ -44,6 +44,8 @@ services:
       - session_secret
       - telegram_token
       - telegram_chat_id
+      - vapid_private_key
+      - vapid_public_key
 
   db:
     image: postgres:15-alpine
@@ -96,5 +98,9 @@ secrets:
     file: ./secrets/telegram_token.txt
   telegram_chat_id:
     file: ./secrets/telegram_chat_id.txt
+  vapid_private_key:
+    file: ./secrets/vapid_private_key.txt
+  vapid_public_key:
+    file: ./secrets/vapid_public_key.txt
 volumes:
   db_data:

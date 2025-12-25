@@ -11,9 +11,10 @@ import { SOCKET_URL } from "../services/config";
 import { usePublicUser } from "../hooks/usePublicUser";
 
 interface Message {
+  id: number;
   from: number;
   text: string;
-  timestamp: number;
+  createdAt: string;
 }
 
 interface ChatProps {
@@ -43,6 +44,10 @@ const Chat: React.FC<ChatProps> = ({ otherUserId, userId }) => {
 
     socket.on("message", (msg: Message) => {
       setMessages((prev) => [...prev, msg]);
+
+      if (msg.from !== userId) {
+        socket.emit("message:seen", { messageId: msg.id });
+      }
     });
 
     return () => {
@@ -83,7 +88,7 @@ const Chat: React.FC<ChatProps> = ({ otherUserId, userId }) => {
                 >
                   {msg.text}
                   <div className="text-xs text-gray-400 mt-1 text-right">
-                    {new Date(msg.timestamp).toLocaleTimeString([], {
+                    {new Date(msg.createdAt).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}

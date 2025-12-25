@@ -21,6 +21,7 @@ import { adminActivityRouter } from "./api/admin-activity";
 import { sessionMiddleware } from "./middleware/session";
 import http from "http";
 import { initSocket } from "./socket";
+import pushRouter from "./api/push";
 
 export function createApp() {
   const isTesting = process.env.NODE_ENV === "test";
@@ -56,26 +57,6 @@ export function createApp() {
 
   app.use(cors(corsOptions));
 
-  // const redisClient = createClient({
-  //   url:
-  //     readSecret("/run/secrets/redis_url") ||
-  //     process.env.REDIS_URL ||
-  //     "redis://localhost:6378",
-  // });
-  // redisClient.connect().catch(console.error);
-
-  // const redisStore = new RedisStore({
-  //   client: redisClient,
-  //   prefix: "myapp:",
-  // });
-
-  // export const sessionMiddleware = session({
-  //   store: redisStore,
-  //   secret: readSecret("/run/secrets/session_secret") ?? "keyboard cat",
-  //   resave: false,
-  //   saveUninitialized: false,
-  // });
-
   app.use(sessionMiddleware);
 
   app.use(passport.initialize());
@@ -88,6 +69,7 @@ export function createApp() {
   app.use("/admin/activity", adminActivityRouter);
   app.use("/users", usersRouter);
   app.use("/schedule", scheduleRouter);
+  app.use("/push", pushRouter);
   app.use(cookieParser());
   return app;
 }

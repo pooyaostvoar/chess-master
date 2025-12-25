@@ -52,6 +52,7 @@ services:
       - DB_PASS=chesspass
       - DB_NAME=chess_master
       - REDIS_URL=redis://:redis-pass@redis:6379
+      - ENV=development
       - EMAIL_NOTIFICATION_URL=https://script.google.com/macros/s/AKfycbymKePXvohmD14G48p2b61zY3485xsvf6jpU71NVywVfRzUM6Z-szNB9dHY34xVqkMo/exec
     secrets:
       - google_client_id
@@ -59,6 +60,8 @@ services:
       - session_secret
       - telegram_token
       - telegram_chat_id
+      - vapid_private_key
+      - vapid_public_key
       
     depends_on:
       - db
@@ -110,6 +113,10 @@ secrets:
     file: ./secrets/telegram_token.txt
   telegram_chat_id:
     file: ./secrets/telegram_chat_id.txt
+  vapid_private_key:
+    file: ./secrets/vapid_private_key.txt
+  vapid_public_key:
+    file: ./secrets/vapid_public_key.txt
 volumes:
   postgres_data:
   redis_data:
