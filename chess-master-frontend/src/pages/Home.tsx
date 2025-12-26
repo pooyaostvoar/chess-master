@@ -25,74 +25,76 @@ const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [bookingsLoading, setBookingsLoading] = useState(false);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const response = await findUsers({ isMaster: true });
-        const mastersWithRating = response.users.filter((m) => m.rating);
+  const loadBookings = async () => {
+    setBookingsLoading(true);
+    let bookings: Booking[] = [];
+    try {
+      const bookingsRes = await getMyBookings();
+      bookings = bookingsRes.bookings || [];
+      const upcoming = bookings
+        .filter((b) => new Date(b.startTime) > new Date())
+        .sort(
+          (a, b) =>
+            new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+        )
+        .slice(0, 3);
+      setRecentBookings(upcoming);
+    } catch (err) {
+      console.error("Failed to load bookings", err);
+    } finally {
+      setBookingsLoading(false);
+    }
+    return bookings;
+  };
+  const loadData = async () => {
+    try {
+      const response = await findUsers({ isMaster: true });
+      const mastersWithRating = response.users.filter((m) => m.rating);
 
-        const sorted = mastersWithRating
-          .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+      const sorted = mastersWithRating
+        .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+        .slice(0, 3);
+
+      setTopMasters(sorted);
+
+      if (user) {
+        const bookings = await loadBookings();
+        const allMasters = response.users;
+        const bookingMasterIds = new Set<number>();
+        if (!user.isMaster) {
+          bookings.forEach((b) => {
+            if (b.master?.id) {
+              bookingMasterIds.add(b.master.id);
+            }
+          });
+        }
+
+        const recommended = allMasters
+          .filter((m) => m.id !== user.id)
+          .sort((a, b) => {
+            if (!user.isMaster) {
+              const aHasBooking = bookingMasterIds.has(a.id);
+              const bHasBooking = bookingMasterIds.has(b.id);
+              if (aHasBooking && !bHasBooking) return -1;
+              if (!aHasBooking && bHasBooking) return 1;
+            }
+            const aRating = a.rating || 0;
+            const bRating = b.rating || 0;
+            if (aRating !== bRating) return bRating - aRating;
+            return a.id - b.id;
+          })
           .slice(0, 3);
 
-        setTopMasters(sorted);
-
-        if (user) {
-          setBookingsLoading(true);
-          let bookings: Booking[] = [];
-          try {
-            const bookingsRes = await getMyBookings();
-            bookings = bookingsRes.bookings || [];
-            const upcoming = bookings
-              .filter((b) => new Date(b.startTime) > new Date())
-              .sort(
-                (a, b) =>
-                  new Date(a.startTime).getTime() -
-                  new Date(b.startTime).getTime()
-              )
-              .slice(0, 3);
-            setRecentBookings(upcoming);
-          } catch (err) {
-            console.error("Failed to load bookings", err);
-          } finally {
-            setBookingsLoading(false);
-          }
-
-          const allMasters = response.users;
-          const bookingMasterIds = new Set<number>();
-          if (!user.isMaster) {
-            bookings.forEach((b) => {
-              if (b.master?.id) {
-                bookingMasterIds.add(b.master.id);
-              }
-            });
-          }
-
-          const recommended = allMasters
-            .filter((m) => m.id !== user.id)
-            .sort((a, b) => {
-              if (!user.isMaster) {
-                const aHasBooking = bookingMasterIds.has(a.id);
-                const bHasBooking = bookingMasterIds.has(b.id);
-                if (aHasBooking && !bHasBooking) return -1;
-                if (!aHasBooking && bHasBooking) return 1;
-              }
-              const aRating = a.rating || 0;
-              const bRating = b.rating || 0;
-              if (aRating !== bRating) return bRating - aRating;
-              return a.id - b.id;
-            })
-            .slice(0, 3);
-
-          setRecommendedMasters(recommended);
-        }
-      } catch (err) {
-        console.error("Failed to load masters", err);
-      } finally {
-        setLoading(false);
+        setRecommendedMasters(recommended);
       }
-    };
+    } catch (err) {
+      console.error("Failed to load masters", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     loadData();
   }, [user]);
 
@@ -121,6 +123,7 @@ const Home: React.FC = () => {
                 bookings={recentBookings}
                 loading={bookingsLoading}
                 currentUser={user}
+                loadBookings={loadBookings}
               />
             </HomeSectionWrapper>
           )}

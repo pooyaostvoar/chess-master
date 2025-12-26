@@ -13,16 +13,18 @@ import { Calendar, Clock } from "lucide-react";
 import moment from "moment";
 import type { Booking } from "../../services/bookings";
 import type { User } from "../../services/auth";
+import { updateSlotStatus } from "../../services/schedule";
 
 interface UpcomingSessionsSectionProps {
   bookings: Booking[];
   loading: boolean;
   currentUser: User;
+  loadBookings?: () => Promise<Booking[]>;
 }
 
 export const UpcomingSessionsSection: React.FC<
   UpcomingSessionsSectionProps
-> = ({ bookings, loading, currentUser }) => {
+> = ({ bookings, loading, currentUser, loadBookings }) => {
   const navigate = useNavigate();
 
   if (loading) {
@@ -50,12 +52,16 @@ export const UpcomingSessionsSection: React.FC<
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {bookings.map((booking) => {
-        const displayUser = currentUser.isMaster
+        const isCurrentUserMasterOfBooking =
+          currentUser.id === booking.master?.id;
+
+        const displayUser = isCurrentUserMasterOfBooking
           ? booking.reservedBy
           : booking.master;
-        const displayName = currentUser.isMaster
-          ? booking.reservedBy?.username || "Unknown Player"
-          : booking.master?.username || "Unknown Master";
+
+        const displayName = isCurrentUserMasterOfBooking
+          ? booking.reservedBy?.username
+          : booking.master?.username || "Unknown User";
 
         return (
           <Card
@@ -71,12 +77,19 @@ export const UpcomingSessionsSection: React.FC<
                 </CardTitle>
               </div>
               <CardDescription>
-                {moment(booking.startTime).format("h:mm A")} -{" "}
+                {moment(booking.startTime).format("h:mm A")} –{" "}
                 {moment(booking.endTime).format("h:mm A")}
               </CardDescription>
             </CardHeader>
+
             <CardContent>
-              <div className="flex items-center gap-2">
+              <div
+                className="flex items-center gap-2"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/users/${displayUser?.id}`);
+                }}
+              >
                 {displayUser?.profilePicture ? (
                   <img
                     src={displayUser.profilePicture}
@@ -88,14 +101,18 @@ export const UpcomingSessionsSection: React.FC<
                     {displayName?.charAt(0).toUpperCase() || "?"}
                   </div>
                 )}
+
                 <span className="font-medium">{displayName}</span>
+
                 {!currentUser.isMaster && booking.master?.title && (
                   <Badge variant="default" className="ml-auto">
                     {booking.master.title}
                   </Badge>
                 )}
               </div>
-              <div className="mt-3">
+
+              {/* STATUS + ACTIONS */}
+              <div className="mt-3 flex items-center gap-2">
                 <Badge
                   variant={
                     booking.status === "booked"
@@ -111,6 +128,37 @@ export const UpcomingSessionsSection: React.FC<
                     ? "Pending"
                     : booking.status}
                 </Badge>
+
+                {isCurrentUserMasterOfBooking &&
+                  booking.status === "reserved" && (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="default"
+                        className="h-7 px-2 text-xs"
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          await updateSlotStatus(booking.id, "booked");
+                          loadBookings && loadBookings();
+                        }}
+                      >
+                        Approve
+                      </Button>
+
+                      <Button
+                        size="sm"
+                        className="h-7 px-2 text-xs"
+                        variant="destructive"
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          await updateSlotStatus(booking.id, "free");
+                          loadBookings && loadBookings();
+                        }}
+                      >
+                        Reject
+                      </Button>
+                    </>
+                  )}
               </div>
             </CardContent>
           </Card>

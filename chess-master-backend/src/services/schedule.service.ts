@@ -307,6 +307,7 @@ export async function getUserBookings(userId: number): Promise<ScheduleSlot[]> {
   return await repo
     .createQueryBuilder("slot")
     .leftJoinAndSelect("slot.master", "master")
+    .leftJoinAndSelect("slot.reservedBy", "reservedBy")
     .where("slot.reservedBy = :userId or slot.masterId = :userId", { userId })
     .andWhere("slot.status IN (:...statuses)", {
       statuses: [SlotStatus.Reserved, SlotStatus.Booked],
