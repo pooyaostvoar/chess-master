@@ -12,6 +12,7 @@ export interface UpdateUserData {
   lichessUrl?: string | null;
   hourlyRate?: number | null;
   languages?: string[] | null;
+  phoneNumber?: string | null;
 }
 
 export interface User {

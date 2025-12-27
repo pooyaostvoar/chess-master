@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -14,6 +13,7 @@ import { SlotBasicInfoSection } from "../../components/slots/SlotBasicInfoSectio
 import { SlotTimeSection } from "../../components/slots/SlotTimeSection";
 import { SlotVideoSection } from "../../components/slots/SlotVideoSection";
 import { SlotPrice } from "../../components/slots/SlotPrice";
+import { SlotDescriptionSection } from "./SlotDescriptionSection";
 
 interface Props {
   id: number;
@@ -56,6 +56,7 @@ const EditSlotSection: React.FC<Props> = ({ id }: Props) => {
           title: slot.title || "",
           youtubeId: slot.youtubeId || "",
           price: slot.price || "0.00",
+          description: slot.description || "",
         });
       } catch (err: any) {
         setMessage(err.message);
@@ -91,6 +92,7 @@ const EditSlotSection: React.FC<Props> = ({ id }: Props) => {
         title: formData.title || undefined,
         youtubeId: formData.youtubeId || undefined,
         price: parseFloat(formData.price),
+        description: formData.description || undefined,
       });
 
       setMessage("Slot updated successfully");
@@ -119,6 +121,10 @@ const EditSlotSection: React.FC<Props> = ({ id }: Props) => {
           <form onSubmit={handleSubmit} className="space-y-8">
             <SlotBasicInfoSection
               title={formData.title}
+              onChange={handleChange}
+            />
+            <SlotDescriptionSection
+              description={formData.description}
               onChange={handleChange}
             />
             <SlotPrice price={formData.price} onChange={handleChange} />

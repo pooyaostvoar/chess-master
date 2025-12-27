@@ -26,6 +26,8 @@ export const userSchemaBase = z.object({
   hourlyRate: z.number().nullish(),
 
   languages: z.array(z.string()).nullish(),
+
+  phoneNumber: z.string().nullish(),
 });
 
 export const userListSchema = z.array(userSchemaBase);

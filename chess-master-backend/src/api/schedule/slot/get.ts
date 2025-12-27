@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { isAuthenticated } from "../../../middleware/passport";
 import { getSlotById } from "../../../services/schedule.service";
 
 export const router = Router();
@@ -7,7 +6,7 @@ export const router = Router();
 /**
  * GET /schedule/slot/:id
  */
-router.get("/:id", isAuthenticated, async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const slotId = Number(req.params.id);
 
@@ -16,10 +15,6 @@ router.get("/:id", isAuthenticated, async (req, res) => {
     }
 
     const slot = await getSlotById(slotId);
-
-    if (slot?.master.id !== (req.user as any).id) {
-      return res.status(403).json({ message: "Forbidden" });
-    }
 
     res.json(slot);
   } catch (error: any) {

@@ -23,6 +23,9 @@ export class ScheduleSlot {
   title: string | null;
 
   @Column("text", { nullable: true })
+  description: string | null;
+
+  @Column("text", { nullable: true })
   youtubeId: string | null;
 
   @ManyToOne(() => User, { nullable: true })

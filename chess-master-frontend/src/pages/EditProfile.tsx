@@ -133,6 +133,7 @@ const EditProfile: React.FC = () => {
         lichessUrl: formData.lichessUrl,
         hourlyRate: formData.hourlyRate,
         languages: formData.languages,
+        phoneNumber: formData.phoneNumber,
       });
 
       if (data.status === "success") {
@@ -180,6 +181,7 @@ const EditProfile: React.FC = () => {
             <BasicInfoSection
               username={formData.username}
               email={formData.email}
+              phoneNumber={formData.phoneNumber}
               onChange={handleChange}
             />
 

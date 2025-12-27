@@ -1,11 +1,17 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { login } from "../services/auth";
 import { useUser } from "../contexts/UserContext";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { API_URL } from "../services/config";
 
 const Login: React.FC = () => {
+  const location = useLocation();
+
+  // Parse query parameters
+  const searchParams = new URLSearchParams(location.search);
+  const redirect = searchParams.get("redirect");
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -24,6 +30,10 @@ const Login: React.FC = () => {
 
       if (data.user) {
         setUser(data.user);
+        if (redirect) {
+          navigate(redirect);
+          return;
+        }
         navigate("/home");
       } else {
         setMessage("Invalid username or password");

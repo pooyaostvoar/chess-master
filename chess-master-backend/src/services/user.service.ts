@@ -13,6 +13,7 @@ export interface UpdateUserData {
   lichessUrl?: string | null;
   hourlyRate?: number | null;
   languages?: string[] | null;
+  phoneNumber?: string | null;
 }
 
 export interface UserFilters {
@@ -138,6 +139,9 @@ export async function updateUser(
   }
   if (data.languages !== undefined) {
     user.languages = data.languages;
+  }
+  if (data.phoneNumber !== undefined) {
+    user.phoneNumber = data.phoneNumber;
   }
 
   await userRepo.save(user);

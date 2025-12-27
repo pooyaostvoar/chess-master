@@ -78,6 +78,7 @@ export const updateSlot = async (
     title?: string;
     youtubeId?: string;
     price?: number | null;
+    description?: string | null;
   }
 ): Promise<{ message: string; slot: ScheduleSlot }> => {
   try {

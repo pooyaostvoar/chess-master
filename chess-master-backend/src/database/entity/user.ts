@@ -19,6 +19,9 @@ export class User {
   @Column({ type: "text", unique: true })
   username: string;
 
+  @Column({ type: "text", nullable: true })
+  phoneNumber: string | null;
+
   @Column("boolean", { default: false })
   isMaster: boolean;
 

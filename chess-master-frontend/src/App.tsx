@@ -16,6 +16,7 @@ import PublicUserProfile from "./pages/PublicUserProfile";
 import ChatPage from "./pages/ChatPage";
 import { PushPrompt } from "./components/push/PushPrompt";
 import { useUser } from "./contexts/UserContext";
+import ReserveSlotPage from "./pages/ReserveSlotPage";
 
 const App: React.FC = () => {
   const { user } = useUser();
@@ -41,6 +42,7 @@ const App: React.FC = () => {
             <Route path="/users/:id" element={<PublicUserProfile />} />
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/chat/:otherUserId" element={<ChatPage />} />
+            <Route path="/events/:id" element={<ReserveSlotPage />} />
           </Route>
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
