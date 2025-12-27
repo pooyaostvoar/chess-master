@@ -29,6 +29,34 @@ export type AdminUserListResponse = {
   pageSize: number;
 };
 
+export type AdminSlot = {
+  id: number;
+  startTime: string;
+  endTime: string;
+  status: string;
+  title: string | null;
+  description: string | null;
+  youtubeId: string | null;
+  price: number | null;
+  master: {
+    id: number;
+    username: string;
+    phoneNumber: string | null;
+  } | null;
+  reservedBy: {
+    id: number;
+    username: string;
+    phoneNumber: string | null;
+  } | null;
+};
+
+export type AdminSlotListResponse = {
+  items: AdminSlot[];
+  total: number;
+  page: number;
+  pageSize: number;
+};
+
 export type AdminStats = {
   totalUsers: number;
   totalMasters: number;
@@ -134,5 +162,35 @@ export const AdminUsersApi = {
     request<AdminUser>(`/admin/users/${id}`, {
       method: "PATCH",
       body: JSON.stringify(payload),
+    }),
+};
+
+export const AdminSlotsApi = {
+  list: (params: {
+    page: number;
+    pageSize: number;
+    startDate?: string;
+    endDate?: string;
+    userId?: string;
+    status?: string;
+  }) => {
+    const search = new URLSearchParams();
+    search.set("page", String(params.page));
+    search.set("pageSize", String(params.pageSize));
+    if (params.startDate) search.set("startDate", params.startDate);
+    if (params.endDate) search.set("endDate", params.endDate);
+    if (params.userId) search.set("userId", params.userId);
+    if (params.status) search.set("status", params.status);
+    return request<AdminSlotListResponse>(`/admin/slots?${search.toString()}`);
+  },
+  get: (id: number) => request<AdminSlot>(`/admin/slots/${id}`),
+  update: (id: number, payload: Partial<AdminSlot>) =>
+    request<AdminSlot>(`/admin/slots/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    }),
+  delete: (id: number) =>
+    request<{ message: string }>(`/admin/slots/${id}`, {
+      method: "DELETE",
     }),
 };

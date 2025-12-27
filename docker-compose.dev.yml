@@ -25,9 +25,7 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - ./chess-master-backoffice:/app
-      - /app/node_modules
-      - /app/.pnpm-store
+      - ./chess-master-backoffice/src:/app/src
     environment:
       - VITE_API_URL=http://localhost:3004
     depends_on:

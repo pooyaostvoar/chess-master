@@ -3,7 +3,6 @@ import { AppDataSource } from "../database/datasource";
 import { User } from "../database/entity/user";
 import { isAdmin } from "../middleware/passport";
 import { ScheduleSlot } from "../database/entity/schedule-slots";
-import { SlotStatus } from "../database/entity/types";
 
 export const adminUsersRouter = express.Router();
 
@@ -157,5 +156,6 @@ function trimUser(user: User) {
     profilePicture: user.profilePicture,
     chesscomUrl: user.chesscomUrl,
     lichessUrl: user.lichessUrl,
+    phoneNumber: user.phoneNumber,
   };
 }

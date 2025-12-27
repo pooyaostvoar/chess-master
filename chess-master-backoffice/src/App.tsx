@@ -5,6 +5,7 @@ import { AdminLayout } from "./components/AdminLayout";
 import { UsersPage } from "./pages/UsersPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { UserDetailPage } from "./pages/UserDetailPage";
+import { SlotsPage } from "./pages/SlotsPage";
 
 export default function App() {
   const [admin, setAdmin] = useState<Admin | null>(null);
@@ -12,6 +13,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [activePage, setActivePage] = useState("dashboard");
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null);
 
   useEffect(() => {
     AdminApi.me()
@@ -51,6 +53,8 @@ export default function App() {
       ? "User Management"
       : activePage === "userDetail"
       ? "User Detail"
+      : activePage === "slots"
+      ? "Schedule Slots"
       : "";
 
   return (
@@ -77,6 +81,15 @@ export default function App() {
           onBack={() => {
             setSelectedUserId(null);
             setActivePage("users");
+          }}
+        />
+      ) : null}
+      {activePage === "slots" ? (
+        <SlotsPage
+          onSelectSlot={(slot) => {
+            setSelectedSlotId(slot.id);
+            // You can add a slot detail page later if needed
+            // setActivePage("slotDetail");
           }}
         />
       ) : null}

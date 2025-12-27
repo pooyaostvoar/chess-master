@@ -23,6 +23,7 @@ import http from "http";
 import { initSocket } from "./socket";
 import pushRouter from "./api/push";
 import { messagesRouter } from "./api/messages/router";
+import { adminSlotsRouter } from "./api/admin-slots";
 
 export function createApp() {
   const isTesting = process.env.NODE_ENV === "test";
@@ -66,6 +67,7 @@ export function createApp() {
   app.use("", passwordAuthRouter);
   app.use("/admin", adminAuthRouter);
   app.use("/admin/users", adminUsersRouter);
+  app.use("/admin/slots", adminSlotsRouter);
   app.use("/admin/stats", adminStatsRouter);
   app.use("/admin/activity", adminActivityRouter);
   app.use("/users", usersRouter);

@@ -17,7 +17,8 @@ export function UsersPage({ onSelectUser }: Props) {
 
   const usersQuery = useQuery({
     queryKey: ["admin-users", { page, pageSize, search, role }],
-    queryFn: () => AdminUsersApi.list({ page, pageSize, q: search || undefined, role }),
+    queryFn: () =>
+      AdminUsersApi.list({ page, pageSize, q: search || undefined, role }),
   });
 
   const columns = useMemo(
@@ -31,6 +32,12 @@ export function UsersPage({ onSelectUser }: Props) {
         title: "Email",
         dataIndex: "email",
         key: "email",
+        render: (val: string | null) => val || "—",
+      },
+      {
+        title: "Phone Number",
+        dataIndex: "phoneNumber",
+        key: "phoneNumber",
         render: (val: string | null) => val || "—",
       },
       {
@@ -113,7 +120,6 @@ export function UsersPage({ onSelectUser }: Props) {
           },
         }}
       />
-
     </div>
   );
 }

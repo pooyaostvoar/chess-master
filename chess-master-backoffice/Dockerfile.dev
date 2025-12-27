@@ -1,17 +1,15 @@
-FROM node:20
+FROM node:20-alpine
 
 WORKDIR /app
 
-# Enable pnpm via corepack
+ENV NODE_ENV=development
+
 RUN corepack enable
 
-# Install deps
-COPY package.json ./
-RUN pnpm install --no-frozen-lockfile
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install
 
-# Copy source
 COPY . .
 
 EXPOSE 3001
-
 CMD ["pnpm", "dev"]
