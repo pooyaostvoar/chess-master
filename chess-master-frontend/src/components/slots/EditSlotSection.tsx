@@ -20,7 +20,7 @@ interface Props {
   onUpdate?: () => void;
 }
 
-const EditSlotSection: React.FC<Props> = ({ id }: Props) => {
+const EditSlotSection: React.FC<Props> = ({ id, onUpdate }: Props) => {
   //   const { id } = useParams<{ id: string }>();
   //   const navigate = useNavigate();
 
@@ -97,6 +97,7 @@ const EditSlotSection: React.FC<Props> = ({ id }: Props) => {
 
       setMessage("Slot updated successfully");
       setMessageType("success");
+      onUpdate && onUpdate();
 
       //   setTimeout(() => navigate("/events"), 1200);
     } catch (err: any) {
@@ -108,7 +109,7 @@ const EditSlotSection: React.FC<Props> = ({ id }: Props) => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-5 py-10">
+    <div className="max-w-2xl mx-auto px-5 py-10 h-full overflow-y-auto">
       <Card>
         <CardHeader>
           <CardTitle className="text-3xl">Edit Slot</CardTitle>

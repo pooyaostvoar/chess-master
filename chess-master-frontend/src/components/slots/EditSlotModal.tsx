@@ -23,12 +23,12 @@ const EditSlotModal: React.FC<EditSlotModalProps> = ({
 }) => {
   return (
     <Dialog open={visible} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] h-[90vh]">
         <DialogHeader>
           <DialogTitle>Slot details</DialogTitle>
           <DialogDescription>Enter you slot's detail?</DialogDescription>
         </DialogHeader>
-        <EditSlotSection id={slotId as number} />
+        <EditSlotSection id={slotId as number} onUpdate={onClose} />
       </DialogContent>
     </Dialog>
   );

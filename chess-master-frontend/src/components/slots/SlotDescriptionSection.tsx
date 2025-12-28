@@ -12,8 +12,6 @@ export const SlotDescriptionSection: React.FC<Props> = ({
   onChange,
 }) => (
   <div className="space-y-2">
-    <h3 className="text-lg font-semibold">Basic Info</h3>
-
     <div>
       <Label htmlFor="description">Slot description</Label>
       <Input

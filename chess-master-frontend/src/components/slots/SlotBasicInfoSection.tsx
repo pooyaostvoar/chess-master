@@ -9,8 +9,6 @@ interface Props {
 
 export const SlotBasicInfoSection: React.FC<Props> = ({ title, onChange }) => (
   <div className="space-y-2">
-    <h3 className="text-lg font-semibold">Basic Info</h3>
-
     <div>
       <Label htmlFor="title">Slot Title</Label>
       <Input
