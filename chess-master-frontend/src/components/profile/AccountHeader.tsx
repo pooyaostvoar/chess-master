@@ -26,8 +26,10 @@ export const AccountHeader: React.FC<MasterCardProps> = ({ user }) => {
         </div>
       )}
 
-      <div className="flex-1">
-        <CardTitle className="text-xl">{user.username}</CardTitle>
+      <div className="flex-1 min-w-0">
+        <CardTitle className="text-xl truncate" title={user.username}>
+          {user.username}
+        </CardTitle>
         {user.title && (
           <Badge variant="default" className="mt-1">
             {user.title}
