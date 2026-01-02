@@ -22,7 +22,7 @@ passport.use(
     let user: any;
     try {
       user = await AppDataSource.getRepository(User).findOne({
-        where: { username },
+        where: [{ username: username }, { email: username }],
       });
       if (!user) {
         return cb(null, false, {

@@ -17,37 +17,40 @@ import ChatPage from "./pages/ChatPage";
 import { PushPrompt } from "./components/push/PushPrompt";
 import { useUser } from "./contexts/UserContext";
 import ReserveSlotPage from "./pages/ReserveSlotPage";
+import { ScheduleProvider } from "./contexts/ScheduleContext";
 
 const App: React.FC = () => {
   const { user } = useUser();
   return (
     <>
       {user?.id && <PushPrompt />}
-      <Router>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/edit-profile" element={<EditProfile />} />
-            <Route path="/masters" element={<Masters />} />
-            <Route
-              path="/calendar/:userId"
-              element={<MasterScheduleCalendar />}
-            />
-            <Route path="/bookings" element={<MyBookings />} />
-            <Route path="/events" element={<FinishedEvents />} />
-            <Route path="/events/:id/edit" element={<EditSlot />} />
-            <Route path="/upcoming-events" element={<UpcomingEventsPage />} />
-            <Route path="/users/:id" element={<PublicUserProfile />} />
-            <Route path="/chat" element={<ChatPage />} />
-            <Route path="/chat/:otherUserId" element={<ChatPage />} />
-            <Route path="/events/:id" element={<ReserveSlotPage />} />
-          </Route>
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
-        </Routes>
-      </Router>
+      <ScheduleProvider userId={user?.id?.toString()}>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/edit-profile" element={<EditProfile />} />
+              <Route path="/masters" element={<Masters />} />
+              <Route
+                path="/calendar/:userId"
+                element={<MasterScheduleCalendar />}
+              />
+              <Route path="/bookings" element={<MyBookings />} />
+              <Route path="/events" element={<FinishedEvents />} />
+              <Route path="/events/:id/edit" element={<EditSlot />} />
+              <Route path="/upcoming-events" element={<UpcomingEventsPage />} />
+              <Route path="/users/:id" element={<PublicUserProfile />} />
+              <Route path="/chat" element={<ChatPage />} />
+              <Route path="/chat/:otherUserId" element={<ChatPage />} />
+              <Route path="/events/:id" element={<ReserveSlotPage />} />
+            </Route>
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/login" element={<Login />} />
+          </Routes>
+        </Router>
+      </ScheduleProvider>
     </>
   );
 };

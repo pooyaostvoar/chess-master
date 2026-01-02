@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { createSlot } from "../services/schedule";
+
 import { useScheduleSlots } from "../hooks/useScheduleSlots";
 import { mapSlotToEvent } from "../utils/slotUtils";
 import ScheduleCalendar, {
@@ -10,6 +10,7 @@ import MiniCalendar from "../components/calendar/MiniCalendar";
 import SlotModal from "../components/SlotModal";
 import { useIsMobile } from "../hooks/useIsMobile";
 import EditSlotModal from "../components/slots/EditSlotModal";
+import { useCurrentUserSchedule } from "../contexts/ScheduleContext";
 
 const MasterCalendarView: React.FC = () => {
   const isMobile = useIsMobile();
@@ -22,7 +23,7 @@ const MasterCalendarView: React.FC = () => {
   const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<any>(null);
   const calendarRef = useRef<ScheduleCalendarRef>(null);
-
+  const { createSlot } = useCurrentUserSchedule();
   const handleDateSelect = (date: Date) => {
     if (calendarRef.current && date) {
       // Ensure date is valid
@@ -79,11 +80,10 @@ const MasterCalendarView: React.FC = () => {
     }
 
     try {
-      const res = await createSlot({
+      const newSlot = await createSlot({
         startTime: info.startStr,
         endTime: info.endStr,
       });
-      const newSlot = res.slot;
 
       setEvents((prev) => [...prev, mapSlotToEvent(newSlot)]);
       setSelectedSlotId(newSlot.id);
