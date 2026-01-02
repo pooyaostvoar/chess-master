@@ -115,7 +115,7 @@ const Layout: React.FC = () => {
                           <img
                             src={user.profilePicture}
                             alt={user.username}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover rounded-full"
                           />
                         ) : (
                           firstLetter
