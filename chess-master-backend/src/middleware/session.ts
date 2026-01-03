@@ -22,4 +22,9 @@ export const sessionMiddleware = session({
   secret: readSecret("/run/secrets/session_secret") ?? "keyboard cat",
   resave: false,
   saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    sameSite: "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+  },
 });
