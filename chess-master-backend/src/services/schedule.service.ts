@@ -8,6 +8,7 @@ import {
   sendNotificationEmail,
   sendNotificationToTelegram,
 } from "./notification.service";
+import { sendReservationRequestEmail } from "./brevo_email";
 
 export interface CreateSlotData {
   masterId: number;
@@ -201,6 +202,9 @@ export async function reserveSlot(
     relations: ["master", "reservedBy"],
   });
 
+  if (!updatedSlot) {
+    throw new Error("Slot not found after reservation");
+  }
   // Send notification email
   const input = {
     master: updatedSlot?.master?.username ?? "",
@@ -209,11 +213,14 @@ export async function reserveSlot(
   await Promise.all([
     sendNotificationEmail(input),
     sendNotificationToTelegram(input),
+    sendReservationRequestEmail({
+      startDateTimeISO: updatedSlot.startTime.toISOString(),
+      masterEmail: updatedSlot.master.email,
+      masterName: updatedSlot.master.username,
+      studentEmail: updatedSlot.reservedBy?.email ?? "",
+      studentName: updatedSlot.reservedBy?.username ?? "",
+    }),
   ]);
-
-  if (!updatedSlot) {
-    throw new Error("Slot not found after reservation");
-  }
 
   return updatedSlot;
 }

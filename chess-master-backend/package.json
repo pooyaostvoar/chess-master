@@ -17,6 +17,7 @@
   "dependencies": {
     "@chess-master/schemas": "workspace:*",
     "@chess-master/utils": "workspace:*",
+    "@sendinblue/client": "^3.3.1",
     "@types/multer": "^1.4.11",
     "body-parser": "^2.2.0",
     "connect-redis": "^7.1.1",

@@ -8,6 +8,7 @@ import {
   getGoogleClientSecret,
   readSecret,
 } from "../utils/secret";
+import { sendWelcomeEmail } from "../services/brevo_email";
 
 export const passport = require("passport");
 var LocalStrategy = require("passport-local");
@@ -189,6 +190,10 @@ passport.use(
             googleId: profile.id,
           });
           await userRepo.save(user);
+          await sendWelcomeEmail({
+            toEmail: user.email,
+            toName: user.username,
+          });
         } else if (!user.googleId) {
           // Link Google account to existing user
           user.googleId = profile.id;

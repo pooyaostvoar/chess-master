@@ -3,6 +3,7 @@ import { AppDataSource } from "../database/datasource";
 import { passport } from "../middleware/passport";
 import { User } from "../database/entity/user";
 import { DeepPartial } from "typeorm";
+import { sendWelcomeEmail } from "../services/brevo_email";
 var crypto = require("crypto");
 
 export const passwordAuthRouter = express.Router();
@@ -68,12 +69,13 @@ passwordAuthRouter.post("/signup", async function (req, res, next) {
         return next(err);
       }
       try {
-        await AppDataSource.getRepository(User).save({
+        const user = await AppDataSource.getRepository(User).save({
           username: req.body.username,
           email: req.body.username,
           password: hashedPassword,
           salt,
         });
+        await sendWelcomeEmail({ toEmail: user.email, toName: user.username });
         res.send({ status: "success" });
       } catch (err) {
         res.redirect("/");
