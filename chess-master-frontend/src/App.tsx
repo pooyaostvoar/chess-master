@@ -19,6 +19,10 @@ import { useUser } from "./contexts/UserContext";
 import ReserveSlotPage from "./pages/ReserveSlotPage";
 import { ScheduleProvider } from "./contexts/ScheduleContext";
 
+import CreateGame from "./pages/CreateGame";
+import JoinGame from "./pages/JoinGame";
+import Game from "./components/game/Game";
+
 const App: React.FC = () => {
   const { user } = useUser();
   return (
@@ -45,6 +49,9 @@ const App: React.FC = () => {
               <Route path="/chat" element={<ChatPage />} />
               <Route path="/chat/:otherUserId" element={<ChatPage />} />
               <Route path="/events/:id" element={<ReserveSlotPage />} />
+              <Route path="/game/:id" element={<Game />} />
+              <Route path="/create-game" element={<CreateGame />} />
+              <Route path="/join-game/:gameId" element={<JoinGame />} />
             </Route>
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />

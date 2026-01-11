@@ -24,6 +24,7 @@ import { initSocket } from "./socket";
 import pushRouter from "./api/push";
 import { messagesRouter } from "./api/messages/router";
 import { adminSlotsRouter } from "./api/admin-slots";
+import { gameRouter } from "./api/game/router";
 
 export function createApp() {
   const isTesting = process.env.NODE_ENV === "test";
@@ -74,6 +75,7 @@ export function createApp() {
   app.use("/schedule", scheduleRouter);
   app.use("/push", pushRouter);
   app.use("/messages", messagesRouter);
+  app.use("/games/", gameRouter);
   app.use(cookieParser());
   return app;
 }

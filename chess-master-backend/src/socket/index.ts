@@ -7,6 +7,7 @@ import { sessionMiddleware } from "../middleware/session";
 import { AppDataSource } from "../database/datasource";
 import { Message } from "../database/entity/message";
 import { sendPushToUser } from "../services/push";
+import { setupGameSocket } from "./game";
 
 const pendingPushes = new Map<number, NodeJS.Timeout>();
 
@@ -112,8 +113,6 @@ export function initSocket(server: HttpServer) {
       socket: Socket<ClientToServerEvents, ServerToClientEvents, {}, SocketData>
     ) => {
       const userId = socket.data.user.id;
-
-      console.log(`Socket connected: user=${userId}`);
 
       socket.on(
         "join-chat",
@@ -236,6 +235,6 @@ export function initSocket(server: HttpServer) {
       });
     }
   );
-
+  setupGameSocket(io);
   return io;
 }
