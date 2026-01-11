@@ -5,7 +5,6 @@ import { readSecret } from "../utils/secret";
 
 // Read API key from Docker secret
 const BREVO_API_KEY = readSecret("/run/secrets/brevo_api_key");
-console.log("Brevo API Key loaded:", BREVO_API_KEY);
 
 // Initialize Brevo client
 let client: SibApiV3Sdk.TransactionalEmailsApi | undefined =

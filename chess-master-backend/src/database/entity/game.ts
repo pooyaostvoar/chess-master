@@ -11,11 +11,11 @@ export class Game {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column("text")
-  whitePlayer: string;
+  @Column("int", { nullable: true })
+  whitePlayerId: number | null;
 
-  @Column("text", { nullable: true })
-  blackPlayer: string | null;
+  @Column("int", { nullable: true })
+  blackPlayerId: number | null;
 
   @Column("jsonb", { default: [] })
   moves: { from: string; to: string; piece: string }[];
