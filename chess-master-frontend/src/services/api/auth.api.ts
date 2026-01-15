@@ -1,6 +1,6 @@
-import axios from 'axios';
-import { API_URL } from '../config';
-import { User } from './user.api';
+import axios from "axios";
+import { API_URL } from "../config";
+import { User } from "./user.api";
 
 export interface LoginResponse {
   user: User;
@@ -11,11 +11,13 @@ export interface LoginResponse {
  */
 export const signup = async (
   username: string,
-  password: string
+  password: string,
+  isMaster: boolean = false
 ): Promise<any> => {
   const response = await axios.post(`${API_URL}/signup`, {
     username,
     password,
+    isMaster,
   });
   return response.data;
 };
@@ -39,11 +41,7 @@ export const login = async (
  * Log out the current user
  */
 export const logout = async (): Promise<void> => {
-  await axios.post(
-    `${API_URL}/logout`,
-    {},
-    { withCredentials: true }
-  );
+  await axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
 };
 
 /**
@@ -56,4 +54,3 @@ export const getAuthUser = async () => {
   });
   return response;
 };
-

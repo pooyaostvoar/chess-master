@@ -1,7 +1,10 @@
 // emailService.ts
 import * as SibApiV3Sdk from "@sendinblue/client";
-
 import { readSecret } from "../utils/secret";
+
+import crypto from "crypto";
+import { User } from "../database/entity/user";
+import { createCalendarEvent } from "./google";
 
 // Read API key from Docker secret
 const BREVO_API_KEY = readSecret("/run/secrets/brevo_api_key");
@@ -198,4 +201,173 @@ Please log in to your dashboard to approve or reject this reservation.
     htmlContent,
     textContent,
   });
+}
+
+function generateICS({
+  uid,
+  startUtc,
+  endUtc,
+  summary,
+  description,
+  location,
+}: {
+  uid: string;
+  startUtc: Date;
+  endUtc: Date;
+  summary: string;
+  description?: string;
+  location?: string;
+}) {
+  const format = (d: Date) =>
+    d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+
+  return `
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//ChessWithMasters//Reservation//EN
+CALSCALE:GREGORIAN
+METHOD:REQUEST
+BEGIN:VEVENT
+UID:${uid}
+DTSTAMP:${format(new Date())}
+DTSTART:${format(startUtc)}
+DTEND:${format(endUtc)}
+SUMMARY:${summary}
+DESCRIPTION:${description ?? ""}
+LOCATION:${location ?? ""}
+END:VEVENT
+END:VCALENDAR
+`.trim();
+}
+
+export async function sendReservationEmail({
+  user,
+  master,
+  startUtc,
+  endUtc,
+}: {
+  user: User;
+  master: User;
+  startUtc: Date;
+  endUtc: Date;
+}) {
+  if (!client) return;
+
+  const { email, username } = user;
+
+  let meetLink: string | undefined;
+  let calendarLink: string | undefined;
+  let icsContent: string | undefined;
+
+  // ---------------------------
+  // 1️⃣ Try creating Google Calendar event
+  // ---------------------------
+  try {
+    const event = await createCalendarEvent({
+      user,
+      master,
+      startUtc,
+      endUtc,
+    });
+
+    meetLink = event.data.hangoutLink ?? undefined;
+    calendarLink = event.data.htmlLink ?? undefined;
+  } catch (err) {
+    console.error("⚠️ Calendar creation failed, using ICS fallback", err);
+
+    // ---------------------------
+    // 2️⃣ Fallback: generate ICS
+    // ---------------------------
+    icsContent = generateICS({
+      uid: `chess-${crypto.randomUUID()}`,
+      startUtc,
+      endUtc,
+      summary: "ChessWithMasters Class",
+      description: "Chess class session between student and teacher.",
+      location: "Online",
+    });
+  }
+
+  // ---------------------------
+  // 3️⃣ Email content
+  // ---------------------------
+  const formattedDate = startUtc.toLocaleString("en-US", {
+    dateStyle: "full",
+    timeStyle: "short",
+    timeZone: "UTC",
+  });
+
+  const subject = "✅ Chess Class Confirmed";
+
+  const htmlContent = `
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <h2>Your Chess Class is Confirmed ♟️</h2>
+
+    <p>Hi <strong>${username}</strong>,</p>
+
+    <p><strong>📅 Date & Time:</strong><br>${formattedDate} (UTC)</p>
+
+    ${
+      meetLink
+        ? `<p><strong>🎥 Join Class:</strong><br>
+            <a href="${meetLink}">${meetLink}</a></p>`
+        : `<p><strong>📎 Calendar Invite:</strong> Attached (.ics)</p>`
+    }
+
+    ${
+      calendarLink
+        ? `<p><a href="${calendarLink}">View in Google Calendar →</a></p>`
+        : ""
+    }
+
+    <p>— ChessWithMasters Team</p>
+  </div>
+  `;
+
+  const textContent = `
+Chess Class Confirmed ♟️
+
+Hi ${username},
+
+Date & Time:
+${formattedDate} (UTC)
+
+${meetLink ? `Join Class:\n${meetLink}` : "Calendar invite attached (.ics)"}
+
+— ChessWithMasters Team
+`.trim();
+
+  // ---------------------------
+  // 4️⃣ Send email (attach ICS only if needed)
+  // ---------------------------
+  const sendSmtpEmail: SibApiV3Sdk.SendSmtpEmail = {
+    to: [
+      { email: user.email, name: username },
+      { email: master.email, name: master.email },
+    ],
+    sender: {
+      email: "no-reply@chesswithmasters.com",
+      name: "ChessWithMasters",
+    },
+    subject,
+    htmlContent,
+    textContent,
+    ...(icsContent && {
+      attachment: [
+        {
+          name: "chess-class.ics",
+          content: Buffer.from(icsContent).toString("base64"),
+        },
+      ],
+    }),
+  };
+
+  await client.sendTransacEmail(sendSmtpEmail);
+
+  return {
+    success: true,
+    meetLink,
+    calendarLink,
+    usedICSFallback: !!icsContent,
+  };
 }

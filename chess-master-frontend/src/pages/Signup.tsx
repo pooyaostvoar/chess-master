@@ -6,6 +6,7 @@ import { API_URL } from "../services/config";
 
 const Signup: React.FC = () => {
   const [username, setUsername] = useState("");
+  const [isMaster, setIsMaster] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -25,7 +26,7 @@ const Signup: React.FC = () => {
     setMessage("");
 
     try {
-      const data = await signup(username, password);
+      const data = await signup(username, password, isMaster);
       if (data.status === "success") {
         setMessage("Account created successfully! Redirecting...");
         setTimeout(() => navigate("/login"), 1500);
@@ -39,7 +40,8 @@ const Signup: React.FC = () => {
     }
   };
   const handleGoogleLogin = () => {
-    window.location.href = `${API_URL}/auth/google`;
+    const url = `${API_URL}/auth/google` + (isMaster ? "?role=master" : "");
+    window.location.href = url;
   };
   return (
     <div style={styles.container}>
@@ -109,6 +111,15 @@ const Signup: React.FC = () => {
                 placeholder="Confirm your password"
               />
             </div>
+            <label>
+              <input
+                type="checkbox"
+                checked={isMaster}
+                onChange={(e) => setIsMaster(e.target.checked)}
+                style={{ marginRight: "8px" }}
+              />
+              I am a Master (teacher)
+            </label>
 
             <button
               type="submit"
