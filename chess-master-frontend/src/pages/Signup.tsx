@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { signup } from "../services/auth";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { API_URL } from "../services/config";
@@ -13,6 +13,8 @@ const Signup: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const masterParam = searchParams.get("master");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,15 +113,17 @@ const Signup: React.FC = () => {
                 placeholder="Confirm your password"
               />
             </div>
-            <label>
-              <input
-                type="checkbox"
-                checked={isMaster}
-                onChange={(e) => setIsMaster(e.target.checked)}
-                style={{ marginRight: "8px" }}
-              />
-              I am a Master (teacher)
-            </label>
+            {masterParam && (
+              <label>
+                <input
+                  type="checkbox"
+                  checked={isMaster}
+                  onChange={(e) => setIsMaster(e.target.checked)}
+                  style={{ marginRight: "8px" }}
+                />
+                I am a Master (teacher)
+              </label>
+            )}
 
             <button
               type="submit"
