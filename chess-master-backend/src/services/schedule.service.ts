@@ -8,7 +8,10 @@ import {
   sendNotificationEmail,
   sendNotificationToTelegram,
 } from "./notification.service";
-import { sendReservationRequestEmail } from "./brevo_email";
+import {
+  sendReservationEmail,
+  sendReservationRequestEmail,
+} from "./brevo_email";
 
 export interface CreateSlotData {
   masterId: number;
@@ -291,6 +294,15 @@ export async function updateSlotStatus(
 
   slot.status = status;
   await repo.save(slot);
+
+  if (status === SlotStatus.Booked && slot.reservedBy) {
+    await sendReservationEmail({
+      user: slot.reservedBy,
+      master: slot.master,
+      startUtc: slot.startTime,
+      endUtc: slot.endTime,
+    });
+  }
 
   // Reload with relations
   const updatedSlot = await repo.findOne({

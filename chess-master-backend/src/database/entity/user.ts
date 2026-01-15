@@ -59,7 +59,13 @@ export class User {
   updatedAt: Date;
 
   @Column("text", { nullable: true })
-  googleId?: string | null;
+  googleId: string | null;
+
+  @Column("text", { nullable: true })
+  googleAccessToken: string | null;
+
+  @Column("text", { nullable: true })
+  googleRefreshToken: string | null;
 
   @Column("text", { array: true, nullable: true })
   languages?: string[] | null;

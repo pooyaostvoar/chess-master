@@ -3,11 +3,7 @@ import { User } from "../database/entity/user";
 import { AdminUser } from "../database/entity/admin-user";
 import { Request, Response, NextFunction } from "express";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import {
-  getGoogleCleintID,
-  getGoogleClientSecret,
-  readSecret,
-} from "../utils/secret";
+import { getGoogleCleintID, getGoogleClientSecret } from "../utils/secret";
 import { sendWelcomeEmail } from "../services/brevo_email";
 
 export const passport = require("passport");
@@ -171,10 +167,16 @@ passport.use(
         process.env.ENV === "production"
           ? "https://chesswithmasters.com/api/auth/google/callback"
           : "http://localhost:3004/auth/google/callback",
+      passReqToCallback: true, // <-- add this to get req object
     },
-    async (accessToken: any, refreshToken: any, profile: any, cb: any) => {
+    async (
+      req: any,
+      accessToken: string,
+      refreshToken: string,
+      profile: any,
+      cb: any
+    ) => {
       try {
-        //console.log("Google profileeeeeeee:", profile);
         const email = profile.emails?.[0]?.value;
         if (!email) return cb(null, false);
 
@@ -182,21 +184,48 @@ passport.use(
 
         let user = await userRepo.findOne({ where: { email } });
 
+        // Parse role from state
+
+        let isMaster = false;
+        if (req.query.state) {
+          try {
+            const parsed = JSON.parse(
+              Buffer.from(req.query.state as string, "base64").toString()
+            );
+            isMaster = parsed.role === "master";
+          } catch (err) {
+            console.error("Failed to parse OAuth state:", err);
+          }
+        }
+
         if (!user) {
-          // Create new user if not exist
+          // Create new user
           user = userRepo.create({
             email,
             username: email,
             googleId: profile.id,
+            googleAccessToken: accessToken,
+            googleRefreshToken: refreshToken,
+            isMaster, // store role here
           });
           await userRepo.save(user);
           await sendWelcomeEmail({
             toEmail: user.email,
             toName: user.username,
           });
-        } else if (!user.googleId) {
+        } else {
           // Link Google account to existing user
           user.googleId = profile.id;
+          user.googleAccessToken = accessToken;
+          if (refreshToken) {
+            user.googleRefreshToken = refreshToken;
+          }
+
+          // Optionally update role if it’s a master login
+          if (isMaster) {
+            user.isMaster = true;
+          }
+
           await userRepo.save(user);
         }
 
