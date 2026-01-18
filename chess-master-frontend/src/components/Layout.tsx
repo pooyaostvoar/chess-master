@@ -77,6 +77,20 @@ const Layout: React.FC = () => {
                 Chess Master
               </span>
             </Link>
+            {/* <Link
+              to="/home"
+              className="flex items-center gap-3 text-xl font-bold"
+            >
+              <img
+                src="/logo.png"
+                alt="ChessWithMasters logo"
+                className="h-20 w-20"
+              /> */}
+
+            {/* <span className={user ? "" : "hidden sm:inline"}>
+                ChessWithMasters
+              </span> */}
+            {/* </Link> */}
 
             <div className="flex items-center gap-8">
               {!isMobile && (
@@ -262,6 +276,7 @@ const Layout: React.FC = () => {
               className="text-green-400 hover:text-green-300"
             >
               <span className="flex items-center gap-2">
+                {/* WhatsApp SVG */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 32 32"
@@ -273,12 +288,35 @@ const Layout: React.FC = () => {
                 : +372 5637 2739
               </span>
             </a>
+            {/* Email */}
+            <a
+              href="mailto:support@chesswithmasters.com"
+              className="text-blue-400 hover:text-blue-300"
+            >
+              <span className="flex items-center gap-2">
+                📧 support@chesswithmasters.com
+              </span>
+            </a>
           </div>
 
-          {/* Copyright */}
-          <span className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Chess Master. All rights reserved.
-          </span>
+          {/* Legal */}
+          <div className="text-sm flex flex-col gap-2">
+            <a
+              href="/privacy-policy"
+              className="text-muted-foreground hover:text-white underline-offset-4 hover:underline"
+            >
+              Privacy Policy
+            </a>
+            <a
+              href="/terms-of-service"
+              className="text-muted-foreground hover:text-white underline-offset-4 hover:underline"
+            >
+              Termss Of Service
+            </a>
+            <span className="text-muted-foreground">
+              © {new Date().getFullYear()} Chess Master. All rights reserved.
+            </span>
+          </div>
         </div>
       </footer>
     </div>

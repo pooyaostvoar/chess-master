@@ -22,6 +22,8 @@ import { ScheduleProvider } from "./contexts/ScheduleContext";
 import CreateGame from "./pages/CreateGame";
 import JoinGame from "./pages/JoinGame";
 import Game from "./components/game/Game";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 
 const App: React.FC = () => {
   const { user } = useUser();
@@ -52,6 +54,8 @@ const App: React.FC = () => {
               <Route path="/game/:id" element={<Game />} />
               <Route path="/create-game" element={<CreateGame />} />
               <Route path="/join-game/:gameId" element={<JoinGame />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
             </Route>
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
