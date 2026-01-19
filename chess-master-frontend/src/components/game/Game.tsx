@@ -8,10 +8,13 @@ import { Chess } from "chess.js";
 import { io, Socket } from "socket.io-client";
 import { SOCKET_URL } from "../../services/config";
 import { GameStatus, Game as GameType } from "./types";
+import { MoveNavigator } from "./MoveNavigator";
+import { playMoveSound } from "../../utils/playSounds";
 
+const positions: string[] = [];
 const Game: React.FC = () => {
   const socketRef = useRef<Socket | null>(null);
-  const chessRef = useRef<Chess>(new Chess());
+
   const { id: gameId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user, loading: isUserLoading } = useUser();
@@ -19,7 +22,8 @@ const Game: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [fetchinGameError, setFetchinGameError] = useState<string | null>(null);
-  const [position, setPosition] = useState(chessRef.current.fen());
+
+  const [moveIndex, setMoveIndex] = useState(0);
   const [gameStatus, setGameStatus] = useState<GameStatus>({
     isCheck: false,
     isCheckmate: false,
@@ -39,8 +43,19 @@ const Game: React.FC = () => {
       try {
         setLoading(true);
         setFetchinGameError(null);
-        const { game } = await getGameById(gameId);
-        setGame(game);
+        const { game: fetchedGame } = await getGameById(gameId);
+        setGame(fetchedGame);
+        const chess = new Chess();
+        positions.push(chess.fen());
+        for (const move of fetchedGame.moves) {
+          chess.move({
+            from: move.from,
+            to: move.to,
+          });
+          positions.push(chess.fen());
+        }
+
+        setMoveIndex(fetchedGame.moves.length - 1);
       } catch (err: any) {
         setFetchinGameError(err.message);
       } finally {
@@ -69,9 +84,7 @@ const Game: React.FC = () => {
 
     // Listen for initial game state from server
     socket.on("game-state", (data) => {
-      const chess = new Chess(data.fen);
-      chessRef.current = chess;
-      setPosition(data.fen);
+      positions.push(data.fen);
       setGameStatus({
         isCheck: data.isCheck,
         isCheckmate: data.isCheckmate,
@@ -84,9 +97,7 @@ const Game: React.FC = () => {
 
     // Listen for moves from other players
     socket.on("move-made", (data) => {
-      const chess = new Chess(data.fen);
-      chessRef.current = chess;
-      setPosition(data.fen);
+      positions.push(data.fen);
       setGameStatus({
         isCheck: data.isCheck,
         isCheckmate: data.isCheckmate,
@@ -94,6 +105,13 @@ const Game: React.FC = () => {
         isDraw: data.isDraw,
         turn: data.turn,
       });
+
+      setGame((prev) =>
+        prev ? { ...prev, moves: [...prev.moves, data.move] } : prev
+      );
+
+      setMoveIndex(positions.length - 1);
+      playMoveSound();
       setError(null);
     });
 
@@ -101,7 +119,6 @@ const Game: React.FC = () => {
     socket.on("game-error", (data) => {
       setError(data.message);
       // Reset to last valid position
-      setPosition(chessRef.current.fen());
     });
 
     // Listen for player joined
@@ -170,10 +187,9 @@ const Game: React.FC = () => {
       gameId: game?.id,
       from: sourceSquare,
       to: targetSquare,
+      piece,
     });
 
-    // Return false to prevent optimistic UI update
-    // Wait for server confirmation via "move-made" event
     return false;
   };
 
@@ -224,7 +240,7 @@ const Game: React.FC = () => {
             <GameBoard
               game={game}
               onPieceDrop={onPieceDrop}
-              position={position}
+              position={positions[moveIndex]}
             />
           </div>
         </div>
@@ -273,6 +289,25 @@ const Game: React.FC = () => {
                 <p className="text-green-600 font-semibold">Game Finished</p>
               )}
             </div>
+            <MoveNavigator
+              currentIndex={moveIndex}
+              moves={game.moves}
+              onFirst={() => {
+                setMoveIndex(0);
+              }}
+              onLast={() => {
+                setMoveIndex(game.moves.length - 1);
+              }}
+              onNext={() => {
+                setMoveIndex(moveIndex + 1);
+              }}
+              onPrevious={() => {
+                setMoveIndex(moveIndex - 1);
+              }}
+              onSelect={(index) => {
+                setMoveIndex(index);
+              }}
+            />
           </div>
         </div>
       </div>

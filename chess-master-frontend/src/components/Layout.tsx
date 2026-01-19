@@ -61,7 +61,7 @@ const Layout: React.FC = () => {
     state === "MASTER_NO_SLOT" &&
     !dropDownIsOpen &&
     !location.pathname.includes("/calendar/");
-  console.log(showAddSlot, showEditProfileHint);
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* ───────── NAVBAR ───────── */}
