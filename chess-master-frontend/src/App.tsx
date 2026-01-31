@@ -24,6 +24,7 @@ import JoinGame from "./pages/JoinGame";
 import Game from "./components/game/Game";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import PaymentResultPage from "./pages/PaymentResultPage";
 
 const App: React.FC = () => {
   const { user } = useUser();
@@ -56,6 +57,7 @@ const App: React.FC = () => {
               <Route path="/join-game/:gameId" element={<JoinGame />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/success" element={<PaymentResultPage />} />
             </Route>
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />

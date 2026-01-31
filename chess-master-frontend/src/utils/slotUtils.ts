@@ -25,6 +25,16 @@ export const mapSlotToEvent = (
       color = "#f39c12";
       break;
 
+    case "paid":
+      // Show request info for masters, regular "Reserved" for others
+      if (options?.isMasterView && slot.reservedBy) {
+        title = `Pending: ${slot.reservedBy.username || "User"}`;
+      } else {
+        title = "Payment Received";
+      }
+      color = "#6AADDE";
+      break;
+
     case "booked":
       title = "Booked";
       color = "#e74c3c";

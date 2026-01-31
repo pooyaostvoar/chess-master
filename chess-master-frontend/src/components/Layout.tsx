@@ -290,11 +290,11 @@ const Layout: React.FC = () => {
             </a>
             {/* Email */}
             <a
-              href="mailto:support@chesswithmasters.com"
+              href="mailto:team@chesswithmasters.com"
               className="text-blue-400 hover:text-blue-300"
             >
               <span className="flex items-center gap-2">
-                📧 support@chesswithmasters.com
+                📧 team@chesswithmasters.com
               </span>
             </a>
           </div>
@@ -311,7 +311,7 @@ const Layout: React.FC = () => {
               href="/terms-of-service"
               className="text-muted-foreground hover:text-white underline-offset-4 hover:underline"
             >
-              Termss Of Service
+              Terms Of Service
             </a>
             <span className="text-muted-foreground">
               © {new Date().getFullYear()} Chess Master. All rights reserved.

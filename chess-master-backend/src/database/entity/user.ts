@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { ScheduleSlot } from "./schedule-slots";
+import { Payment } from "./payment";
 
 @Entity("users")
 export class User {
@@ -81,4 +82,7 @@ export class User {
     },
   })
   hourlyRate: number | null;
+
+  @OneToMany(() => Payment, (payment) => payment.slot)
+  payments: Payment[];
 }

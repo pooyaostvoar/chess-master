@@ -1,6 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  OneToMany,
+} from "typeorm";
 import { User } from "./user";
 import { SlotStatus } from "./types";
+import { Payment } from "./payment";
 
 @Entity("schedule_slots")
 export class ScheduleSlot {
@@ -31,6 +38,9 @@ export class ScheduleSlot {
   @ManyToOne(() => User, { nullable: true })
   reservedBy: User | null;
 
+  @Column("int")
+  reservedById: number | null;
+
   @Column({
     type: "decimal",
     precision: 10,
@@ -42,4 +52,19 @@ export class ScheduleSlot {
     },
   })
   price: number | null;
+
+  @Column({
+    type: "decimal",
+    precision: 12,
+    scale: 2,
+    nullable: true,
+    transformer: {
+      to: (value: number | null) => value,
+      from: (value: string | null) => (value === null ? null : Number(value)),
+    },
+  })
+  priceCents: number | null;
+
+  @OneToMany(() => Payment, (payment) => payment.slot)
+  payments: Payment[];
 }

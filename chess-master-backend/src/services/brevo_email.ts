@@ -10,15 +10,29 @@ import { createCalendarEvent } from "./google";
 const BREVO_API_KEY = readSecret("/run/secrets/brevo_api_key");
 
 // Initialize Brevo client
-let client: SibApiV3Sdk.TransactionalEmailsApi | undefined =
-  new SibApiV3Sdk.TransactionalEmailsApi();
-if (BREVO_API_KEY) {
-  client.setApiKey(
-    SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey,
-    BREVO_API_KEY
-  );
-} else {
-  client = undefined;
+let client: SibApiV3Sdk.TransactionalEmailsApi | undefined;
+//  =
+//   new SibApiV3Sdk.TransactionalEmailsApi();
+// if (BREVO_API_KEY) {
+//   client.setApiKey(
+//     SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey,
+//     BREVO_API_KEY
+//   );
+// } else {
+//   client = undefined;
+// }
+
+function getClient() {
+  client = new SibApiV3Sdk.TransactionalEmailsApi();
+  if (BREVO_API_KEY) {
+    client.setApiKey(
+      SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey,
+      BREVO_API_KEY
+    );
+  } else {
+    client = undefined;
+  }
+  return client;
 }
 
 interface SendEmailOptions {
@@ -40,8 +54,9 @@ export async function sendEmail({
   fromEmail = "welcome@chesswithmasters.com",
   fromName = "ChessWithMasters",
 }: SendEmailOptions): Promise<void> {
+  const client = getClient();
   if (!client) {
-    console.warn("Brevo client not initialized. Email not sent.");
+    console.log("Brevo client not initialized. Email not sent.");
     return;
   }
   try {
