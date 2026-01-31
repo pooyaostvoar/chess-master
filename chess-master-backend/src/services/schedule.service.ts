@@ -253,8 +253,17 @@ export async function updateSlot(
   }
 
   // Prevent updating slots in the past
-
-  await repo.save({ ...slot, ...data } as ScheduleSlot);
+  console.log("updatingggg");
+  await repo
+    .createQueryBuilder()
+    .update(ScheduleSlot)
+    .set({
+      ...data,
+      priceCents: () => "CAST(:price AS DECIMAL) * 100",
+    })
+    .setParameter("price", data.price)
+    .where("id = :id", { id: slot.id })
+    .execute();
 
   // Reload with relations
   const updatedSlot = await repo.findOne({
@@ -288,6 +297,9 @@ export async function updateSlotStatus(
   }
 
   // If making it "Free", clear user
+  if (status === SlotStatus.Free && slot.status === SlotStatus.Paid) {
+    throw new Error("Cannot free a paid slot");
+  }
   if (status === SlotStatus.Free) {
     slot.reservedBy = null;
   }

@@ -9,6 +9,7 @@ import {
 } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { CalendarCheck, XCircle } from "lucide-react";
+import { checkoutSlot } from "../services/payment";
 
 interface BookingModalProps {
   visible: boolean;
@@ -36,24 +37,15 @@ const BookingModal: React.FC<BookingModalProps> = ({
       setLoading(true);
       setMessage(null);
 
-      await bookSlot(slotId);
-      setLoading(false);
-      setMessage({
-        type: "success",
-        text: "✅ Booking request sent successfully!",
-      });
+      await checkoutSlot(slotId);
 
-      setTimeout(() => {
-        onBooked?.();
-        setMessage(null);
-      }, 2000);
+      // nothing after this runs because browser redirects
     } catch (err) {
       setLoading(false);
-      console.error(err);
 
       setMessage({
         type: "error",
-        text: "❌ Booking failed. Please try again.",
+        text: "❌ Payment session failed. Please try again.",
       });
     }
   };

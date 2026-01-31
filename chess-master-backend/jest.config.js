@@ -5,7 +5,14 @@ module.exports = {
   preset: "ts-jest/presets/default-esm",
   testEnvironment: "node",
   transform: {
-    "^.+\\.ts$": ["ts-jest", { useESM: true }],
+    "^.+\\.ts$": [
+      "ts-jest",
+      {
+        useESM: true,
+        isolatedModules: true,
+        tsconfig: "tsconfig.test.json",
+      },
+    ],
   },
   setupFilesAfterEnv: ["./tests/setup.ts"],
   testMatch: ["**/*.test.ts", "**/*.int.test.ts"],
@@ -13,9 +20,4 @@ module.exports = {
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths || {}, {
     prefix: "<rootDir>/",
   }),
-  globals: {
-    "ts-jest": {
-      tsconfig: "tsconfig.test.json",
-    },
-  },
 };

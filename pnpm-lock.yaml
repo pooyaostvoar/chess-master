@@ -26,6 +26,9 @@ importers:
       '@sendinblue/client':
         specifier: ^3.3.1
         version: 3.3.1
+      '@stripe/stripe-js':
+        specifier: ^8.6.4
+        version: 8.6.4
       '@types/multer':
         specifier: ^1.4.11
         version: 1.4.13
@@ -89,6 +92,9 @@ importers:
       socket.io:
         specifier: ^4.8.3
         version: 4.8.3
+      stripe:
+        specifier: ^20.2.0
+        version: 20.2.0(@types/node@20.19.25)
       typeorm:
         specifier: ^0.3.20
         version: 0.3.28(babel-plugin-macros@3.1.0)(better-sqlite3@8.7.0)(pg@8.16.3)(redis@4.7.1)(ts-node@10.9.2(@types/node@20.19.25)(typescript@5.9.3))
@@ -126,6 +132,9 @@ importers:
       '@types/pg':
         specifier: ^8.15.6
         version: 8.15.6
+      '@types/stripe':
+        specifier: ^8.0.417
+        version: 8.0.417(@types/node@20.19.25)
       '@types/supertest':
         specifier: ^6.0.2
         version: 6.0.3
@@ -2230,6 +2239,10 @@ packages:
   '@sqltools/formatter@1.2.5':
     resolution: {integrity: sha512-Uy0+khmZqUrUGm5dmMqVlnvufZRSK0FbYzVgp0UMstm+F5+W2/jnEEQyc9vo1ZR/E5ZI/B1WjjoTqBqwJL6Krw==}
 
+  '@stripe/stripe-js@8.6.4':
+    resolution: {integrity: sha512-ipBq9+YEt5i4FxotkwNlQDqXvt//9ts23XQ4zgwm7yOkU/k3ZHnNRnm7dR418r5nC455dVYEzP7eERUHLrIYhA==}
+    engines: {node: '>=12.16'}
+
   '@surma/rollup-plugin-off-main-thread@2.2.3':
     resolution: {integrity: sha512-lR8q/9W7hZpMWweNiAKU7NQerBnzQQLvi8qnTDU/fxItPhtZVMbPV3lbCwjhIlNBe9Bbr5V+KHshvWmVSG9cxQ==}
 
@@ -2628,6 +2641,10 @@ packages:
 
   '@types/stack-utils@2.0.3':
     resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==}
+
+  '@types/stripe@8.0.417':
+    resolution: {integrity: sha512-PTuqskh9YKNENnOHGVJBm4sM0zE8B1jZw1JIskuGAPkMB+OH236QeN8scclhYGPA4nG6zTtPXgwpXdp+HPDTVw==}
+    deprecated: This is a stub types definition. stripe provides its own type definitions, so you do not need this installed.
 
   '@types/superagent@8.1.9':
     resolution: {integrity: sha512-pTVjI73witn+9ILmoJdajHGW2jkSaOzhiFYF1Rd3EQ94kymLqB9PjD9ISg7WaALC7+dCHT0FGe9T2LktLq/3GQ==}
@@ -6597,6 +6614,10 @@ packages:
     resolution: {integrity: sha512-YWWTjgABSKcvs/nWBi9PycY/JiPJqOD4JA6o9Sej2AtvSGarXxKC3OQSk4pAarbdQlKAh5D4FCQkJNkW+GAn3w==}
     engines: {node: '>=0.6'}
 
+  qs@6.14.1:
+    resolution: {integrity: sha512-4EK3+xJl8Ts67nLYNwqw/dsFVnCf+qR7RgXSK9jEEm9unao3njwMDdmsdvoKBKHzxd7tCYz5e5M+SnMjdtXGQQ==}
+    engines: {node: '>=0.6'}
+
   qs@6.5.3:
     resolution: {integrity: sha512-qxXIEh4pCGfHICj1mAJQ2/2XVZkjCDTcEgfoSQxc/fYivUZxTkk7L3bDBJSoNrEzXI17oUO5Dp07ktqE5KzczA==}
     engines: {node: '>=0.6'}
@@ -7526,6 +7547,15 @@ packages:
   strip-json-comments@3.1.1:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
+
+  stripe@20.2.0:
+    resolution: {integrity: sha512-m8niTfdm3nPP/yQswRWMwQxqEUcTtB3RTJQ9oo6NINDzgi7aPOadsH/fPXIIfL1Sc5+lqQFKSk7WiO6CXmvaeA==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      '@types/node': '>=16'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
 
   style-loader@3.3.4:
     resolution: {integrity: sha512-0WqXzrsMTyb8yjZJHDqwmnwRJvhALK9LfRtRc6B4UTWe8AijYLZYZ9thuJTZc2VfQWINADW/j+LiJnfy2RoC1w==}
@@ -10564,6 +10594,8 @@ snapshots:
 
   '@sqltools/formatter@1.2.5': {}
 
+  '@stripe/stripe-js@8.6.4': {}
+
   '@surma/rollup-plugin-off-main-thread@2.2.3':
     dependencies:
       ejs: 3.1.10
@@ -11006,6 +11038,12 @@ snapshots:
       '@types/node': 16.18.126
 
   '@types/stack-utils@2.0.3': {}
+
+  '@types/stripe@8.0.417(@types/node@20.19.25)':
+    dependencies:
+      stripe: 20.2.0(@types/node@20.19.25)
+    transitivePeerDependencies:
+      - '@types/node'
 
   '@types/superagent@8.1.9':
     dependencies:
@@ -13196,7 +13234,7 @@ snapshots:
       '@paralleldrive/cuid2': 2.3.1
       dezalgo: 1.0.4
       once: 1.4.0
-      qs: 6.14.0
+      qs: 6.14.1
 
   forwarded@0.2.0: {}
 
@@ -15855,6 +15893,10 @@ snapshots:
     dependencies:
       side-channel: 1.1.0
 
+  qs@6.14.1:
+    dependencies:
+      side-channel: 1.1.0
+
   qs@6.5.3: {}
 
   querystringify@2.2.0: {}
@@ -17124,6 +17166,12 @@ snapshots:
   strip-json-comments@2.0.1: {}
 
   strip-json-comments@3.1.1: {}
+
+  stripe@20.2.0(@types/node@20.19.25):
+    dependencies:
+      qs: 6.14.1
+    optionalDependencies:
+      '@types/node': 20.19.25
 
   style-loader@3.3.4(webpack@5.103.0):
     dependencies:

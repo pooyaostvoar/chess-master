@@ -61,6 +61,8 @@ services:
       - vapid_private_key
       - vapid_public_key
       - brevo_api_key
+      - stripe_secret_key_dev
+      - stripe_webhook_secret_dev
       
     depends_on:
       - db
@@ -118,6 +120,10 @@ secrets:
     file: ./secrets/vapid_public_key.txt
   brevo_api_key:
     file: ./secrets/brevo_api_key.txt
+  stripe_secret_key_dev:
+    file: ./secrets/stripe_secret_key_dev.txt
+  stripe_webhook_secret_dev:
+    file: ./secrets/stripe_webhook_secret_dev.txt
 volumes:
   postgres_data:
   redis_data:

@@ -25,6 +25,8 @@ import pushRouter from "./api/push";
 import { messagesRouter } from "./api/messages/router";
 import { adminSlotsRouter } from "./api/admin-slots";
 import { gameRouter } from "./api/game/router";
+import { paymentRouter } from "./api/payments/router";
+import { router as webhookRouter } from "./api/payments/webhook";
 
 export function createApp() {
   const isTesting = process.env.NODE_ENV === "test";
@@ -40,6 +42,7 @@ export function createApp() {
 
   const app: Express = express();
 
+  app.use("/payments/webhook", webhookRouter);
   app.use(bodyParser.json({ limit: "10mb" }));
   app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
 
@@ -76,6 +79,7 @@ export function createApp() {
   app.use("/push", pushRouter);
   app.use("/messages", messagesRouter);
   app.use("/games/", gameRouter);
+  app.use("/payments", paymentRouter);
   app.use(cookieParser());
   return app;
 }

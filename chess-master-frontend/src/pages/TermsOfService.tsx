@@ -157,7 +157,7 @@ const TermsOfService: React.FC = () => {
               at:
             </p>
             <p className="font-medium text-primary">
-              support@chesswithmasters.com
+              team@chesswithmasters.com
             </p>
           </section>
         </CardContent>
