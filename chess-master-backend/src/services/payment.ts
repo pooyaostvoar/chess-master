@@ -1,20 +1,10 @@
-import Stripe from "stripe";
 import { AppDataSource } from "../database/datasource";
 import { ScheduleSlot } from "../database/entity/schedule-slots";
 import { Payment, PaymentStatus } from "../database/entity/payment";
 import { User } from "../database/entity/user";
 import { SlotStatus } from "../database/entity/types";
 import { readSecret } from "../utils/secret";
-
-let stripeInstance: Stripe | null = null;
-export function getStripeInstance() {
-  if (!stripeInstance) {
-    stripeInstance = new Stripe(getSecretKey(), {
-      apiVersion: "2025-12-15.clover",
-    });
-  }
-  return stripeInstance;
-}
+import { getStripeInstance } from "./stripe";
 
 export function createCheckoutSession(eventId: number, userId: number) {
   const stripe = getStripeInstance();
@@ -130,18 +120,6 @@ function getWebhookSecret() {
 
 function getClientUrl() {
   return process.env.ENV === "production"
-    ? "https://chesswithmasters.com/"
+    ? "https://chesswithmasters.com"
     : "http://localhost:3000";
-}
-
-let secretKey: string | undefined = undefined;
-function getSecretKey() {
-  if (!secretKey) {
-    secretKey =
-      process.env.ENV === "production"
-        ? readSecret("/run/secrets/stripe_secret_key")
-        : readSecret("/run/secrets/stripe_secret_key_dev") ?? "";
-  }
-  console.log(secretKey, "secretKey");
-  return secretKey as string;
 }

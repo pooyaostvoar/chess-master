@@ -1,17 +1,27 @@
 import { AppDataSource } from "../../src/database/datasource";
 import { ScheduleSlot } from "../../src/database/entity/schedule-slots";
 import { SlotStatus } from "../../src/database/entity/types";
-import { getStripeInstance } from "../../src/services/payment";
+import * as stripeModule from "../../src/services/stripe";
 import { authAgent } from "../setup";
 
 describe("POST /payments/checkout-session", () => {
   let slot: ScheduleSlot;
   beforeEach(async () => {
-    const stripe = getStripeInstance();
-    stripe.checkout.sessions.create = jest.fn().mockResolvedValue({
-      id: "cs_test_123",
-      url: "https://stripe.test/checkout/cs_test_123",
-    }) as any;
+    // Reset the cached Stripe instance
+
+    const stripeMock: any = {
+      checkout: {
+        sessions: {
+          create: jest.fn().mockResolvedValue({
+            id: "cs_test_123",
+            url: "https://stripe.test/checkout/cs_test_123",
+          }),
+        },
+      },
+    };
+
+    jest.spyOn(stripeModule, "getStripeInstance").mockReturnValue(stripeMock);
+
     const slotRepo = AppDataSource.getRepository(ScheduleSlot);
     slot = await slotRepo.save({
       startTime: new Date(),
@@ -21,11 +31,16 @@ describe("POST /payments/checkout-session", () => {
       title: "Test coaching",
     } as any);
   });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("should create checkout session and return url", async () => {
     const res = await authAgent
       .post("/payments/checkout-session")
       .send({ eventId: slot.id });
-
+    console.log(res.body);
     expect(res.status).toBe(200);
   });
 
@@ -97,10 +112,16 @@ describe("POST /payments/checkout-session", () => {
      */
     jest.clearAllMocks();
     const slotRepo = AppDataSource.getRepository(ScheduleSlot);
-    const stripe = getStripeInstance();
-    stripe.checkout.sessions.create = jest
-      .fn()
-      .mockRejectedValue(new Error("Stripe failed"));
+
+    const stripeMock: any = {
+      checkout: {
+        sessions: {
+          create: jest.fn().mockRejectedValue(new Error("Stripe failed")),
+        },
+      },
+    };
+
+    jest.spyOn(stripeModule, "getStripeInstance").mockReturnValue(stripeMock);
 
     const res = await authAgent
       .post("/payments/checkout-session")
