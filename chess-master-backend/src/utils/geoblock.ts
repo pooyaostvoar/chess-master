@@ -6,8 +6,6 @@
  * @see https://stripe.com/docs/treasury/treasury-accounts/restricted-countries
  */
 
-/// <reference path="../../geoip-lite.d.ts" />
-
 import type { Request } from "express";
 import geoip from "geoip-lite";
 
