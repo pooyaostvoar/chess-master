@@ -42,7 +42,8 @@
     "socket.io": "^4.8.3",
     "stripe": "^20.2.0",
     "typeorm": "^0.3.20",
-    "web-push": "^3.6.7"
+    "web-push": "^3.6.7",
+    "geoip-lite": "^1.4.9"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.6",

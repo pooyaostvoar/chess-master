@@ -42,6 +42,9 @@ export function createApp() {
 
   const app: Express = express();
 
+  // Trust proxy for correct client IP (x-forwarded-for) when behind nginx/load balancer
+  app.set("trust proxy", 1);
+
   app.use("/payments/webhook", webhookRouter);
   app.use(bodyParser.json({ limit: "10mb" }));
   app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
