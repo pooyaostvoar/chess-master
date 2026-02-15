@@ -2,7 +2,7 @@ import { AppDataSource } from "../database/datasource";
 import { ScheduleSlot } from "../database/entity/schedule-slots";
 import { SlotStatus } from "../database/entity/types";
 import { User } from "../database/entity/user";
-import { In } from "typeorm";
+import { EntityManager, In } from "typeorm";
 import { formatUserMinimal } from "./user.service";
 import {
   sendNotificationEmail,
@@ -284,9 +284,12 @@ export async function updateSlot(
 export async function updateSlotStatus(
   slotId: number,
   masterId: number,
-  status: SlotStatus
+  status: SlotStatus,
+  trx?: EntityManager
 ): Promise<ScheduleSlot> {
-  const repo = AppDataSource.getRepository(ScheduleSlot);
+  const repo = trx
+    ? trx.getRepository(ScheduleSlot)
+    : AppDataSource.getRepository(ScheduleSlot);
   const slot = await repo.findOne({
     where: { id: slotId, master: { id: masterId } },
     relations: ["reservedBy", "master"],
@@ -316,6 +319,22 @@ export async function updateSlotStatus(
     });
   }
 
+  if (status === SlotStatus.Paid) {
+    await Promise.all([
+      sendNotificationToTelegram({
+        master: slot.master.email ?? "",
+        reservedBy: slot.reservedBy?.email ?? "",
+      }),
+      sendReservationRequestEmail({
+        startDateTimeISO: slot.startTime.toISOString(),
+        masterEmail: slot.master.email,
+        masterName: slot.master.username,
+        studentEmail: slot.reservedBy?.email ?? "",
+        studentName: slot.reservedBy?.username ?? "",
+      }),
+    ]);
+  }
+
   // Reload with relations
   const updatedSlot = await repo.findOne({
     where: { id: slotId },
@@ -341,7 +360,7 @@ export async function getUserBookings(userId: number): Promise<ScheduleSlot[]> {
     .leftJoinAndSelect("slot.reservedBy", "reservedBy")
     .where("slot.reservedBy = :userId or slot.masterId = :userId", { userId })
     .andWhere("slot.status IN (:...statuses)", {
-      statuses: [SlotStatus.Reserved, SlotStatus.Booked],
+      statuses: [SlotStatus.Reserved, SlotStatus.Booked, SlotStatus.Paid],
     })
     .orderBy("slot.startTime", "ASC")
     .getMany();

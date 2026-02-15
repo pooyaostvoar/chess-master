@@ -1,10 +1,10 @@
-import { apiClient, handleApiError } from './client';
+import { apiClient, handleApiError } from "./client";
 
 export interface Booking {
   id: number;
   startTime: string;
   endTime: string;
-  status: 'free' | 'reserved' | 'booked';
+  status: "free" | "reserved" | "booked" | "paid";
   master?: {
     id: number;
     username: string;
@@ -31,7 +31,7 @@ export const getMyBookings = async (): Promise<{
   bookings: Booking[];
 }> => {
   try {
-    const response = await apiClient.get('/schedule/slot/my-bookings');
+    const response = await apiClient.get("/schedule/slot/my-bookings");
     return response.data;
   } catch (error: any) {
     throw new Error(handleApiError(error));
@@ -46,10 +46,9 @@ export const getMasterBookings = async (): Promise<{
   bookings: Booking[];
 }> => {
   try {
-    const response = await apiClient.get('/schedule/slot/master-bookings');
+    const response = await apiClient.get("/schedule/slot/master-bookings");
     return response.data;
   } catch (error: any) {
     throw new Error(handleApiError(error));
   }
 };
-

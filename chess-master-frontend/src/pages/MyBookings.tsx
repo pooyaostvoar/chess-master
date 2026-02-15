@@ -169,7 +169,7 @@ const MyBookings: React.FC = () => {
                     </div>
                     <div style={styles.actionButtons}>
                       {isCurrentUserMasterOfBooking &&
-                        booking.status === "reserved" && (
+                        booking.status === "paid" && (
                           <>
                             <button
                               style={styles.approveButton}

@@ -5,6 +5,7 @@ import { User } from "../database/entity/user";
 import { SlotStatus } from "../database/entity/types";
 import { readSecret } from "../utils/secret";
 import { getStripeInstance } from "./stripe";
+import { updateSlotStatus } from "./schedule.service";
 
 export function createCheckoutSession(eventId: number, userId: number) {
   const stripe = getStripeInstance();
@@ -38,6 +39,7 @@ export function createCheckoutSession(eventId: number, userId: number) {
     }
 
     if (slot.priceCents === 0) {
+      await updateSlotStatus(slot.id, slot.master.id, SlotStatus.Paid, manager);
       return { url: `${getClientUrl()}/home` };
     }
 

@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { constructWebhookEvent } from "../../services/payment";
 import { AppDataSource } from "../../database/datasource";
-import { ScheduleSlot } from "../../database/entity/schedule-slots";
+
 import { Payment, PaymentStatus } from "../../database/entity/payment";
 import { SlotStatus } from "../../database/entity/types";
-import { sendNotificationToTelegram } from "../../services/notification.service";
+
+import { updateSlotStatus } from "../../services/schedule.service";
 
 export const router = Router();
 
@@ -18,7 +19,6 @@ router.post(
       const event = constructWebhookEvent(req.body, sig);
 
       const paymentRepo = AppDataSource.getRepository(Payment);
-      const slotRepo = AppDataSource.getRepository(ScheduleSlot);
 
       // =========================================
       // CHECKOUT COMPLETED
@@ -53,14 +53,7 @@ router.post(
         // 2️⃣ change slot status to PAID
         const slot = payment.slot;
 
-        slot.status = SlotStatus.Paid;
-        slot.reservedBy = payment.user;
-
-        await slotRepo.save(slot);
-        await sendNotificationToTelegram({
-          master: slot.master.email ?? "",
-          reservedBy: payment.user.email ?? "",
-        });
+        await updateSlotStatus(slot.id, slot.master.id, SlotStatus.Paid);
       }
 
       // =========================================

@@ -225,6 +225,7 @@ function generateICS({
   summary,
   description,
   location,
+  meetUrl,
 }: {
   uid: string;
   startUtc: Date;
@@ -232,9 +233,35 @@ function generateICS({
   summary: string;
   description?: string;
   location?: string;
+  meetUrl?: string;
 }) {
   const format = (d: Date) =>
     d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+
+  // RFC5545 escaping
+  const escapeText = (text: string) =>
+    text
+      .replace(/\\/g, "\\\\")
+      .replace(/\n/g, "\\n")
+      .replace(/,/g, "\\,")
+      .replace(/;/g, "\\;");
+
+  const isUrl = (v?: string) => !!v && /^https?:\/\//i.test(v.trim());
+
+  // Prevent URLs from ever becoming a physical location
+  const safeLocation = (() => {
+    if (isUrl(location)) return "Online";
+    if (location) return location;
+    if (meetUrl) return "Online";
+    return "";
+  })();
+
+  const fullDescription = [
+    description,
+    meetUrl ? `Join meeting: ${meetUrl}` : undefined,
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   return `
 BEGIN:VCALENDAR
@@ -247,9 +274,10 @@ UID:${uid}
 DTSTAMP:${format(new Date())}
 DTSTART:${format(startUtc)}
 DTEND:${format(endUtc)}
-SUMMARY:${summary}
-DESCRIPTION:${description ?? ""}
-LOCATION:${location ?? ""}
+SUMMARY:${escapeText(summary)}
+DESCRIPTION:${escapeText(fullDescription)}
+${safeLocation ? `LOCATION:${escapeText(safeLocation)}` : ""}
+${meetUrl ? `URL:${escapeText(meetUrl)}` : ""}
 END:VEVENT
 END:VCALENDAR
 `.trim();
@@ -266,6 +294,7 @@ export async function sendReservationEmail({
   startUtc: Date;
   endUtc: Date;
 }) {
+  client = getClient();
   if (!client) return;
 
   const { email, username } = user;
@@ -277,6 +306,7 @@ export async function sendReservationEmail({
   // ---------------------------
   // 1️⃣ Try creating Google Calendar event
   // ---------------------------
+
   try {
     const event = await createCalendarEvent({
       user,
@@ -289,7 +319,9 @@ export async function sendReservationEmail({
     calendarLink = event.data.htmlLink ?? undefined;
   } catch (err) {
     console.error("⚠️ Calendar creation failed, using ICS fallback", err);
-
+    meetLink = `https://meet.chesswithmasters.com/${user.id}-${
+      master.id
+    }-${new Date().getTime()}`;
     // ---------------------------
     // 2️⃣ Fallback: generate ICS
     // ---------------------------
@@ -300,6 +332,7 @@ export async function sendReservationEmail({
       summary: "ChessWithMasters Class",
       description: "Chess class session between student and teacher.",
       location: "Online",
+      meetUrl: meetLink,
     });
   }
 

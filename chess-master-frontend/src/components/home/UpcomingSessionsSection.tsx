@@ -129,36 +129,35 @@ export const UpcomingSessionsSection: React.FC<
                     : booking.status}
                 </Badge>
 
-                {isCurrentUserMasterOfBooking &&
-                  booking.status === "reserved" && (
-                    <>
-                      <Button
-                        size="sm"
-                        variant="default"
-                        className="h-7 px-2 text-xs"
-                        onClick={async (e) => {
-                          e.stopPropagation();
-                          await updateSlotStatus(booking.id, "booked");
-                          loadBookings && loadBookings();
-                        }}
-                      >
-                        Approve
-                      </Button>
+                {isCurrentUserMasterOfBooking && booking.status === "paid" && (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="default"
+                      className="h-7 px-2 text-xs"
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        await updateSlotStatus(booking.id, "booked");
+                        loadBookings && loadBookings();
+                      }}
+                    >
+                      Approve
+                    </Button>
 
-                      <Button
-                        size="sm"
-                        className="h-7 px-2 text-xs"
-                        variant="destructive"
-                        onClick={async (e) => {
-                          e.stopPropagation();
-                          await updateSlotStatus(booking.id, "free");
-                          loadBookings && loadBookings();
-                        }}
-                      >
-                        Reject
-                      </Button>
-                    </>
-                  )}
+                    <Button
+                      size="sm"
+                      className="h-7 px-2 text-xs"
+                      variant="destructive"
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        await updateSlotStatus(booking.id, "free");
+                        loadBookings && loadBookings();
+                      }}
+                    >
+                      Reject
+                    </Button>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>

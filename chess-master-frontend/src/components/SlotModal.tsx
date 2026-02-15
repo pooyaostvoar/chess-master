@@ -32,7 +32,7 @@ const SlotModal: React.FC<SlotModalProps> = ({
   const navigate = useNavigate();
   if (!visible || slotId == null) return null;
 
-  const isReserved = slot?.status === "reserved";
+  const isReserved = slot?.status === "paid";
   const reservedBy =
     slot?.extendedProps?.fullSlot?.reservedBy || slot?.reservedBy;
 
