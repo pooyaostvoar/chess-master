@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { isAuthenticated } from "../../../middleware/passport";
 import { createSlot } from "../../../services/schedule.service";
+import { geoblockPaymentMiddleware } from "../../../utils/geoblock";
 
 export const router = Router();
 
 // POST /schedule/slot - Create a new slot
-router.post("", isAuthenticated, async (req, res) => {
+router.post("", isAuthenticated, geoblockPaymentMiddleware, async (req, res) => {
   try {
     const { startTime, endTime } = req.body;
     const masterId = (req.user as any)?.id;

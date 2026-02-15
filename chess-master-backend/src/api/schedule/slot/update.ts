@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { isAuthenticated } from "../../../middleware/passport";
 import { updateSlot, formatSlot } from "../../../services/schedule.service";
+import { geoblockPaymentMiddleware } from "../../../utils/geoblock";
 
 export const router = Router();
 
 // PATCH /schedule/slot/:id - Update slot times
-router.patch("/:id", isAuthenticated, async (req, res) => {
+router.patch("/:id", isAuthenticated, geoblockPaymentMiddleware, async (req, res) => {
   try {
     const slotId = Number(req.params.id);
     const masterId = (req.user as any).id;

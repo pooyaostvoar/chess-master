@@ -2,10 +2,11 @@ import express from "express";
 import { passport } from "../middleware/passport";
 import { AppDataSource } from "../database/datasource";
 import { User } from "../database/entity/user";
+import { geoblockPaymentMiddleware } from "../utils/geoblock";
 
 export const googleRouter = express.Router();
 
-googleRouter.get("/google", async (req, res, next) => {
+googleRouter.get("/google", geoblockPaymentMiddleware, async (req, res, next) => {
   const roleFromUI = req.query.role === "master";
   const emailHint = req.query.email as string | undefined;
 
@@ -45,6 +46,7 @@ googleRouter.get("/google", async (req, res, next) => {
 // Callback
 googleRouter.get(
   "/google/callback",
+  geoblockPaymentMiddleware,
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
     // Successful login

@@ -35,8 +35,13 @@ const Signup: React.FC = () => {
       } else {
         setMessage("Something went wrong. Please try again.");
       }
-    } catch (err) {
-      setMessage("Error creating user. Username may already exist.");
+    } catch (err: any) {
+      const errorMsg =
+        err?.response?.data?.error ||
+        (err?.response?.data?.code === "GEOBLOCKED"
+          ? "Access from your region is not permitted."
+          : "Error creating user. Username may already exist.");
+      setMessage(errorMsg);
     } finally {
       setLoading(false);
     }

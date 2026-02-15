@@ -4,6 +4,7 @@ import { passport } from "../middleware/passport";
 import { User } from "../database/entity/user";
 import { DeepPartial } from "typeorm";
 import { sendWelcomeEmail } from "../services/brevo_email";
+import { geoblockPaymentMiddleware } from "../utils/geoblock";
 var crypto = require("crypto");
 
 export const passwordAuthRouter = express.Router();
@@ -56,7 +57,7 @@ passwordAuthRouter.post("/logout", (req, res, next) => {
   });
 });
 
-passwordAuthRouter.post("/signup", async function (req, res, next) {
+passwordAuthRouter.post("/signup", geoblockPaymentMiddleware, async function (req, res, next) {
   var salt = crypto.randomBytes(16);
   crypto.pbkdf2(
     req.body.password,

@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { isAuthenticated } from "../../../middleware/passport";
 import { deleteSlots } from "../../../services/schedule.service";
+import { geoblockPaymentMiddleware } from "../../../utils/geoblock";
 
 export const router = Router();
 
 // DELETE /schedule/slot - Delete slots
-router.delete("", isAuthenticated, async (req, res) => {
+router.delete("", isAuthenticated, geoblockPaymentMiddleware, async (req, res) => {
   try {
     const ids: number[] = req.body.ids;
     const userId = (req.user as any)?.id;
