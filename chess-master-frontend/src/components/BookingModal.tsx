@@ -40,12 +40,15 @@ const BookingModal: React.FC<BookingModalProps> = ({
       await checkoutSlot(slotId);
 
       // nothing after this runs because browser redirects
-    } catch (err) {
+    } catch (err: any) {
       setLoading(false);
-
+      const errorMsg =
+        err?.message && typeof err.message === "string"
+          ? err.message
+          : "Payment session failed. Please try again.";
       setMessage({
         type: "error",
-        text: "❌ Payment session failed. Please try again.",
+        text: `❌ ${errorMsg}`,
       });
     }
   };

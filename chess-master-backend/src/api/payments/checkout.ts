@@ -3,10 +3,15 @@ import { isAuthenticated } from "../../middleware/passport";
 import { createCheckoutSession } from "../../services/payment";
 import { AppDataSource } from "../../database/datasource";
 import { Payment } from "../../database/entity/payment";
+import { geoblockPaymentMiddleware } from "../../utils/geoblock";
 
 export const router = Router();
 
-router.post("/checkout-session", isAuthenticated, async (req, res) => {
+router.post(
+  "/checkout-session",
+  isAuthenticated,
+  geoblockPaymentMiddleware,
+  async (req, res) => {
   try {
     const userId = (req.user as any).id;
     const { eventId } = req.body;
@@ -23,7 +28,8 @@ router.post("/checkout-session", isAuthenticated, async (req, res) => {
       error: (err as Error).message,
     });
   }
-});
+}
+);
 
 router.get(
   "/session/:sessionId",

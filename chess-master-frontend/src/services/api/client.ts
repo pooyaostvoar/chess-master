@@ -19,9 +19,12 @@ export const handleApiError = (error: any): string => {
   if (error.response?.data?.error) {
     return error.response.data.error;
   }
+  if (error.response?.status === 403 && error.response?.data?.code === "GEOBLOCKED") {
+    return error.response.data.error || "Access from your region is not permitted.";
+  }
   if (error.message) {
     return error.message;
   }
-  return 'An unexpected error occurred';
+  return "An unexpected error occurred";
 };
 

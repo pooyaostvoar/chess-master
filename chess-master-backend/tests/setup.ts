@@ -16,7 +16,7 @@ beforeAll(async () => {
 
 let dbName = "";
 beforeEach(async () => {
-  dbName = `chess_master_test_${Date.now()}`;
+  dbName = `chess_master_test_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
   await changeDB(dbName);
 
   if (!AppDataSource.isInitialized) {
@@ -40,7 +40,13 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-  await authAgent.post("/logout");
-  await AppDataSource.destroy();
-  await dropTestDatabase(dbName);
+  try {
+    if (authAgent) await authAgent.post("/logout");
+  } catch (_) {}
+  try {
+    if (AppDataSource?.isInitialized) await AppDataSource.destroy();
+  } catch (_) {}
+  try {
+    if (dbName) await dropTestDatabase(dbName);
+  } catch (_) {}
 });
