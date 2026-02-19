@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AdminUsersApi, type AdminUser } from "../api";
+import { AdminImpersonateApi, AdminUsersApi, type AdminUser } from "../api";
 import {
   Button,
   Card,
@@ -150,6 +150,24 @@ export function UserDetailPage({ userId, onBack }: Props) {
         ← Back to users
       </Button>
 
+      <Button
+        onClick={async () => {
+          const res = await AdminImpersonateApi.impersonate(userId);
+          if (res.success) {
+            setTimeout(() => {
+              const url = window.location.href;
+              if (url.includes("localhost")) {
+                window.location.href = "http://localhost:3000";
+              } else {
+                window.location.href = "https://chesswithmasters.com/home";
+              }
+            }, 500);
+          }
+        }}
+        style={{ width: "fit-content" }}
+      >
+        Impersonate
+      </Button>
       <Card
         loading={loading}
         style={{ borderRadius: 12 }}

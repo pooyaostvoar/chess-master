@@ -27,6 +27,7 @@ import { adminSlotsRouter } from "./api/admin-slots";
 import { gameRouter } from "./api/game/router";
 import { paymentRouter } from "./api/payments/router";
 import { router as webhookRouter } from "./api/payments/webhook";
+import { router as impersonateRouter } from "./api/admin-impersonate";
 
 export function createApp() {
   const isTesting = process.env.NODE_ENV === "test";
@@ -73,6 +74,7 @@ export function createApp() {
   app.use("/auth", googleRouter);
   app.use("", passwordAuthRouter);
   app.use("/admin", adminAuthRouter);
+  app.use("/admin/impersonate", impersonateRouter);
   app.use("/admin/users", adminUsersRouter);
   app.use("/admin/slots", adminSlotsRouter);
   app.use("/admin/stats", adminStatsRouter);

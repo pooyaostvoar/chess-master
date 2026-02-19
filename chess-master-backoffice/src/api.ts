@@ -165,6 +165,13 @@ export const AdminUsersApi = {
     }),
 };
 
+export const AdminImpersonateApi = {
+  impersonate: (userId: number) =>
+    request<{ success: boolean }>(`/admin/impersonate/${userId}`, {
+      method: "GET",
+    }),
+};
+
 export const AdminSlotsApi = {
   list: (params: {
     page: number;
