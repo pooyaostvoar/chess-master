@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
-import { getMyBookings, getMasterBookings } from "../services/bookings";
+import { getMyBookings } from "../services/bookings";
 import { findUsers } from "../services/auth";
 import type { Booking } from "../services/bookings";
 import type { User } from "../services/auth";
@@ -11,10 +11,13 @@ import { TopMastersSection } from "../components/home/TopMastersSection";
 import { RecommendedMastersSection } from "../components/home/RecommendedMastersSection";
 import { UpcomingSessionsSection } from "../components/home/UpcomingSessionsSection";
 import { CTASection } from "../components/home/CTASection";
-import { WelcomeSection } from "../components/home/WelcomeSection";
+
 import { FinishedEventsSection } from "../components/event/FinishedEventsSection";
 import { HomeSectionWrapper } from "../components/home/HomeSectionWrapper";
 import { UpcomingEventsSection } from "../components/event/UpcomingEventsSection";
+import { useUpcomingEvents } from "../hooks/useUpcomingEvents";
+import keyBy from "lodash-es/keyBy";
+import { sortMastersByEvents } from "../services/users";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -24,6 +27,12 @@ const Home: React.FC = () => {
   const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [bookingsLoading, setBookingsLoading] = useState(false);
+
+  const {
+    events,
+    loading: loadingUpcomingEvents,
+    refetch: loadEvents,
+  } = useUpcomingEvents();
 
   const loadBookings = async () => {
     setBookingsLoading(true);
@@ -46,14 +55,15 @@ const Home: React.FC = () => {
     }
     return bookings;
   };
+
   const loadData = async () => {
     try {
       const response = await findUsers({ isMaster: true });
       const mastersWithRating = response.users.filter((m) => m.rating);
 
-      const sorted = mastersWithRating
-        .sort((a, b) => (b.rating || 0) - (a.rating || 0))
-        .slice(0, 3);
+      const sorted = mastersWithRating.sort(
+        (a, b) => (b.rating || 0) - (a.rating || 0)
+      );
 
       setTopMasters(sorted);
 
@@ -69,22 +79,18 @@ const Home: React.FC = () => {
           });
         }
 
-        const recommended = allMasters
-          .filter((m) => m.id !== user.id)
-          .sort((a, b) => {
-            if (!user.isMaster) {
-              const aHasBooking = bookingMasterIds.has(a.id);
-              const bHasBooking = bookingMasterIds.has(b.id);
-              if (aHasBooking && !bHasBooking) return -1;
-              if (!aHasBooking && bHasBooking) return 1;
-            }
-            const aRating = a.rating || 0;
-            const bRating = b.rating || 0;
-            if (aRating !== bRating) return bRating - aRating;
-            return a.id - b.id;
-          })
-          .slice(0, 3);
-
+        const recommended = allMasters.sort((a, b) => {
+          if (!user.isMaster) {
+            const aHasBooking = bookingMasterIds.has(a.id);
+            const bHasBooking = bookingMasterIds.has(b.id);
+            if (aHasBooking && !bHasBooking) return -1;
+            if (!aHasBooking && bHasBooking) return 1;
+          }
+          const aRating = a.rating || 0;
+          const bRating = b.rating || 0;
+          if (aRating !== bRating) return bRating - aRating;
+          return a.id - b.id;
+        });
         setRecommendedMasters(recommended);
       }
     } catch (err) {
@@ -108,6 +114,7 @@ const Home: React.FC = () => {
   if (isUserloading) {
     return null;
   }
+
   return (
     <div className="min-h-screen">
       {user ? (
@@ -132,7 +139,11 @@ const Home: React.FC = () => {
             path="/upcoming-events"
             buttonText="View All Events"
           >
-            <UpcomingEventsSection limit={3} />
+            <UpcomingEventsSection
+              events={events.slice(0, 3)}
+              loadEvents={loadEvents}
+              loading={loadingUpcomingEvents}
+            />
           </HomeSectionWrapper>
           <HomeSectionWrapper
             title="Recommended Masters"
@@ -141,7 +152,10 @@ const Home: React.FC = () => {
             buttonText="View All Masters"
           >
             <RecommendedMastersSection
-              masters={recommendedMasters}
+              masters={sortMastersByEvents(recommendedMasters, events).slice(
+                0,
+                3
+              )}
               loading={loading}
               onViewSchedule={handleViewSchedule}
             />
@@ -165,7 +179,11 @@ const Home: React.FC = () => {
               path="/upcoming-events"
               buttonText="View All Events"
             >
-              <UpcomingEventsSection limit={3} />
+              <UpcomingEventsSection
+                events={events.slice(0, 3)}
+                loadEvents={loadEvents}
+                loading={loadingUpcomingEvents}
+              />
             </HomeSectionWrapper>
             <HomeSectionWrapper
               title="Top Rated Masters"
@@ -174,7 +192,7 @@ const Home: React.FC = () => {
               buttonText="View All Masters"
             >
               <TopMastersSection
-                masters={topMasters}
+                masters={sortMastersByEvents(topMasters, events).slice(0, 3)}
                 loading={loading}
                 onViewSchedule={handleViewSchedule}
               />

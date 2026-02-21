@@ -1,33 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Card, CardContent } from "../ui/card";
 
 import { UpcomingEventCard } from "./UpcomingEventCard";
-import { getUpcomingEvents } from "../../services/api/schedule.api";
+
 import BookingModal from "../BookingModal";
 
 interface UpcomingEventsSectionProps {
-  limit?: number | null;
+  events: any[];
+  loading: boolean;
+  loadEvents: () => void;
 }
 
 export const UpcomingEventsSection: React.FC<UpcomingEventsSectionProps> = ({
-  limit,
+  events,
+  loading,
+  loadEvents,
 }) => {
-  const [events, setEvents] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
-
-  const loadEvents = async () => {
-    try {
-      const data = await getUpcomingEvents();
-      limit ? setEvents(data.slice(0, limit)) : setEvents(data);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadEvents();
-  }, []);
 
   if (loading) {
     return (

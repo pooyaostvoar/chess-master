@@ -13,7 +13,7 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
     if (authenticatedUserId !== userId) {
       return res
         .status(403)
-        .json({ error: "Forbidden: You can only edit your own profile" });
+        .json({ error: "Forbidden: You can only edit your own profile!" });
     }
 
     const {

@@ -15,8 +15,6 @@ router.get("", async (req, res) => {
 
     const events = await repo.find({
       where: {
-        endTime: LessThan(new Date()),
-        status: SlotStatus.Booked,
         youtubeId: Not(IsNull()),
       },
       relations: { master: true },
