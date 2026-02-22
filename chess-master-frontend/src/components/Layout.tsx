@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { logout } from "../services/auth";
 import { useUser } from "../contexts/UserContext";
@@ -22,8 +22,10 @@ import { useIsMobile } from "../hooks/useIsMobile";
 import { useMasterOnboarding } from "../hooks/useMasterOnboarding";
 import { OnboardingHint } from "./onboarding/OnboardingHint";
 import AvatarHint from "./onboarding/AvatarHint";
+import { getUnreadSenders } from "../services/api/messages.api";
 
 const Layout: React.FC = () => {
+  const [unreadCount, setUnreadCount] = React.useState(0);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [dropDownIsOpen, setDropDownIsOpen] = React.useState(false);
@@ -61,6 +63,30 @@ const Layout: React.FC = () => {
     state === "MASTER_NO_SLOT" &&
     !dropDownIsOpen &&
     !location.pathname.includes("/calendar/");
+
+  useEffect(() => {
+    const fetchUnread = async () => {
+      if (!user) {
+        setUnreadCount(0);
+        return;
+      }
+
+      try {
+        const senders = await getUnreadSenders(user.id);
+
+        const totalUnread = senders.reduce(
+          (sum, sender) => sum + sender.unreadCount,
+          0
+        );
+
+        setUnreadCount(totalUnread);
+      } catch (err) {
+        console.error("Failed to fetch unread messages", err);
+      }
+    };
+
+    fetchUnread();
+  }, [user]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -116,6 +142,11 @@ const Layout: React.FC = () => {
                 <DropdownMenu onOpenChange={(open) => setDropDownIsOpen(open)}>
                   <DropdownMenuTrigger asChild>
                     <div className="relative">
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center">
+                          {unreadCount > 99 ? "99+" : unreadCount}
+                        </span>
+                      )}
                       <button
                         className={`w-11 h-11 rounded-full bg-white text-slate-900 font-bold text-lg flex items-center justify-center transition-all
                           ${
@@ -165,8 +196,16 @@ const Layout: React.FC = () => {
                       Dashboard
                     </DropdownMenuItem>
 
-                    <DropdownMenuItem onClick={() => navigate("/chat")}>
-                      💬 Messages
+                    <DropdownMenuItem
+                      onClick={() => navigate("/chat")}
+                      className="flex items-center justify-between px-2"
+                    >
+                      <span>💬 Messages</span>
+                      {unreadCount > 0 && (
+                        <span className="bg-red-600 text-white text-xs font-bold rounded-full min-w-[20px] h-5 px-2 flex items-center justify-center">
+                          {unreadCount > 99 ? "99+" : unreadCount}
+                        </span>
+                      )}
                     </DropdownMenuItem>
 
                     <DropdownMenuItem
