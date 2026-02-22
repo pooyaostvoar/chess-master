@@ -182,12 +182,12 @@ const Masters: React.FC = () => {
 
       {/* TODO: Apply intent to findUsers or client-side filter when API supports it */}
 
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>Filter Masters</CardTitle>
+      <Card className="mb-6">
+        <CardHeader className="py-4 pb-2">
+          <CardTitle className="text-base font-medium">Filter Masters</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <CardContent className="pt-0">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
             <div>
               <Label htmlFor="search">Search by name</Label>
               <div className="relative">
@@ -233,7 +233,7 @@ const Masters: React.FC = () => {
               variant="outline"
               size="sm"
               onClick={clearFilters}
-              className="w-full md:w-auto"
+              className="w-full md:w-auto mt-1"
             >
               <X className="mr-2 h-4 w-4" />
               Clear filters
