@@ -8,8 +8,12 @@ import { AppDataSource } from "../database/datasource";
 import { Message } from "../database/entity/message";
 import { sendPushToUser } from "../services/push";
 import { setupGameSocket } from "./game";
+import { sendUnreadMessagesEmail } from "../services/brevo_email";
+
+import { getUserById } from "../services/user.service";
 
 const pendingPushes = new Map<number, NodeJS.Timeout>();
+const pendingEmailByUserId = new Map<number, NodeJS.Timeout>();
 
 /**
  * Shape of authenticated user
@@ -211,6 +215,26 @@ export function initSocket(server: HttpServer) {
 
             pendingPushes.set(newMessage.id, timeout);
 
+            const timeoutForEmail = setTimeout(async () => {
+              const msg = await messageRepo.findOne({
+                where: { toUserId: newMessage.toUserId, isSeen: false },
+              });
+              if (msg) {
+                const toUser = await getUserById(newMessage.toUserId);
+                if (toUser?.email) {
+                  console.log("sending email to", toUser.email);
+                  await sendUnreadMessagesEmail({
+                    toEmail: toUser.email,
+                    toName: toUser.username ?? "",
+                  });
+                }
+              }
+              pendingEmailByUserId.delete(newMessage.toUserId);
+            }, 60000);
+
+            if (!pendingEmailByUserId.has(newMessage.toUserId)) {
+              pendingEmailByUserId.set(newMessage.id, timeoutForEmail);
+            }
             console.log("Message sent:", text, "room:", room);
           } catch (err) {
             console.error("Failed to save message:", err);

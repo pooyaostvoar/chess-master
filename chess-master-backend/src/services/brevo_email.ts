@@ -145,6 +145,70 @@ If you are a master:
   });
 }
 
+interface UnreadMessagesEmailOptions {
+  toEmail: string;
+  toName: string;
+}
+
+export async function sendUnreadMessagesEmail({
+  toEmail,
+  toName,
+}: UnreadMessagesEmailOptions) {
+  const subject = "You have unread messages";
+
+  const inboxUrl =
+    process.env.ENV === "production"
+      ? "https://chesswithmasters.com/chat"
+      : "http://localhost:3000/chat";
+  const htmlContent = `
+    <html>
+      <body style="font-family: Arial, sans-serif; line-height:1.6; color:#333;">
+        <h1 style="color:#2a2a2a;">You have unread messages</h1>
+
+        <p>Hi ${toName},</p>
+
+        <p>
+          You have some unread messages waiting for you.
+        </p>
+
+        <p>
+          Please check your inbox to read and respond.
+        </p>
+
+        <p>
+          <a href="${inboxUrl}" 
+             style="display:inline-block;padding:10px 16px;background-color:#2a2a2a;color:#ffffff;text-decoration:none;border-radius:4px;">
+            Go to Inbox
+          </a>
+        </p>
+
+        <p>
+          — The Chess with Masters Team
+        </p>
+      </body>
+    </html>
+  `;
+
+  const textContent = `
+Hi ${toName},
+
+You have some unread messages waiting for you.
+
+Please check your inbox:
+${inboxUrl}
+
+— The Chess with Masters Team
+  `.trim();
+
+  await sendEmail({
+    toEmail,
+    toName,
+    subject,
+    htmlContent,
+    textContent,
+  });
+}
+
 export interface ReservationEmailOptions {
   startDateTimeISO: string;
   masterEmail: string;
