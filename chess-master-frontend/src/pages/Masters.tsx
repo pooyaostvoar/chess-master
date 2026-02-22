@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -14,7 +14,40 @@ import { findUsers } from "../services/auth";
 import type { User } from "../services/auth";
 import { MasterCard } from "../components/home/MasterCard";
 
+/** Quick Start intent: label + helper text (transparent about no filtering yet) */
+const INTENT_CONFIG: Record<
+  string,
+  { label: string; helperSuffix: string; searchPlaceholder: string }
+> = {
+  lesson: {
+    label: "1-on-1 Lessons",
+    helperSuffix: "1-on-1 lessons",
+    searchPlaceholder: "Search coaches and teachers...",
+  },
+  review: {
+    label: "Game Reviews",
+    helperSuffix: "game reviews",
+    searchPlaceholder: "Search masters for game reviews...",
+  },
+  play: {
+    label: "Play a Master",
+    helperSuffix: "play sessions",
+    searchPlaceholder: "Search masters to play with...",
+  },
+  blitz: {
+    label: "Blitz Sessions",
+    helperSuffix: "blitz sessions",
+    searchPlaceholder: "Search masters for blitz sessions...",
+  },
+  beginner: {
+    label: "Beginner-Friendly Sessions",
+    helperSuffix: "beginner-friendly sessions",
+    searchPlaceholder: "Search beginner-friendly masters...",
+  },
+};
+
 const Masters: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [masters, setMasters] = useState<User[]>([]);
   const [filteredMasters, setFilteredMasters] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,6 +56,10 @@ const Masters: React.FC = () => {
   const [minRating, setMinRating] = useState("");
   const [maxRating, setMaxRating] = useState("");
   const navigate = useNavigate();
+
+  // Parse Quick Start intent from URL (TODO: apply to findUsers when API supports it)
+  const intent = searchParams.get("intent");
+  const intentConfig = intent ? INTENT_CONFIG[intent] : null;
 
   useEffect(() => {
     const loadMasters = async () => {
@@ -71,6 +108,15 @@ const Masters: React.FC = () => {
     setSearchTerm("");
     setMinRating("");
     setMaxRating("");
+    const next = new URLSearchParams(searchParams);
+    next.delete("intent");
+    setSearchParams(next, { replace: true });
+  };
+
+  const clearIntent = () => {
+    const next = new URLSearchParams(searchParams);
+    next.delete("intent");
+    setSearchParams(next, { replace: true });
   };
 
   if (loading) {
@@ -105,6 +151,37 @@ const Masters: React.FC = () => {
         </p>
       </div>
 
+      {/* Intent banner: acknowledge selected intent, transparent that filtering is not yet active */}
+      {intentConfig && (
+        <Card className="mb-8 border-primary/20 bg-primary/5">
+          <CardContent className="pt-6">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+              <div>
+                <h2 className="font-semibold text-lg mb-1">
+                  Looking for: {intentConfig.label}
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  We&apos;re showing all masters for now. Session-type filtering is
+                  coming soon. You can still browse profiles and choose a master
+                  who offers {intentConfig.helperSuffix}.
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={clearIntent}
+                className="flex-shrink-0"
+                data-intent-clear
+              >
+                Clear
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* TODO: Apply intent to findUsers or client-side filter when API supports it */}
+
       <Card className="mb-8">
         <CardHeader>
           <CardTitle>Filter Masters</CardTitle>
@@ -118,7 +195,9 @@ const Masters: React.FC = () => {
                 <Input
                   id="search"
                   type="text"
-                  placeholder="Search masters..."
+                  placeholder={
+                    intentConfig?.searchPlaceholder ?? "Search masters..."
+                  }
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -149,7 +228,7 @@ const Masters: React.FC = () => {
             </div>
           </div>
 
-          {(searchTerm || minRating || maxRating) && (
+          {(searchTerm || minRating || maxRating || intent) && (
             <Button
               variant="outline"
               size="sm"
@@ -169,7 +248,7 @@ const Masters: React.FC = () => {
             <p className="text-muted-foreground mb-4">
               No masters found matching your criteria
             </p>
-            {(searchTerm || minRating || maxRating) && (
+            {(searchTerm || minRating || maxRating || intent) && (
               <Button variant="outline" onClick={clearFilters}>
                 Clear filters
               </Button>
