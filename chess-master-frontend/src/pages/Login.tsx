@@ -5,6 +5,7 @@ import { useUser } from "../contexts/UserContext";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { API_URL } from "../services/config";
 import { GoogleAuthButton } from "../components/auth/GoogleAuthButton";
+import { ONBOARDING_STORAGE_KEY } from "./GettingStarted";
 
 const Login: React.FC = () => {
   const location = useLocation();
@@ -34,6 +35,15 @@ const Login: React.FC = () => {
         if (redirect) {
           navigate(redirect);
           return;
+        }
+        // New users: send to onboarding if not yet completed
+        try {
+          if (!localStorage.getItem(ONBOARDING_STORAGE_KEY)) {
+            navigate("/getting-started");
+            return;
+          }
+        } catch {
+          /* ignore */
         }
         navigate("/home");
       } else {
