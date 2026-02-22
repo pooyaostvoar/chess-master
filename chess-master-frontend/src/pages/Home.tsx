@@ -7,6 +7,7 @@ import type { Booking } from "../services/bookings";
 import type { User } from "../services/auth";
 import { HeroSection } from "../components/home/HeroSection";
 import { FeaturesSection } from "../components/home/FeaturesSection";
+import { HowItWorksSection } from "../components/home/HowItWorksSection";
 import { TopMastersSection } from "../components/home/TopMastersSection";
 import { RecommendedMastersSection } from "../components/home/RecommendedMastersSection";
 import { UpcomingSessionsSection } from "../components/home/UpcomingSessionsSection";
@@ -173,6 +174,7 @@ const Home: React.FC = () => {
         <>
           <HeroSection />
           <FeaturesSection />
+          <HowItWorksSection />
           <div className="max-w-7xl mx-auto px-5 py-16">
             <HomeSectionWrapper
               title="Upcoming Events"
