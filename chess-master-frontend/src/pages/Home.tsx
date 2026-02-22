@@ -20,10 +20,23 @@ import { UpcomingEventsSection } from "../components/event/UpcomingEventsSection
 import { useUpcomingEvents } from "../hooks/useUpcomingEvents";
 import keyBy from "lodash-es/keyBy";
 import { sortMastersByEvents } from "../services/users";
+import { ONBOARDING_STORAGE_KEY } from "./GettingStarted";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const { user, loading: isUserloading } = useUser();
+
+  // Redirect new users (e.g. from OAuth) to onboarding
+  useEffect(() => {
+    if (!user || isUserloading) return;
+    try {
+      if (!localStorage.getItem(ONBOARDING_STORAGE_KEY)) {
+        navigate("/getting-started", { replace: true });
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [user, isUserloading, navigate]);
   const [topMasters, setTopMasters] = useState<User[]>([]);
   const [recommendedMasters, setRecommendedMasters] = useState<User[]>([]);
   const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
