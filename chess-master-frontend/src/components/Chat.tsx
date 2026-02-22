@@ -51,6 +51,7 @@ const Chat: React.FC<ChatProps> = ({ otherUserId, userId }) => {
     });
 
     return () => {
+      setMessages([]);
       socket.disconnect();
     };
   }, [otherUserId]);
@@ -76,17 +77,25 @@ const Chat: React.FC<ChatProps> = ({ otherUserId, userId }) => {
               {messages.map((msg, idx) => (
                 <div
                   key={idx}
-                  className={`flex ${msg.from === userId ? "justify-end" : "justify-start"
-                    }`}
+                  className={`flex ${
+                    msg.from === userId ? "justify-end" : "justify-start"
+                  }`}
                 >
                   <div
-                    className={`p-3 rounded-2xl max-w-[75%] break-words shadow-sm ${msg.from === userId
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-foreground"
-                      }`}
+                    className={`p-3 rounded-2xl max-w-[75%] break-words shadow-sm ${
+                      msg.from === userId
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-foreground"
+                    }`}
                   >
                     <p className="text-sm leading-relaxed">{msg.text}</p>
-                    <div className={`text-[10px] mt-1 text-right ${msg.from === userId ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                    <div
+                      className={`text-[10px] mt-1 text-right ${
+                        msg.from === userId
+                          ? "text-primary-foreground/70"
+                          : "text-muted-foreground"
+                      }`}
+                    >
                       {new Date(msg.createdAt).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
