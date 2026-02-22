@@ -20,8 +20,8 @@ export const UpcomingEventCard: React.FC<Props> = ({ event, onClick }) => {
   const durationMinutes = (end.getTime() - start.getTime()) / 60000;
 
   return (
-    <Card className="hover:shadow-lg transition-shadow">
-      <CardHeader>
+    <Card className="hover:shadow-lg transition-shadow flex flex-col h-full">
+      <CardHeader className="flex-1 flex flex-col min-h-0">
         <CardTitle className="text-xl m-1">
           {event.title ?? "Blitz session"}
         </CardTitle>
@@ -32,7 +32,7 @@ export const UpcomingEventCard: React.FC<Props> = ({ event, onClick }) => {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 flex-shrink-0 pt-0">
         {/* Price */}
         <div className="flex items-center gap-2">
           <DollarSign className="h-4 w-4 text-primary" />

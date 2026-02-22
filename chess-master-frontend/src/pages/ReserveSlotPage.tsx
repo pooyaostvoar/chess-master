@@ -6,9 +6,10 @@ import {
   CardTitle,
 } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { bookSlot, getSlotById, updateSlotStatus } from "../services/schedule";
+import { bookSlot, getSlotById } from "../services/schedule";
 import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
+import { BookingHowItWorks } from "../components/booking/BookingHowItWorks";
 
 const ReserveSlotPage: React.FC = () => {
   const navigate = useNavigate();
@@ -114,6 +115,8 @@ const ReserveSlotPage: React.FC = () => {
             </p>
           </div>
 
+          <BookingHowItWorks />
+
           <Button
             size="lg"
             className="w-full text-lg"
@@ -128,12 +131,14 @@ const ReserveSlotPage: React.FC = () => {
           </Button>
 
           <p className="text-center text-sm text-muted-foreground">
-            ⏳ Slot held for 15 minutes after reservation
+            After reserving, you&apos;ll receive payment instructions. The master
+            will approve once payment is complete.
           </p>
 
           {slot.youtubeId && (
             <div className="pt-6">
               <iframe
+                title="Session preview"
                 className="w-full aspect-video rounded-md"
                 src={`https://www.youtube.com/embed/${slot.youtubeId}`}
                 allowFullScreen

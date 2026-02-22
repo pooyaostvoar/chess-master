@@ -4,6 +4,12 @@ import { useUser } from "../contexts/UserContext";
 import { getMyBookings } from "../services/bookings";
 import type { Booking } from "../services/bookings";
 import { updateSlotStatus } from "../services/schedule";
+import { Card, CardContent } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { BookingStatusBadge } from "../components/booking/BookingStatusBadge";
+import { PendingApprovalCard } from "../components/booking/PendingApprovalCard";
+import { ConfirmedBookingCard } from "../components/booking/ConfirmedBookingCard";
+import { MessageCircle } from "lucide-react";
 
 const MyBookings: React.FC = () => {
   const { user } = useUser();
@@ -42,71 +48,59 @@ const MyBookings: React.FC = () => {
     });
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "free":
-        return "#27ae60";
-      case "reserved":
-        return "#f39c12";
-      case "booked":
-        return "#27ae60";
-      default:
-        return "#777";
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "free":
-        return "Available";
-      case "reserved":
-        return "Pending Approval";
-      case "booked":
-        return "Confirmed";
-      default:
-        return status;
-    }
+  const getDuration = (start: string, end: string) => {
+    const s = new Date(start);
+    const e = new Date(end);
+    const mins = Math.round((e.getTime() - s.getTime()) / 60000);
+    return mins >= 60 ? `${mins / 60} hr` : `${mins} min`;
   };
 
   if (loading) {
     return (
-      <div style={styles.loadingContainer}>
-        <div style={styles.spinner} />
-        <p>Loading bookings...</p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh]">
+        <div className="w-10 h-10 border-4 border-muted border-t-primary rounded-full animate-spin mb-4" />
+        <p className="text-muted-foreground">Loading bookings...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={styles.errorContainer}>
-        <p style={styles.error}>{error}</p>
+      <div className="flex justify-center p-8">
+        <p className="text-destructive font-medium p-4 bg-destructive/10 rounded-lg">
+          {error}
+        </p>
       </div>
     );
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>My Bookings</h1>
-        <p style={styles.subtitle}>
+    <div className="max-w-3xl mx-auto px-4 py-10">
+      <div className="text-center mb-10">
+        <h1 className="text-3xl font-bold text-foreground mb-2">My Bookings</h1>
+        <p className="text-muted-foreground">
           View all slot requests and confirmed bookings
         </p>
       </div>
 
       {bookings.length === 0 ? (
-        <div style={styles.emptyState}>
-          <div style={styles.emptyIcon}>📅</div>
-          <h2 style={styles.emptyTitle}>No bookings yet</h2>
-          <p style={styles.emptyText}>You don't have any bookings yet.</p>
-        </div>
+        <Card>
+          <CardContent className="py-16 text-center">
+            <div className="text-5xl mb-4">📅</div>
+            <h2 className="text-xl font-semibold mb-2">No bookings yet</h2>
+            <p className="text-muted-foreground mb-6">
+              Book a session with a master to get started.
+            </p>
+            <Button onClick={() => navigate("/masters")}>Browse Masters</Button>
+          </CardContent>
+        </Card>
       ) : (
-        <div style={styles.bookingsList}>
+        <div className="space-y-6">
           {bookings.map((booking) => {
             const isCurrentUserMasterOfBooking =
               user?.id === booking.master?.id;
 
-            const displayUser: any = isCurrentUserMasterOfBooking
+            const displayUser = isCurrentUserMasterOfBooking
               ? booking.reservedBy
               : booking.master;
 
@@ -114,315 +108,162 @@ const MyBookings: React.FC = () => {
               ? booking.reservedBy?.username
               : booking.master?.username || "Unknown User";
 
-            return (
-              <div key={booking.id} style={styles.bookingCard}>
-                {/* HEADER */}
-                <div style={styles.cardHeader}>
-                  <div style={styles.timeInfo}>
-                    <div style={styles.date}>
-                      {formatDate(booking.startTime)}
-                    </div>
-                    <div style={styles.duration}>
-                      {new Date(booking.endTime).getHours() -
-                        new Date(booking.startTime).getHours()}{" "}
-                      hour
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      ...styles.statusBadge,
-                      background: getStatusColor(booking.status),
-                    }}
-                  >
-                    {getStatusLabel(booking.status)}
-                  </div>
-                </div>
+            const masterName = booking.master?.username || "Master";
 
-                {/* BODY */}
-                <div style={styles.cardBody}>
-                  <div style={styles.userRow}>
-                    <div
-                      style={styles.userInfo}
-                      onClick={() =>
-                        displayUser?.id && navigate(`/users/${displayUser.id}`)
-                      }
-                    >
-                      <div style={styles.avatar}>
-                        {displayName?.charAt(0).toUpperCase() || "U"}
-                      </div>
-                      <div style={styles.userDetails}>
-                        <h3 style={styles.userName}>
-                          {displayName || "Unknown User"}
-                          {displayUser?.title && (
-                            <span style={styles.titleTag}>
-                              {" "}
-                              {displayUser.title}
-                            </span>
-                          )}
-                        </h3>
-                        {displayUser?.rating && (
-                          <p style={styles.rating}>
-                            Rating: {displayUser.rating}
-                          </p>
-                        )}
-                      </div>
+            return (
+              <Card key={booking.id} className="overflow-hidden">
+                <CardContent className="p-0">
+                  {/* Header: date + status */}
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border-b bg-muted/30">
+                    <div>
+                      <p className="font-semibold">{formatDate(booking.startTime)}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {getDuration(booking.startTime, booking.endTime)}
+                      </p>
                     </div>
-                    <div style={styles.actionButtons}>
-                      {isCurrentUserMasterOfBooking &&
-                        booking.status === "paid" && (
-                          <>
-                            <button
-                              style={styles.approveButton}
-                              onClick={async (e) => {
-                                e.stopPropagation();
-                                await updateSlotStatus(booking.id, "booked");
-                                loadBookings();
-                              }}
-                            >
-                              Approve
-                            </button>
-                            <button
-                              style={styles.rejectButton}
-                              onClick={async (e) => {
-                                e.stopPropagation();
-                                await updateSlotStatus(booking.id, "free");
-                                loadBookings();
-                              }}
-                            >
-                              Reject
-                            </button>
-                          </>
+                    <BookingStatusBadge status={booking.status} />
+                  </div>
+
+                  {/* User info */}
+                  <div
+                    className="flex items-center gap-4 p-4 cursor-pointer hover:bg-muted/20 transition-colors"
+                    onClick={() =>
+                      displayUser?.id && navigate(`/users/${displayUser.id}`)
+                    }
+                  >
+                    <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg">
+                      {displayName?.charAt(0).toUpperCase() || "U"}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">
+                        {displayName || "Unknown User"}
+                        {booking.master?.title && !isCurrentUserMasterOfBooking && (
+                          <span className="ml-2 text-xs font-normal text-muted-foreground">
+                            {booking.master.title}
+                          </span>
                         )}
-                      <button
-                        style={styles.messageButton}
+                      </p>
+                      {booking.master?.rating != null && !isCurrentUserMasterOfBooking && (
+                        <p className="text-sm text-muted-foreground">
+                          Rating: {booking.master.rating}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Status-specific content (for players, not masters) */}
+                  {!isCurrentUserMasterOfBooking && booking.status === "paid" && (
+                    <div className="px-4 pb-4">
+                      <PendingApprovalCard
+                        masterName={masterName}
+                        startTime={booking.startTime}
+                        endTime={booking.endTime}
+                        onViewMessages={() =>
+                          displayUser?.id &&
+                          navigate(`/chat/${displayUser.id}`)
+                        }
+                        onBrowseMasters={() => navigate("/masters")}
+                      />
+                    </div>
+                  )}
+
+                  {!isCurrentUserMasterOfBooking && booking.status === "booked" && (
+                    <div className="px-4 pb-4">
+                      <ConfirmedBookingCard
+                        masterName={masterName}
+                        startTime={booking.startTime}
+                        endTime={booking.endTime}
+                        onOpenChat={() =>
+                          displayUser?.id &&
+                          navigate(`/chat/${displayUser.id}`)
+                        }
+                      />
+                    </div>
+                  )}
+
+                  {/* Legacy reserved state (no payment) */}
+                  {!isCurrentUserMasterOfBooking &&
+                    booking.status === "reserved" && (
+                      <div className="px-4 pb-4">
+                        <div className="rounded-lg border border-amber-200 bg-amber-50/50 p-4">
+                          <p className="text-sm text-muted-foreground">
+                            Waiting for master approval. You&apos;ll be notified
+                            when your request is reviewed.
+                          </p>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="mt-3"
+                            onClick={() =>
+                              displayUser?.id &&
+                              navigate(`/chat/${displayUser.id}`)
+                            }
+                          >
+                            <MessageCircle className="mr-2 h-4 w-4" />
+                            View messages
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                  {/* Master actions: approve/reject when status is paid */}
+                  {isCurrentUserMasterOfBooking && booking.status === "paid" && (
+                    <div className="flex flex-wrap gap-2 p-4 border-t bg-muted/20">
+                      <Button
+                        size="sm"
                         onClick={async (e) => {
                           e.stopPropagation();
-                          if (displayUser?.id) {
-                            navigate(`/chat/${displayUser.id}`);
+                          await updateSlotStatus(booking.id, "booked");
+                          loadBookings();
+                        }}
+                      >
+                        Approve
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          if (
+                            window.confirm(
+                              `Reject the request from ${displayName}? The slot will become available again.`
+                            )
+                          ) {
+                            await updateSlotStatus(booking.id, "free");
+                            loadBookings();
                           }
                         }}
                       >
-                        send message
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {booking.status === "reserved" &&
-                  !isCurrentUserMasterOfBooking && (
-                    <div style={styles.pendingNote}>
-                      ⏳ Waiting for master approval
+                        Reject
+                      </Button>
                     </div>
                   )}
-              </div>
+
+                  {/* Message button for all */}
+                  <div className="p-4 border-t">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full sm:w-auto"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (displayUser?.id) {
+                          navigate(`/chat/${displayUser.id}`);
+                        }
+                      }}
+                    >
+                      <MessageCircle className="mr-2 h-4 w-4" />
+                      Send message
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             );
           })}
         </div>
       )}
     </div>
   );
-};
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    maxWidth: "1200px",
-    margin: "0 auto",
-    padding: "40px 20px",
-  },
-  loadingContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "60vh",
-  },
-  spinner: {
-    width: "40px",
-    height: "40px",
-    border: "4px solid #e0e0e0",
-    borderTop: "4px solid #3498db",
-    borderRadius: "50%",
-    animation: "spin 1s linear infinite",
-    marginBottom: "20px",
-  },
-  errorContainer: {
-    display: "flex",
-    justifyContent: "center",
-  },
-  error: {
-    color: "#e74c3c",
-    fontSize: "18px",
-    padding: "20px",
-    background: "#fee",
-    borderRadius: "8px",
-  },
-  header: {
-    textAlign: "center",
-    marginBottom: "48px",
-  },
-  title: {
-    fontSize: "42px",
-    fontWeight: 700,
-    color: "#2c3e50",
-    marginBottom: "12px",
-  },
-  subtitle: {
-    fontSize: "18px",
-    color: "#7f8c8d",
-  },
-  emptyState: {
-    textAlign: "center",
-    padding: "60px 20px",
-    background: "white",
-    borderRadius: "16px",
-    boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
-  },
-  emptyIcon: {
-    fontSize: "64px",
-    marginBottom: "20px",
-  },
-  emptyTitle: {
-    fontSize: "24px",
-    fontWeight: 600,
-    marginBottom: "12px",
-  },
-  emptyText: {
-    fontSize: "16px",
-    color: "#7f8c8d",
-  },
-  bookingsList: {
-    display: "grid",
-    gap: "20px",
-  },
-  bookingCard: {
-    background: "white",
-    padding: "24px",
-    borderRadius: "16px",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-    transition: "all 0.3s ease",
-  },
-  cardHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: "20px",
-    paddingBottom: "20px",
-    borderBottom: "1px solid #e0e0e0",
-  },
-  timeInfo: {},
-  date: {
-    fontSize: "18px",
-    fontWeight: 600,
-    marginBottom: "8px",
-  },
-  duration: {
-    fontSize: "14px",
-    color: "#7f8c8d",
-  },
-  statusBadge: {
-    padding: "6px 12px",
-    borderRadius: "20px",
-    color: "white",
-    fontSize: "12px",
-    fontWeight: 600,
-    textTransform: "uppercase",
-  },
-  cardBody: {
-    marginBottom: "16px",
-  },
-  userRow: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: "16px",
-  },
-  userInfo: {
-    display: "flex",
-    alignItems: "center",
-    gap: "16px",
-    cursor: "pointer",
-  },
-  avatar: {
-    width: "56px",
-    height: "56px",
-    borderRadius: "50%",
-    background: "linear-gradient(135deg, #3498db 0%, #2980b9 100%)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "white",
-    fontSize: "24px",
-    fontWeight: 700,
-    flexShrink: 0,
-  },
-  userDetails: {
-    flex: 1,
-  },
-  userName: {
-    fontSize: "20px",
-    fontWeight: 600,
-    marginBottom: "4px",
-  },
-  titleTag: {
-    background: "linear-gradient(135deg, #3498db 0%, #2980b9 100%)",
-    color: "white",
-    padding: "2px 8px",
-    borderRadius: "4px",
-    fontSize: "12px",
-    fontWeight: 600,
-    marginLeft: "8px",
-  },
-  rating: {
-    fontSize: "14px",
-    color: "#7f8c8d",
-  },
-  actionButtons: {
-    display: "flex",
-    gap: "8px",
-    flexShrink: 0,
-  },
-  approveButton: {
-    height: "28px",
-    padding: "0 10px",
-    fontSize: "12px",
-    fontWeight: 600,
-    borderRadius: "6px",
-    border: "none",
-    cursor: "pointer",
-    background: "#27ae60",
-    color: "white",
-  },
-  rejectButton: {
-    height: "28px",
-    padding: "0 10px",
-    fontSize: "12px",
-    fontWeight: 600,
-    borderRadius: "6px",
-    border: "none",
-    cursor: "pointer",
-    background: "#e74c3c",
-    color: "white",
-  },
-  messageButton: {
-    height: "28px",
-    padding: "0 10px",
-    fontSize: "12px",
-    fontWeight: 600,
-    borderRadius: "6px",
-    border: "none",
-    cursor: "pointer",
-    background: "#2563eb",
-    color: "white",
-  },
-  pendingNote: {
-    padding: "12px",
-    background: "#fff9e6",
-    borderLeft: "4px solid #f39c12",
-    borderRadius: "8px",
-    fontSize: "14px",
-    color: "#856404",
-    fontWeight: 500,
-  },
 };
 
 export default MyBookings;
