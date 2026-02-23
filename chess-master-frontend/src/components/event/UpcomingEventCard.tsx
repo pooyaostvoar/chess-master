@@ -20,7 +20,7 @@ export const UpcomingEventCard: React.FC<Props> = ({ event, onClick }) => {
   const durationMinutes = (end.getTime() - start.getTime()) / 60000;
 
   return (
-    <Card className="hover:shadow-lg transition-shadow">
+    <Card className="flex flex-col h-full hover:shadow-lg transition-shadow">
       <CardHeader>
         <CardTitle className="text-xl m-1">
           {event.title ?? "Blitz session"}
@@ -32,26 +32,29 @@ export const UpcomingEventCard: React.FC<Props> = ({ event, onClick }) => {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
-        {/* Price */}
-        <div className="flex items-center gap-2">
-          <DollarSign className="h-4 w-4 text-primary" />
-          <span className="text-lg font-semibold">${event.price ?? 0}</span>
-        </div>
+      <CardContent className="flex flex-col flex-1">
+        {/* This pushes everything below it to the bottom */}
+        <div className="mt-auto space-y-4">
+          {/* Price */}
+          <div className="flex items-center gap-2">
+            <DollarSign className="h-4 w-4 text-primary" />
+            <span className="text-lg font-semibold">${event.price ?? 0}</span>
+          </div>
 
-        {/* Book Button */}
-        <Button
-          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-          onClick={() => {
-            if (!user && !isUserloading) {
-              navigate("/login");
-              return;
-            }
-            onClick();
-          }}
-        >
-          Book Now
-        </Button>
+          {/* Button */}
+          <Button
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+            onClick={() => {
+              if (!user && !isUserloading) {
+                navigate("/login");
+                return;
+              }
+              onClick();
+            }}
+          >
+            Book Now
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
