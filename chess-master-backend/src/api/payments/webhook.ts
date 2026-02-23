@@ -72,6 +72,31 @@ router.post(
         }
       }
 
+      if (event.type === "checkout.session.expired") {
+        const session = event.data.object as any;
+
+        const paymentId = Number(session.metadata.paymentId);
+
+        const payment = await paymentRepo.findOne({
+          where: { id: paymentId },
+          relations: { slot: { master: true } },
+        });
+
+        if (!payment) {
+          return res.json({ received: true });
+        }
+
+        // Session expired → slot never paid → safe to release
+        payment.status = PaymentStatus.Failed;
+        await paymentRepo.save(payment);
+
+        await updateSlotStatus(
+          payment.slot.id,
+          payment.slot.master.id,
+          SlotStatus.Free
+        );
+      }
+
       res.json({ received: true });
     } catch (err) {
       console.error("Webhook error:", err);

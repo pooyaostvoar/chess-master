@@ -253,7 +253,7 @@ export async function updateSlot(
   }
 
   // Prevent updating slots in the past
-  console.log("updatingggg");
+
   await repo
     .createQueryBuilder()
     .update(ScheduleSlot)
