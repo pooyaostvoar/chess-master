@@ -23,6 +23,7 @@ export interface UserFilters {
   isMaster?: boolean;
   minRating?: number;
   maxRating?: number;
+  limit?: number;
 }
 
 export interface SafeUser {
@@ -192,6 +193,10 @@ export async function findUsers(filters: UserFilters): Promise<User[]> {
     qb = qb.andWhere("user.rating <= :maxRating", {
       maxRating: filters.maxRating,
     });
+  }
+
+  if (filters.limit) {
+    qb = qb.limit(filters.limit);
   }
 
   return await qb.getMany();

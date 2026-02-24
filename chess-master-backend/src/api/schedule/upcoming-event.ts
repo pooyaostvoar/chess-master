@@ -20,6 +20,7 @@ router.get("", async (req, res) => {
       },
       relations: { master: true },
       order: { startTime: "ASC" },
+      ...(req.query.limit ? { take: Number(req.query.limit) } : {}),
     });
     res.json({
       succsess: true,

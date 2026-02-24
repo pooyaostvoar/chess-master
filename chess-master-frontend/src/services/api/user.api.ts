@@ -66,6 +66,7 @@ export const findUsers = async (filters: {
   minRating?: number;
   maxRating?: number;
   title?: string;
+  limit?: number;
 }): Promise<{ status: string; users: User[] }> => {
   try {
     const response = await apiClient.get("/users", { params: filters });

@@ -36,6 +36,11 @@ export const userQuerySchema = z.object({
   username: z.string().min(1).optional(),
   email: z.string().optional(),
   title: z.string().min(1).optional(),
+  limit: z
+    .string()
+    .regex(/^\d+$/)
+    .transform((val) => parseInt(val, 10))
+    .optional(),
 
   isMaster: z
     .enum(["true", "false"])

@@ -7,7 +7,7 @@ export function useUpcomingEvents(limit?: number | null) {
 
   const loadEvents = async () => {
     try {
-      const data = await getUpcomingEvents();
+      const data = await getUpcomingEvents(limit);
       limit ? setEvents(data.slice(0, limit)) : setEvents(data);
     } finally {
       setLoading(false);

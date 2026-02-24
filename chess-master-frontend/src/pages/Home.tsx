@@ -18,7 +18,7 @@ import { FinishedEventsSection } from "../components/event/FinishedEventsSection
 import { HomeSectionWrapper } from "../components/home/HomeSectionWrapper";
 import { UpcomingEventsSection } from "../components/event/UpcomingEventsSection";
 import { useUpcomingEvents } from "../hooks/useUpcomingEvents";
-import keyBy from "lodash-es/keyBy";
+
 import { sortMastersByEvents } from "../services/users";
 
 const Home: React.FC = () => {
@@ -34,7 +34,7 @@ const Home: React.FC = () => {
     events,
     loading: loadingUpcomingEvents,
     refetch: loadEvents,
-  } = useUpcomingEvents();
+  } = useUpcomingEvents(3);
 
   const loadBookings = async () => {
     setBookingsLoading(true);
@@ -60,7 +60,7 @@ const Home: React.FC = () => {
 
   const loadData = async () => {
     try {
-      const response = await findUsers({ isMaster: true });
+      const response = await findUsers({ isMaster: true, limit: 3 });
       const mastersWithRating = response.users.filter((m) => m.rating);
 
       const sorted = mastersWithRating.sort(

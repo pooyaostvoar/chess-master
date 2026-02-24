@@ -116,9 +116,11 @@ export const getFinishedEvents = async () => {
   }
 };
 
-export const getUpcomingEvents = async () => {
+export const getUpcomingEvents = async (limit?: number | null) => {
   try {
-    const response = await apiClient.get(`/schedule/upcoming-events`);
+    const response = await apiClient.get(
+      `/schedule/upcoming-events${limit ? `?limit=${limit}` : ""}`
+    );
 
     return response.data.events;
   } catch (error: any) {
