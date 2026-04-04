@@ -1,16 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { login } from "../services/auth";
 import { useUser } from "../contexts/UserContext";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { API_URL } from "../services/config";
 import { GoogleAuthButton } from "../components/auth/GoogleAuthButton";
+import { LichessAuthButton } from "../components/auth/LichessAuthButton";
 
 const Login: React.FC = () => {
   const location = useLocation();
 
   const searchParams = new URLSearchParams(location.search);
   const redirect = searchParams.get("redirect");
+  const error = searchParams.get("error");
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -20,6 +22,22 @@ const Login: React.FC = () => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const { setUser } = useUser();
+
+  useEffect(() => {
+    if (error === "lichess_email_required") {
+      setMessage("Your Lichess account needs an email address before it can be used here.");
+      return;
+    }
+
+    if (error === "lichess_invalid_state" || error === "lichess_session_expired") {
+      setMessage("Your Lichess sign-in session expired. Please try again.");
+      return;
+    }
+
+    if (error === "lichess_auth_failed") {
+      setMessage("Lichess sign-in failed. Please try again.");
+    }
+  }, [error]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,6 +67,10 @@ const Login: React.FC = () => {
 
   const handleGoogleLogin = () => {
     window.location.href = `${API_URL}/auth/google`;
+  };
+
+  const handleLichessLogin = () => {
+    window.location.href = `${API_URL}/auth/lichess?mode=login`;
   };
 
   return (
@@ -95,6 +117,14 @@ const Login: React.FC = () => {
           <GoogleAuthButton
             label="Sign in with Google"
             onClick={handleGoogleLogin}
+            disabled={loading}
+          />
+
+          <div style={{ height: "12px" }} />
+
+          <LichessAuthButton
+            label="Sign in with Lichess"
+            onClick={handleLichessLogin}
             disabled={loading}
           />
 

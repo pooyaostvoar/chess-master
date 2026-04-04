@@ -1,5 +1,16 @@
 import { z } from "zod";
 
+export const lichessPerfSchema = z.object({
+  rating: z.number().int(),
+  games: z.number().int().optional(),
+  rd: z.number().int().optional(),
+  prog: z.number().int().optional(),
+  prov: z.boolean().optional(),
+  rank: z.number().int().optional(),
+});
+
+export const lichessRatingsSchema = z.record(z.string(), lichessPerfSchema);
+
 export const userSchemaBase = z.object({
   id: z.number().int().positive(),
 
@@ -20,6 +31,8 @@ export const userSchemaBase = z.object({
   chesscomUrl: z.string().nullish(),
 
   lichessUrl: z.string().nullish(),
+
+  lichessRatings: lichessRatingsSchema.nullish(),
 
   schedule: z.array(z.any()).nullish(),
 

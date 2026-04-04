@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { getMe, updateUser } from "../services/auth";
 import { useUser } from "../contexts/UserContext";
+import { API_URL } from "../services/config";
 import {
   Card,
   CardContent,
@@ -17,6 +18,7 @@ import { ChessPlatformSection } from "../components/profile/ChessPlatformSection
 import { PricingSection } from "../components/profile/PricingSection";
 import { AccountTypeSection } from "../components/profile/AccountTypeSection";
 import { LanguagesSection } from "../components/profile/LanguagesSection";
+import { LichessRatingsSection } from "../components/profile/LichessRatingsSection";
 
 const EditProfile: React.FC = () => {
   const [formData, setFormData] = useState<any>(null);
@@ -28,6 +30,7 @@ const EditProfile: React.FC = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const navigate = useNavigate();
   const { setUser } = useUser();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -47,6 +50,34 @@ const EditProfile: React.FC = () => {
 
     checkAuth();
   }, [navigate]);
+
+  useEffect(() => {
+    const error = searchParams.get("error");
+    const status = searchParams.get("status");
+
+    if (status === "lichess_synced") {
+      setMessage("Lichess profile synced successfully.");
+      setMessageType("success");
+      return;
+    }
+
+    if (error === "lichess_account_already_linked") {
+      setMessage("That Lichess account is already linked to another user.");
+      setMessageType("error");
+      return;
+    }
+
+    if (error === "lichess_link_requires_login") {
+      setMessage("Please sign in before linking a Lichess account.");
+      setMessageType("error");
+      return;
+    }
+
+    if (error === "lichess_auth_failed") {
+      setMessage("Lichess sync failed. Please try again.");
+      setMessageType("error");
+    }
+  }, [searchParams]);
 
   if (!formData) {
     return (
@@ -113,6 +144,10 @@ const EditProfile: React.FC = () => {
 
   const handlePricingChange = (value: number | null) => {
     setFormData({ ...formData, hourlyRate: value });
+  };
+
+  const handleLichessSync = () => {
+    window.location.href = `${API_URL}/auth/lichess?mode=link`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -202,6 +237,26 @@ const EditProfile: React.FC = () => {
               chesscomUrl={formData.chesscomUrl}
               lichessUrl={formData.lichessUrl}
               onChange={handleChange}
+            />
+
+            <div className="rounded-lg border bg-muted/30 p-4">
+              <div className="flex items-start justify-between gap-4 flex-wrap">
+                <div>
+                  <h3 className="text-lg font-semibold">Sync from Lichess</h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Connect your Lichess account to import your title and ratings
+                    without changing your coaching or pricing details.
+                  </p>
+                </div>
+                <Button type="button" variant="outline" onClick={handleLichessSync}>
+                  {formData.lichessId ? "Refresh from Lichess" : "Connect Lichess"}
+                </Button>
+              </div>
+            </div>
+
+            <LichessRatingsSection
+              lichessRatings={formData.lichessRatings}
+              lichessUrl={formData.lichessUrl}
             />
 
             {formData.isMaster && (

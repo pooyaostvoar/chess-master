@@ -5,6 +5,7 @@ import "reflect-metadata";
 import bodyParser from "body-parser";
 import { AppDataSource } from "./database/datasource";
 import { googleRouter } from "./api/google";
+import { lichessRouter } from "./api/lichess";
 import { passwordAuthRouter } from "./api/auth-password";
 import cors from "cors";
 import { passport } from "./middleware/passport";
@@ -72,6 +73,7 @@ export function createApp() {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use("/auth", googleRouter);
+  app.use("/auth", lichessRouter);
   app.use("", passwordAuthRouter);
   app.use("/admin", adminAuthRouter);
   app.use("/admin/impersonate", impersonateRouter);

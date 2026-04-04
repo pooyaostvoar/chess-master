@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { getMe } from "../services/auth";
+import type { LichessRatings } from "../services/api/user.api";
 
 export interface User {
   id: number;
@@ -12,6 +13,7 @@ export interface User {
   profilePicture?: string | null;
   chesscomUrl?: string | null;
   lichessUrl?: string | null;
+  lichessRatings?: LichessRatings | null;
 }
 
 interface UserContextType {

@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { signup } from "../services/auth";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { API_URL } from "../services/config";
 import { GoogleAuthButton } from "../components/auth/GoogleAuthButton";
+import { LichessAuthButton } from "../components/auth/LichessAuthButton";
 
 const Signup: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -17,6 +18,23 @@ const Signup: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const masterParam = searchParams.get("master");
+  const error = searchParams.get("error");
+
+  useEffect(() => {
+    if (error === "lichess_email_required") {
+      setMessage("Your Lichess account needs an email address before it can be used here.");
+      return;
+    }
+
+    if (error === "lichess_invalid_state" || error === "lichess_session_expired") {
+      setMessage("Your Lichess sign-up session expired. Please try again.");
+      return;
+    }
+
+    if (error === "lichess_auth_failed") {
+      setMessage("Lichess sign-up failed. Please try again.");
+    }
+  }, [error]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,6 +69,9 @@ const Signup: React.FC = () => {
   const handleGoogleLogin = () => {
     const url = `${API_URL}/auth/google` + (isMaster ? "?role=master" : "");
     window.location.href = url;
+  };
+  const handleLichessLogin = () => {
+    window.location.href = `${API_URL}/auth/lichess?mode=signup`;
   };
   return (
     <div style={styles.container}>
@@ -98,6 +119,14 @@ const Signup: React.FC = () => {
           <GoogleAuthButton
             label="Sign up with Google"
             onClick={handleGoogleLogin}
+            disabled={loading}
+          />
+
+          <div style={{ height: "12px" }} />
+
+          <LichessAuthButton
+            label="Sign up with Lichess"
+            onClick={handleLichessLogin}
             disabled={loading}
           />
 

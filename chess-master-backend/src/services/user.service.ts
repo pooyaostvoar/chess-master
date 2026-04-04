@@ -1,5 +1,5 @@
 import { AppDataSource } from "../database/datasource";
-import { User } from "../database/entity/user";
+import { LichessRatingsMap, User } from "../database/entity/user";
 
 export interface UpdateUserData {
   email?: string;
@@ -11,6 +11,7 @@ export interface UpdateUserData {
   profilePicture?: string | null;
   chesscomUrl?: string | null;
   lichessUrl?: string | null;
+  lichessRatings?: LichessRatingsMap | null;
   hourlyRate?: number | null;
   languages?: string[] | null;
   phoneNumber?: string | null;
@@ -37,6 +38,7 @@ export interface SafeUser {
   profilePicture: string | null;
   chesscomUrl: string | null;
   lichessUrl: string | null;
+  lichessRatings: LichessRatingsMap | null;
   hourlyRate: number | null;
   languages?: string[] | null;
 }
@@ -56,6 +58,7 @@ export function formatUser(user: User): SafeUser {
     profilePicture: user.profilePicture,
     chesscomUrl: user.chesscomUrl,
     lichessUrl: user.lichessUrl,
+    lichessRatings: user.lichessRatings,
     hourlyRate: user.hourlyRate,
     languages: user.languages,
   };
@@ -101,6 +104,7 @@ export async function getAuthenticatedUser(
       "profilePicture",
       "chesscomUrl",
       "lichessUrl",
+      "lichessRatings",
       "hourlyRate",
     ],
   });
@@ -135,6 +139,9 @@ export async function updateUser(
     user.profilePicture = data.profilePicture;
   if (data.chesscomUrl !== undefined) user.chesscomUrl = data.chesscomUrl;
   if (data.lichessUrl !== undefined) user.lichessUrl = data.lichessUrl;
+  if (data.lichessRatings !== undefined) {
+    user.lichessRatings = data.lichessRatings;
+  }
   if (data.hourlyRate !== undefined) {
     user.hourlyRate = data.hourlyRate;
   }

@@ -10,6 +10,7 @@ import {
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { getPublicUser } from "../services/api/user.api";
+import { LichessRatingsSection } from "../components/profile/LichessRatingsSection";
 
 const PublicUserProfile: React.FC = () => {
   const navigate = useNavigate();
@@ -154,6 +155,11 @@ const PublicUserProfile: React.FC = () => {
               </div>
             </div>
           )}
+
+          <LichessRatingsSection
+            lichessRatings={user.lichessRatings}
+            lichessUrl={user.lichessUrl}
+          />
 
           {/* PRICING */}
           {user.isMaster && user.hourlyRate !== null && (
