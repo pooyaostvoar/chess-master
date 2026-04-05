@@ -156,6 +156,7 @@ function trimUser(user: User) {
     profilePicture: user.profilePicture,
     chesscomUrl: user.chesscomUrl,
     lichessUrl: user.lichessUrl,
+    lichessRatings: user.lichessRatings,
     phoneNumber: user.phoneNumber,
   };
 }

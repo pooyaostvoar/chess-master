@@ -9,6 +9,17 @@ import {
 import { ScheduleSlot } from "./schedule-slots";
 import { Payment } from "./payment";
 
+export interface LichessPerfData {
+  rating?: number;
+  games?: number;
+  rd?: number;
+  prog?: number;
+  prov?: boolean;
+  rank?: number;
+}
+
+export type LichessRatingsMap = Record<string, LichessPerfData>;
+
 @Entity("users")
 export class User {
   @PrimaryGeneratedColumn()
@@ -67,6 +78,15 @@ export class User {
 
   @Column("text", { nullable: true })
   googleRefreshToken: string | null;
+
+  @Column("text", { nullable: true, unique: true })
+  lichessId: string | null;
+
+  @Column("text", { nullable: true })
+  lichessUsername: string | null;
+
+  @Column("jsonb", { nullable: true })
+  lichessRatings: LichessRatingsMap | null;
 
   @Column("text", { array: true, nullable: true })
   languages?: string[] | null;

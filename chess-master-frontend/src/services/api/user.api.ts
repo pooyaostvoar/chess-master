@@ -1,5 +1,16 @@
 import { apiClient, handleApiError } from "./client";
 
+export interface LichessPerf {
+  rating: number;
+  games?: number;
+  rd?: number;
+  prog?: number;
+  prov?: boolean;
+  rank?: number;
+}
+
+export type LichessRatings = Record<string, LichessPerf>;
+
 export interface UpdateUserData {
   email?: string;
   username?: string;
@@ -10,6 +21,7 @@ export interface UpdateUserData {
   profilePicture?: string | null;
   chesscomUrl?: string | null;
   lichessUrl?: string | null;
+  lichessRatings?: LichessRatings | null;
   hourlyRate?: number | null;
   languages?: string[] | null;
   phoneNumber?: string | null;
@@ -26,6 +38,7 @@ export interface User {
   profilePicture?: string | null;
   chesscomUrl?: string | null;
   lichessUrl?: string | null;
+  lichessRatings?: LichessRatings | null;
   hourlyRate?: number | null;
   languages?: string[] | null;
 }

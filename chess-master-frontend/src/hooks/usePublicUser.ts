@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getPublicUser } from "../services/api/user.api";
+import type { LichessRatings } from "../services/api/user.api";
 
 export interface PublicUser {
   id: number;
@@ -11,6 +12,7 @@ export interface PublicUser {
   bio?: string;
   chesscomUrl?: string;
   lichessUrl?: string;
+  lichessRatings?: LichessRatings | null;
   isMaster?: boolean;
   hourlyRate?: number | null;
 }

@@ -30,7 +30,7 @@ passwordAuthRouter.post(
     }
 
     // Send user info in response
-    const { id, username, email, isMaster, title, rating, bio } =
+    const { id, username, email, isMaster, title, rating, bio, lichessRatings } =
       req.user as any;
 
     res
@@ -40,7 +40,7 @@ passwordAuthRouter.post(
       })
       .send({
         status: "success",
-        user: { id, username, email, isMaster, title, rating, bio },
+        user: { id, username, email, isMaster, title, rating, bio, lichessRatings },
       });
   }
 );
