@@ -23,6 +23,7 @@ import { useMasterOnboarding } from "../hooks/useMasterOnboarding";
 import { OnboardingHint } from "./onboarding/OnboardingHint";
 import AvatarHint from "./onboarding/AvatarHint";
 import { getUnreadSenders } from "../services/api/messages.api";
+import { MEDIA_URL } from "../services/config";
 
 const Layout: React.FC = () => {
   const [unreadCount, setUnreadCount] = React.useState(0);
@@ -103,20 +104,6 @@ const Layout: React.FC = () => {
                 Chess Master
               </span>
             </Link>
-            {/* <Link
-              to="/home"
-              className="flex items-center gap-3 text-xl font-bold"
-            >
-              <img
-                src="/logo.png"
-                alt="ChessWithMasters logo"
-                className="h-20 w-20"
-              /> */}
-
-            {/* <span className={user ? "" : "hidden sm:inline"}>
-                ChessWithMasters
-              </span> */}
-            {/* </Link> */}
 
             <div className="flex items-center gap-8">
               {!isMobile && (
@@ -156,9 +143,9 @@ const Layout: React.FC = () => {
                           }
                         `}
                       >
-                        {user.profilePicture ? (
+                        {user.profilePictureThumbnailUrl ? (
                           <img
-                            src={user.profilePicture}
+                            src={MEDIA_URL + user.profilePictureThumbnailUrl}
                             alt={user.username}
                             className="w-full h-full object-cover rounded-full"
                           />

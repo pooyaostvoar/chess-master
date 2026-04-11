@@ -14,6 +14,8 @@ export interface User {
   chesscomUrl?: string | null;
   lichessUrl?: string | null;
   lichessRatings?: LichessRatings | null;
+  profilePictureThumbnailUrl?: string | null;
+  profilePictureUrl?: string | null;
 }
 
 interface UserContextType {

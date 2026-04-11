@@ -63,6 +63,8 @@ services:
       - brevo_api_key
       - stripe_secret_key_dev
       - stripe_webhook_secret_dev
+      - minio_access_key_id
+      - minio_secret_access_key
       
     depends_on:
       - db
@@ -103,6 +105,25 @@ services:
       - ./pgadmin/servers.json:/pgadmin4/servers.json
     depends_on:
       - db
+
+  minio:
+    image: minio/minio:latest
+    container_name: chess_minio_dev
+    entrypoint: >
+      /bin/sh -c "
+      export MINIO_ROOT_USER=$(cat /run/secrets/minio_access_key_id) &&
+      export MINIO_ROOT_PASSWORD=$(cat /run/secrets/minio_secret_access_key) &&
+      exec minio server /data --console-address ':9001'
+      "
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    secrets:
+      - minio_access_key_id
+      - minio_secret_access_key
+
 secrets:
   google_client_id:
     file: ./secrets/google_client_id.txt
@@ -124,6 +145,11 @@ secrets:
     file: ./secrets/stripe_secret_key_dev.txt
   stripe_webhook_secret_dev:
     file: ./secrets/stripe_webhook_secret_dev.txt
+  minio_access_key_id:
+    file: ./secrets/minio_access_key_id.txt
+  minio_secret_access_key:
+    file: ./secrets/minio_secret_access_key.txt
 volumes:
   postgres_data:
   redis_data:
+  minio_data:

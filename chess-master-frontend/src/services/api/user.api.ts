@@ -35,7 +35,8 @@ export interface User {
   rating?: number | null;
   bio?: string | null;
   isMaster: boolean;
-  profilePicture?: string | null;
+  profilePictureUrl?: string | null;
+  profilePictureThumbnailUrl?: string | null;
   chesscomUrl?: string | null;
   lichessUrl?: string | null;
   lichessRatings?: LichessRatings | null;
@@ -93,4 +94,18 @@ export const getPublicUser = async (userId: number) => {
   const res = await apiClient.get(`/users/${userId}`);
   if (!res.data.user) throw new Error("User not found");
   return res.data.user;
+};
+
+export const uploadProfilePicture = async (file: File) => {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const res = await apiClient.post(`/users/images`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  if (!res.data.success) throw new Error("Upload failed");
+  return res.data;
 };

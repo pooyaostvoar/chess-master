@@ -50,6 +50,12 @@ export class User {
   profilePicture: string | null;
 
   @Column("text", { nullable: true })
+  profilePictureThumbnailUrl: string | null;
+
+  @Column("text", { nullable: true })
+  profilePictureUrl: string | null;
+
+  @Column("text", { nullable: true })
   chesscomUrl: string | null;
 
   @Column("text", { nullable: true })
