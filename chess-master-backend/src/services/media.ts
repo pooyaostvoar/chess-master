@@ -2,6 +2,7 @@ import {
   PutObjectCommand,
   CreateBucketCommand,
   HeadBucketCommand,
+  PutBucketPolicyCommand,
 } from "@aws-sdk/client-s3";
 
 import crypto from "crypto";
@@ -19,6 +20,23 @@ async function ensureBucketExists() {
   } catch (err: any) {
     if (err.$metadata?.httpStatusCode === 404) {
       await getS3Client().send(new CreateBucketCommand({ Bucket: BUCKET }));
+
+      await getS3Client().send(
+        new PutBucketPolicyCommand({
+          Bucket: BUCKET,
+          Policy: JSON.stringify({
+            Version: "2012-10-17",
+            Statement: [
+              {
+                Effect: "Allow",
+                Principal: "*",
+                Action: ["s3:GetObject"],
+                Resource: [`arn:aws:s3:::${BUCKET}/*`],
+              },
+            ],
+          }),
+        })
+      );
     } else {
       throw err;
     }
