@@ -4,6 +4,7 @@ import { CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { ShieldCheck } from "lucide-react";
 import type { User } from "../../services/auth";
+import { MEDIA_URL } from "../../services/config";
 
 interface AccountHeaderProps {
   user: User;
@@ -28,9 +29,9 @@ export const AccountHeader: React.FC<AccountHeaderProps> = ({
       className="flex items-center gap-4 hover:opacity-90 transition"
     >
       {/* Avatar */}
-      {user.profilePicture ? (
+      {user.profilePictureThumbnailUrl ? (
         <img
-          src={user.profilePicture}
+          src={MEDIA_URL + user.profilePictureThumbnailUrl}
           alt={user.username}
           className="w-14 h-14 rounded-full object-cover border-2 border-primary"
         />
@@ -72,7 +73,9 @@ export const AccountHeader: React.FC<AccountHeaderProps> = ({
               </Badge>
             ))}
             {extraCount > 0 && (
-              <span className="text-xs text-muted-foreground">+{extraCount}</span>
+              <span className="text-xs text-muted-foreground">
+                +{extraCount}
+              </span>
             )}
           </div>
         )}

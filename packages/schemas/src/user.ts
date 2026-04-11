@@ -26,7 +26,9 @@ export const userSchemaBase = z.object({
 
   bio: z.string().nullish(),
 
-  profilePicture: z.url().nullish(),
+  profilePictureThumbnailUrl: z.string().nullish(),
+
+  profilePictureUrl: z.string().nullish(),
 
   chesscomUrl: z.string().nullish(),
 

@@ -19,9 +19,11 @@ import { PricingSection } from "../components/profile/PricingSection";
 import { AccountTypeSection } from "../components/profile/AccountTypeSection";
 import { LanguagesSection } from "../components/profile/LanguagesSection";
 import { LichessRatingsSection } from "../components/profile/LichessRatingsSection";
+import { uploadProfilePicture } from "../services/api/user.api";
 
 const EditProfile: React.FC = () => {
   const [formData, setFormData] = useState<any>(null);
+
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"success" | "error">(
     "success"
@@ -42,8 +44,8 @@ const EditProfile: React.FC = () => {
           ...response.user,
         };
         setFormData(userData);
-        if (response.user.profilePicture) {
-          setPreviewImage(response.user.profilePicture);
+        if (response.user.profilePictureUrl) {
+          setPreviewImage(response.user.profilePictureUrl);
         }
       }
     };
@@ -96,44 +98,41 @@ const EditProfile: React.FC = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith("image/")) {
-        setMessage("Please select an image file");
-        setMessageType("error");
-        return;
-      }
+    if (!file) return;
 
-      if (file.size > 2 * 1024 * 1024) {
-        setMessage("Image size should be less than 2MB");
-        setMessageType("error");
-        return;
-      }
+    if (!file.type.startsWith("image/")) {
+      setMessage("Please select an image file");
+      setMessageType("error");
+      return;
+    }
 
-      const reader = new FileReader();
-      reader.onerror = () => {
-        setMessage("Error reading image file. Please try again.");
-        setMessageType("error");
-      };
-      reader.onloadend = () => {
-        try {
-          const base64String = reader.result as string;
-          if (!base64String) {
-            throw new Error("Failed to read image");
-          }
-          setPreviewImage(base64String);
-          setFormData({ ...formData, profilePicture: base64String });
-          setMessage("Image loaded successfully");
-          setMessageType("success");
-          setTimeout(() => setMessage(""), 2000);
-        } catch (err) {
-          console.error("Error processing image:", err);
-          setMessage("Error processing image. Please try again.");
-          setMessageType("error");
-        }
-      };
-      reader.readAsDataURL(file);
+    if (file.size > 5 * 1024 * 1024) {
+      setMessage("Image size should be less than 5MB");
+      setMessageType("error");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const result = await uploadProfilePicture(file);
+
+      setPreviewImage(result.url);
+      setUser({
+        ...formData,
+        profilePictureUrl: result.url,
+        profilePictureThumbnailUrl: result.url,
+      });
+      setMessage("Image uploaded successfully");
+      setMessageType("success");
+      setTimeout(() => setMessage(""), 2000);
+    } catch (err) {
+      console.error("Error uploading image:", err);
+      setMessage("Error uploading image. Please try again.");
+      setMessageType("error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -163,7 +162,6 @@ const EditProfile: React.FC = () => {
         rating: formData.rating,
         bio: formData.bio,
         isMaster: formData.isMaster,
-        profilePicture: formData.profilePicture,
         chesscomUrl: formData.chesscomUrl,
         lichessUrl: formData.lichessUrl,
         hourlyRate: formData.hourlyRate,
@@ -175,11 +173,6 @@ const EditProfile: React.FC = () => {
         setMessage("Profile updated successfully!");
         setMessageType("success");
         setUser(data.user);
-        if (data.user.profilePicture) {
-          setPreviewImage(data.user.profilePicture);
-        } else {
-          setPreviewImage(null);
-        }
       } else {
         setMessage("Something went wrong");
         setMessageType("error");
@@ -244,12 +237,18 @@ const EditProfile: React.FC = () => {
                 <div>
                   <h3 className="text-lg font-semibold">Sync from Lichess</h3>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Connect your Lichess account to import your title and ratings
-                    without changing your coaching or pricing details.
+                    Connect your Lichess account to import your title and
+                    ratings without changing your coaching or pricing details.
                   </p>
                 </div>
-                <Button type="button" variant="outline" onClick={handleLichessSync}>
-                  {formData.lichessId ? "Refresh from Lichess" : "Connect Lichess"}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleLichessSync}
+                >
+                  {formData.lichessId
+                    ? "Refresh from Lichess"
+                    : "Connect Lichess"}
                 </Button>
               </div>
             </div>
