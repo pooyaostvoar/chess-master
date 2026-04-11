@@ -137,3 +137,4 @@ secrets:
     file: ./secrets/minio_secret_access_key.txt
 volumes:
   db_data:
+  minio_data:
