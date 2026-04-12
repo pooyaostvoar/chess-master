@@ -90,9 +90,9 @@ export const UpcomingSessionsSection: React.FC<
                   navigate(`/users/${displayUser?.id}`);
                 }}
               >
-                {displayUser?.profilePicture ? (
+                {displayUser?.profilePictureThumbnailUrl ? (
                   <img
-                    src={displayUser.profilePicture}
+                    src={displayUser.profilePictureThumbnailUrl}
                     alt={displayName}
                     className="w-8 h-8 rounded-full object-cover"
                   />

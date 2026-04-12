@@ -11,7 +11,7 @@ interface FinishedEvent {
   master: {
     id: number;
     username: string;
-    profilePicture?: string;
+    profilePictureThumbnailUrl?: string;
   };
 }
 

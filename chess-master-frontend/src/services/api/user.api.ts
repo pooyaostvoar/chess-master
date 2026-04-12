@@ -18,7 +18,6 @@ export interface UpdateUserData {
   rating?: number | null;
   bio?: string | null;
   isMaster?: boolean;
-  profilePicture?: string | null;
   chesscomUrl?: string | null;
   lichessUrl?: string | null;
   lichessRatings?: LichessRatings | null;

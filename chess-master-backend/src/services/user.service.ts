@@ -8,7 +8,7 @@ export interface UpdateUserData {
   rating?: number | null;
   bio?: string | null;
   isMaster?: boolean;
-  profilePicture?: string | null;
+  profilePictureThumbnailUrl?: string | null;
   chesscomUrl?: string | null;
   lichessUrl?: string | null;
   lichessRatings?: LichessRatingsMap | null;
@@ -35,7 +35,7 @@ export interface SafeUser {
   rating: number | null;
   bio: string | null;
   isMaster: boolean;
-  profilePicture: string | null;
+  profilePictureThumbnailUrl: string | null;
   chesscomUrl: string | null;
   lichessUrl: string | null;
   lichessRatings: LichessRatingsMap | null;
@@ -55,7 +55,7 @@ export function formatUser(user: User): SafeUser {
     rating: user.rating,
     bio: user.bio,
     isMaster: user.isMaster,
-    profilePicture: user.profilePicture,
+    profilePictureThumbnailUrl: user.profilePictureThumbnailUrl,
     chesscomUrl: user.chesscomUrl,
     lichessUrl: user.lichessUrl,
     lichessRatings: user.lichessRatings,
@@ -72,7 +72,7 @@ export function formatUserMinimal(user: User) {
     id: user.id,
     username: user.username,
     email: user.email,
-    profilePicture: user.profilePicture,
+    profilePictureThumbnailUrl: user.profilePictureThumbnailUrl,
   };
 }
 
@@ -82,34 +82,6 @@ export function formatUserMinimal(user: User) {
 export async function getUserById(userId: number): Promise<User | null> {
   const userRepo = AppDataSource.getRepository(User);
   return await userRepo.findOne({ where: { id: userId } });
-}
-
-/**
- * Get authenticated user with safe fields
- */
-export async function getAuthenticatedUser(
-  userId: number
-): Promise<SafeUser | null> {
-  const userRepo = AppDataSource.getRepository(User);
-  const user = await userRepo.findOne({
-    where: { id: userId },
-    select: [
-      "id",
-      "username",
-      "email",
-      "title",
-      "rating",
-      "bio",
-      "isMaster",
-      "profilePicture",
-      "chesscomUrl",
-      "lichessUrl",
-      "lichessRatings",
-      "hourlyRate",
-    ],
-  });
-
-  return user;
 }
 
 /**
@@ -135,8 +107,8 @@ export async function updateUser(
   if (data.rating !== undefined) user.rating = data.rating;
   if (data.bio !== undefined) user.bio = data.bio;
   if (data.isMaster !== undefined) user.isMaster = data.isMaster;
-  if (data.profilePicture !== undefined)
-    user.profilePicture = data.profilePicture;
+  if (data.profilePictureThumbnailUrl !== undefined)
+    user.profilePictureThumbnailUrl = data.profilePictureThumbnailUrl;
   if (data.chesscomUrl !== undefined) user.chesscomUrl = data.chesscomUrl;
   if (data.lichessUrl !== undefined) user.lichessUrl = data.lichessUrl;
   if (data.lichessRatings !== undefined) {

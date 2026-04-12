@@ -10,7 +10,6 @@ export interface User {
   title?: string | null;
   rating?: number | null;
   bio?: string | null;
-  profilePicture?: string | null;
   chesscomUrl?: string | null;
   lichessUrl?: string | null;
   lichessRatings?: LichessRatings | null;

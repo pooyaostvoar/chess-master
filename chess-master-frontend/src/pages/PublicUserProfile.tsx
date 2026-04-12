@@ -67,9 +67,9 @@ const PublicUserProfile: React.FC = () => {
             <Badge className="absolute top-4 right-4">Master</Badge>
           )}
 
-          {user.profilePicture ? (
+          {user.profilePictureUrl ? (
             <img
-              src={user.profilePicture}
+              src={user.profilePictureUrl}
               alt={user.username}
               className="w-32 h-32 rounded-full mx-auto object-cover
                          border-4 border-primary shadow-md"
