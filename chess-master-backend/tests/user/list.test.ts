@@ -49,7 +49,7 @@ describe("GET /users", () => {
         title: u.title,
         rating: u.rating,
         bio: null,
-        profilePicture: null,
+        profilePictureThumbnailUrl: null,
         chesscomUrl: null,
         lichessUrl: null,
         password: u.hash,

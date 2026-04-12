@@ -19,7 +19,7 @@ export type AdminUser = {
   bio: string | null;
   chesscomUrl: string | null;
   lichessUrl: string | null;
-  profilePicture: string | null;
+  profilePictureThumbnailUrl: string | null;
 };
 
 export type AdminUserListResponse = {

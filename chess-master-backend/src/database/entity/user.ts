@@ -47,9 +47,6 @@ export class User {
   bio: string | null;
 
   @Column("text", { nullable: true })
-  profilePicture: string | null;
-
-  @Column("text", { nullable: true })
   profilePictureThumbnailUrl: string | null;
 
   @Column("text", { nullable: true })

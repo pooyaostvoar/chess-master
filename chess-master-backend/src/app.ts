@@ -1,6 +1,5 @@
 import express, { Express } from "express";
-// import session from "express-session";
-//typeorm
+
 import "reflect-metadata";
 import bodyParser from "body-parser";
 import { AppDataSource } from "./database/datasource";
@@ -10,11 +9,10 @@ import { passwordAuthRouter } from "./api/auth-password";
 import cors from "cors";
 import { passport } from "./middleware/passport";
 const cookieParser = require("cookie-parser");
-// import RedisStore from "connect-redis";
-// import { createClient } from "redis";
+
 import { usersRouter } from "./api/user/router";
 import { scheduleRouter } from "./api/schedule/router";
-// import { readSecret } from "./utils/secret";
+
 import { adminAuthRouter } from "./api/admin-auth";
 import { adminUsersRouter } from "./api/admin-users";
 import { adminStatsRouter } from "./api/admin-stats";

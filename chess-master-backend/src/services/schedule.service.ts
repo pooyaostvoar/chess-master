@@ -31,7 +31,7 @@ export interface SafeSlot {
     email: string;
     title: string | null;
     rating: number | null;
-    profilePicture: string | null;
+    profilePictureThumbnailUrl: string | null;
     chesscomUrl: string | null;
     lichessUrl: string | null;
   };
@@ -39,7 +39,7 @@ export interface SafeSlot {
     id: number;
     username: string;
     email: string;
-    profilePicture: string | null;
+    profilePictureThumbnailUrl: string | null;
   } | null;
   price: number | null;
 }
@@ -64,7 +64,7 @@ export function formatSlot(slot: ScheduleSlot): SafeSlot {
       email: slot.master.email,
       title: slot.master.title,
       rating: slot.master.rating,
-      profilePicture: slot.master.profilePicture,
+      profilePictureThumbnailUrl: slot.master.profilePictureThumbnailUrl,
       chesscomUrl: slot.master.chesscomUrl,
       lichessUrl: slot.master.lichessUrl,
     };

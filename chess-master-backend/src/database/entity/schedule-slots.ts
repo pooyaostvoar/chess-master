@@ -38,7 +38,7 @@ export class ScheduleSlot {
   @ManyToOne(() => User, { nullable: true })
   reservedBy: User | null;
 
-  @Column("int")
+  @Column("int", { nullable: true })
   reservedById: number | null;
 
   @Column({

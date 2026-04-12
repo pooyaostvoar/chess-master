@@ -5,7 +5,7 @@ import type { LichessRatings } from "../services/api/user.api";
 export interface PublicUser {
   id: number;
   username: string;
-  profilePicture?: string;
+  profilePictureUrl?: string;
   title?: string;
   rating?: number | null;
   languages?: string[];

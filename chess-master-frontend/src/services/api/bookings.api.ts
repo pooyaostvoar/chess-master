@@ -11,7 +11,7 @@ export interface Booking {
     email: string;
     title?: string | null;
     rating?: number | null;
-    profilePicture?: string | null;
+    profilePictureThumbnailUrl?: string | null;
     chesscomUrl?: string | null;
     lichessUrl?: string | null;
   };
@@ -19,7 +19,7 @@ export interface Booking {
     id: number;
     username: string;
     email: string;
-    profilePicture?: string | null;
+    profilePictureThumbnailUrl?: string | null;
   } | null;
 }
 
