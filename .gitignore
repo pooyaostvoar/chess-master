@@ -14,6 +14,9 @@ dist/
 .env.local
 .env.*.local
 
+# Local settings
+settings.local.json
+
 # Logs
 logs/
 *.log
