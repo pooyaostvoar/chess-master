@@ -43,7 +43,25 @@ export const userSchemaBase = z.object({
   languages: z.array(z.string()).nullish(),
 
   phoneNumber: z.string().nullish(),
+
+  twitchUrl: z.string().nullable().optional(),
+
+  youtubeUrl: z.string().nullable().optional(),
+
+  instagramUrl: z.string().nullable().optional(),
+
+  xUrl: z.string().nullable().optional(),
+
+  facebookUrl: z.string().nullable().optional(),
+
+  tiktokUrl: z.string().nullable().optional(),
+
+  avgReviewRating: z.number().nullable().optional(),
+
+  studentsCount: z.number().nullable().optional(),
 });
+
+export type BaseUser = z.infer<typeof userSchemaBase>;
 
 export const userListSchema = z.array(userSchemaBase);
 
@@ -58,7 +76,7 @@ export const userQuerySchema = z.object({
     .optional(),
 
   isMaster: z
-    .enum(["true", "false"])
+    .string()
     .transform((val) => val === "true")
     .optional(),
 
