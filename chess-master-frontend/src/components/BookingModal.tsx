@@ -7,7 +7,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
-import { Button } from "./ui/button";
 import { CalendarCheck, XCircle } from "lucide-react";
 import { checkoutSlot } from "../services/payment";
 
@@ -36,75 +35,65 @@ const BookingModal: React.FC<BookingModalProps> = ({
     try {
       setLoading(true);
       setMessage(null);
-
       await checkoutSlot(slotId);
-
-      // nothing after this runs because browser redirects
     } catch (err: any) {
       setLoading(false);
       const errorMsg =
         err?.message && typeof err.message === "string"
           ? err.message
           : "Payment session failed. Please try again.";
-      setMessage({
-        type: "error",
-        text: `❌ ${errorMsg}`,
-      });
+      setMessage({ type: "error", text: errorMsg });
     }
   };
 
   return (
     <Dialog open={visible} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] bg-[#FAF5EB] border-[#1F1109]/[0.12]">
         <DialogHeader>
-          <DialogTitle>Confirm Booking</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-[#1F1109]" style={{ fontFamily: "Georgia, serif" }}>
+            Confirm booking
+          </DialogTitle>
+          <DialogDescription className="text-[#6B5640]">
             Do you want to book this time slot?
           </DialogDescription>
         </DialogHeader>
 
-        {/* Actions */}
-        <div className="flex flex-col gap-3 mt-4">
-          <Button
+        <div className="flex flex-col gap-2.5 mt-4">
+          <button
             onClick={handleBook}
             disabled={loading || !!message}
-            className="w-full h-auto py-4 justify-start"
+            className="w-full flex items-center gap-3 p-4 rounded-lg bg-[#B8893D] text-[#1F1109] hover:bg-[#A37728] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <CalendarCheck className="mr-3 h-5 w-5" />
+            <CalendarCheck className="h-5 w-5 flex-shrink-0" />
             <div className="text-left">
-              <div className="font-semibold">Yes, Book This Slot</div>
-              <div className="text-sm opacity-80">
+              <div className="text-sm font-medium">Yes, book this slot</div>
+              <div className="text-xs opacity-70">
                 {loading ? "Processing..." : "Confirm your reservation"}
               </div>
             </div>
-          </Button>
+          </button>
 
-          <Button
+          <button
             onClick={onClose}
-            variant="outline"
             disabled={loading || !!message}
-            className="w-full h-auto py-4 justify-start"
+            className="w-full flex items-center gap-3 p-4 rounded-lg border border-[#1F1109]/[0.12] text-[#3D2817] hover:bg-[#1F1109]/[0.04] transition-colors disabled:opacity-50"
           >
-            <XCircle className="mr-3 h-5 w-5" />
+            <XCircle className="h-5 w-5 flex-shrink-0 text-[#8B6F4E]" />
             <div className="text-left">
-              <div className="font-semibold">No, Cancel</div>
-              <div className="text-sm opacity-80">Close without booking</div>
+              <div className="text-sm font-medium">No, cancel</div>
+              <div className="text-xs text-[#6B5640]">Close without booking</div>
             </div>
-          </Button>
+          </button>
 
-          {/* ✅ Success / Error Message */}
           {message && (
             <div
-              className={`mt-3 text-sm font-medium text-center p-3 rounded-lg ${
+              className={`mt-2 text-[13px] font-medium text-center p-3 rounded-lg ${
                 message.type === "success"
-                  ? "bg-green-100 text-green-700"
-                  : "bg-red-100 text-red-700"
+                  ? "bg-[#B8893D]/10 text-[#6B4F1F]"
+                  : "bg-[#7A2E2E]/10 text-[#7A2E2E]"
               }`}
             >
               {message.text}
-              <div className="text-xs opacity-70 mt-1">
-                Closing automatically...
-              </div>
             </div>
           )}
         </div>

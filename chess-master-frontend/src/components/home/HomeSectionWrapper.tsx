@@ -1,7 +1,5 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "../ui/button";
-import { ArrowRight } from "lucide-react";
 
 interface HomeSectionWrapperProps {
   title: string;
@@ -15,41 +13,33 @@ export const HomeSectionWrapper: React.FC<HomeSectionWrapperProps> = ({
   title,
   description,
   path,
-  buttonText = "View All",
+  buttonText = "View all",
   children,
 }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="mb-12">
-      <div className="flex justify-between items-center mb-6">
+    <div className="mb-10">
+      <div className="flex justify-between items-baseline mb-5">
         <div>
-          <h2 className="text-2xl md:text-3xl font-bold mb-2">{title}</h2>
+          <h2
+            className="text-lg font-medium text-[#1F1109]"
+            style={{ fontFamily: "Georgia, serif" }}
+          >
+            {title}
+          </h2>
           {description && (
-            <p className="text-muted-foreground">{description}</p>
+            <p className="text-xs text-[#6B5640] mt-0.5">{description}</p>
           )}
         </div>
-        <Button
-          variant="outline"
-          className="hidden md:flex"
+        <button
           onClick={() => navigate(path)}
+          className="text-xs text-[#B8893D] font-medium hover:underline whitespace-nowrap"
         >
-          {buttonText}
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
+          {buttonText} →
+        </button>
       </div>
       {children}
-      <div className="text-center mt-4">
-        <Button
-          variant="outline"
-          size="lg"
-          className="md:hidden w-full"
-          onClick={() => navigate(path)}
-        >
-          {buttonText}
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
-      </div>
     </div>
   );
 };

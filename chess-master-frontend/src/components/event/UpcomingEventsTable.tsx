@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
 import { UpcomingEventsSection } from "./UpcomingEventsSection";
 
 interface Event {
@@ -26,7 +24,6 @@ export const UpcomingEventsTable: React.FC<Props> = ({
   loadEvents,
   loading,
 }) => {
-  // Current week start (Sunday)
   const [currentWeekStart, setCurrentWeekStart] = useState(() => {
     const now = new Date();
     const start = new Date(now);
@@ -50,7 +47,6 @@ export const UpcomingEventsTable: React.FC<Props> = ({
     dayDate.setHours(0, 0, 0, 0);
     const nextDay = new Date(dayDate);
     nextDay.setDate(dayDate.getDate() + 1);
-
     return events
       .filter((e) => {
         const start = new Date(e.startTime);
@@ -65,16 +61,8 @@ export const UpcomingEventsTable: React.FC<Props> = ({
   const formatWeekRange = (start: Date) => {
     const end = new Date(start);
     end.setDate(start.getDate() + 6);
-
-    const options: Intl.DateTimeFormatOptions = {
-      month: "short",
-      day: "numeric",
-    };
-
-    return `${start.toLocaleDateString(
-      undefined,
-      options
-    )} – ${end.toLocaleDateString(undefined, options)}`;
+    const options: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
+    return `${start.toLocaleDateString(undefined, options)} – ${end.toLocaleDateString(undefined, options)}`;
   };
 
   const today = new Date();
@@ -84,31 +72,31 @@ export const UpcomingEventsTable: React.FC<Props> = ({
     <div className="space-y-6">
       {/* Week Navigation */}
       <div className="flex justify-between items-center mb-4">
-        <Button
-          variant="outline"
+        <button
           onClick={() => goWeek(-1)}
-          className="flex items-center gap-1 border-blue-500 text-blue-500 hover:bg-blue-50"
+          className="flex items-center gap-1 px-3 py-2 rounded-lg border border-[#1F1109]/[0.15] text-xs font-medium text-[#3D2817] hover:bg-[#1F1109]/[0.04] transition-colors"
         >
-          <ChevronLeft className="w-4 h-4" /> Prev Week
-        </Button>
-        <h2 className="text-2xl font-bold text-gray-800">
+          <ChevronLeft className="w-3.5 h-3.5" /> Prev
+        </button>
+        <h2
+          className="text-lg font-medium text-[#1F1109]"
+          style={{ fontFamily: "Georgia, serif" }}
+        >
           {formatWeekRange(currentWeekStart)}
         </h2>
-        <Button
-          variant="outline"
+        <button
           onClick={() => goWeek(1)}
-          className="flex items-center gap-1 border-blue-500 text-blue-500 hover:bg-blue-50"
+          className="flex items-center gap-1 px-3 py-2 rounded-lg border border-[#1F1109]/[0.15] text-xs font-medium text-[#3D2817] hover:bg-[#1F1109]/[0.04] transition-colors"
         >
-          Next Week <ChevronRight className="w-4 h-4" />
-        </Button>
+          Next <ChevronRight className="w-3.5 h-3.5" />
+        </button>
       </div>
 
       {/* Days Tabs */}
-      <div className="flex gap-2 overflow-x-auto">
+      <div className="flex gap-1.5 overflow-x-auto">
         {DAYS.map((day, idx) => {
           const dayDate = new Date(currentWeekStart);
           dayDate.setDate(currentWeekStart.getDate() + idx);
-
           const isActive = idx === activeDayIndex;
           const isToday = dayDate.getTime() === today.getTime();
           const isPast = dayDate < today;
@@ -116,15 +104,11 @@ export const UpcomingEventsTable: React.FC<Props> = ({
           return (
             <button
               key={day}
-              className={`px-4 py-2 min-w-[60px] text-center font-medium rounded-lg transition-colors
-                ${isActive ? "bg-blue-600 text-white shadow" : ""}
-                ${!isActive && isToday ? "bg-blue-400 text-white shadow" : ""}
-                ${
-                  !isActive && !isToday
-                    ? "bg-blue-100 text-blue-800 hover:bg-blue-200"
-                    : ""
-                }
-                ${isPast && !isActive ? "opacity-60 cursor-not-allowed" : ""}`}
+              className={`px-3.5 py-2 min-w-[56px] text-center text-xs font-medium rounded-lg transition-colors
+                ${isActive ? "bg-[#B8893D] text-[#1F1109] shadow-sm" : ""}
+                ${!isActive && isToday ? "bg-[#B8893D]/30 text-[#3D2817]" : ""}
+                ${!isActive && !isToday ? "bg-[#B8893D]/10 text-[#3D2817] hover:bg-[#B8893D]/20" : ""}
+                ${isPast && !isActive ? "opacity-50 cursor-not-allowed" : ""}`}
               onClick={() => !isPast && setActiveDayIndex(idx)}
               disabled={isPast}
             >
@@ -135,18 +119,16 @@ export const UpcomingEventsTable: React.FC<Props> = ({
       </div>
 
       {/* Events for Active Day */}
-      <>
-        <UpcomingEventsSection
-          events={getEventsForDay(activeDayIndex)}
-          loading={loading}
-          loadEvents={loadEvents}
-        />
-        {getEventsForDay(activeDayIndex).length === 0 && (
-          <p className="text-gray-500 col-span-full mt-4">
-            No events this day.
-          </p>
-        )}
-      </>
+      <UpcomingEventsSection
+        events={getEventsForDay(activeDayIndex)}
+        loading={loading}
+        loadEvents={loadEvents}
+      />
+      {getEventsForDay(activeDayIndex).length === 0 && !loading && (
+        <p className="text-xs text-[#6B5640] text-center py-4 italic">
+          No events this day.
+        </p>
+      )}
     </div>
   );
 };

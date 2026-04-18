@@ -42,16 +42,15 @@ const MyBookings: React.FC = () => {
     });
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusStyle = (status: string) => {
     switch (status) {
-      case "free":
-        return "#27ae60";
-      case "reserved":
-        return "#f39c12";
       case "booked":
-        return "#27ae60";
+        return "bg-[#B8893D]/20 text-[#6B4F1F]";
+      case "reserved":
+      case "paid":
+        return "bg-[#B8893D]/10 text-[#8B6F4E]";
       default:
-        return "#777";
+        return "bg-[#1F1109]/[0.06] text-[#6B5640]";
     }
   };
 
@@ -61,6 +60,8 @@ const MyBookings: React.FC = () => {
         return "Available";
       case "reserved":
         return "Pending Approval";
+      case "paid":
+        return "Paid · Awaiting Approval";
       case "booked":
         return "Confirmed";
       default:
@@ -70,359 +71,195 @@ const MyBookings: React.FC = () => {
 
   if (loading) {
     return (
-      <div style={styles.loadingContainer}>
-        <div style={styles.spinner} />
-        <p>Loading bookings...</p>
+      <div className="bg-[#FAF5EB] min-h-screen flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-[#B8893D]/20 border-t-[#B8893D] rounded-full animate-spin" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={styles.errorContainer}>
-        <p style={styles.error}>{error}</p>
+      <div className="bg-[#FAF5EB] min-h-screen flex items-center justify-center">
+        <div className="bg-[#7A2E2E]/10 border border-[#7A2E2E]/20 text-[#7A2E2E] text-[13px] px-4 py-3 rounded-lg">
+          {error}
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>My Bookings</h1>
-        <p style={styles.subtitle}>
-          View all slot requests and confirmed bookings
-        </p>
+    <div className="bg-[#FAF5EB] min-h-screen">
+      {/* Header */}
+      <div className="bg-[#F4ECDD] border-b border-[#1F1109]/[0.08]">
+        <div className="max-w-5xl mx-auto px-5 sm:px-8 py-8 sm:py-10">
+          <div
+            className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-2"
+            style={{ fontFamily: "Georgia, serif" }}
+          >
+            Sessions
+          </div>
+          <h1
+            className="text-2xl sm:text-3xl font-medium text-[#1F1109] leading-[1.1] tracking-[-0.01em]"
+            style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
+          >
+            My bookings
+          </h1>
+          <p className="text-[13px] text-[#5C4631] mt-1.5">
+            View all slot requests and confirmed bookings
+          </p>
+        </div>
       </div>
 
-      {bookings.length === 0 ? (
-        <div style={styles.emptyState}>
-          <div style={styles.emptyIcon}>📅</div>
-          <h2 style={styles.emptyTitle}>No bookings yet</h2>
-          <p style={styles.emptyText}>You don't have any bookings yet.</p>
-        </div>
-      ) : (
-        <div style={styles.bookingsList}>
-          {bookings.map((booking) => {
-            const isCurrentUserMasterOfBooking =
-              user?.id === booking.master?.id;
+      <div className="max-w-5xl mx-auto px-5 sm:px-8 py-8">
+        {bookings.length === 0 ? (
+          <div className="bg-white border border-[#1F1109]/[0.12] rounded-xl p-12 text-center">
+            <svg viewBox="0 0 45 45" className="w-12 h-12 mx-auto mb-4 opacity-25">
+              <g fill="#5C4631">
+                <circle cx="22.5" cy="9" r="5" />
+                <path d="M18 14 h9 l-1 5 h-7 z" />
+                <path d="M16 19 h13 l-2 9 h-9 z" />
+                <rect x="13" y="28" width="19" height="3" />
+                <path d="M11 31 h23 l-2 9 h-19 z" />
+              </g>
+            </svg>
+            <h2
+              className="text-lg text-[#1F1109] mb-2"
+              style={{ fontFamily: "Georgia, serif" }}
+            >
+              No bookings yet
+            </h2>
+            <p className="text-[13px] text-[#6B5640] mb-5">
+              You don't have any bookings yet.
+            </p>
+            <button
+              onClick={() => navigate("/masters")}
+              className="text-xs text-[#B8893D] font-medium hover:underline"
+            >
+              Browse masters →
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {bookings.map((booking) => {
+              const isCurrentUserMasterOfBooking =
+                user?.id === booking.master?.id;
 
-            const displayUser: any = isCurrentUserMasterOfBooking
-              ? booking.reservedBy
-              : booking.master;
+              const displayUser: any = isCurrentUserMasterOfBooking
+                ? booking.reservedBy
+                : booking.master;
 
-            const displayName = isCurrentUserMasterOfBooking
-              ? booking.reservedBy?.username
-              : booking.master?.username || "Unknown User";
+              const displayName = isCurrentUserMasterOfBooking
+                ? booking.reservedBy?.username
+                : booking.master?.username || "Unknown User";
 
-            return (
-              <div key={booking.id} style={styles.bookingCard}>
-                {/* HEADER */}
-                <div style={styles.cardHeader}>
-                  <div style={styles.timeInfo}>
-                    <div style={styles.date}>
-                      {formatDate(booking.startTime)}
+              return (
+                <div
+                  key={booking.id}
+                  className="bg-white border border-[#1F1109]/[0.12] rounded-xl p-5 hover:border-[#1F1109]/25 transition-colors"
+                >
+                  {/* Header row */}
+                  <div className="flex flex-wrap justify-between items-start gap-3 mb-4 pb-4 border-b border-[#1F1109]/[0.08]">
+                    <div>
+                      <div className="text-sm font-medium text-[#1F1109] mb-1">
+                        {formatDate(booking.startTime)}
+                      </div>
+                      <div className="text-[11px] text-[#6B5640]">
+                        {Math.round(
+                          (new Date(booking.endTime).getTime() -
+                            new Date(booking.startTime).getTime()) /
+                            (1000 * 60 * 60)
+                        )}{" "}
+                        hour
+                      </div>
                     </div>
-                    <div style={styles.duration}>
-                      {new Date(booking.endTime).getHours() -
-                        new Date(booking.startTime).getHours()}{" "}
-                      hour
-                    </div>
+                    <span
+                      className={`text-[10px] font-medium px-2.5 py-1 rounded-full tracking-wide uppercase ${getStatusStyle(booking.status)}`}
+                    >
+                      {getStatusLabel(booking.status)}
+                    </span>
                   </div>
-                  <div
-                    style={{
-                      ...styles.statusBadge,
-                      background: getStatusColor(booking.status),
-                    }}
-                  >
-                    {getStatusLabel(booking.status)}
-                  </div>
-                </div>
 
-                {/* BODY */}
-                <div style={styles.cardBody}>
-                  <div style={styles.userRow}>
+                  {/* User row */}
+                  <div className="flex flex-wrap items-center justify-between gap-3">
                     <div
-                      style={styles.userInfo}
+                      className="flex items-center gap-3 cursor-pointer"
                       onClick={() =>
                         displayUser?.id && navigate(`/users/${displayUser.id}`)
                       }
                     >
-                      <div style={styles.avatar}>
+                      <div className="w-11 h-11 rounded-full bg-[#3D2817] flex items-center justify-center text-[#F4ECDD] text-lg font-medium flex-shrink-0">
                         {displayName?.charAt(0).toUpperCase() || "U"}
                       </div>
-                      <div style={styles.userDetails}>
-                        <h3 style={styles.userName}>
+                      <div>
+                        <div className="text-sm font-medium text-[#1F1109] flex items-center gap-2">
                           {displayName || "Unknown User"}
                           {displayUser?.title && (
-                            <span style={styles.titleTag}>
-                              {" "}
+                            <span className="text-[9px] font-medium bg-[#3D2817] text-[#F4ECDD] px-1.5 py-0.5 rounded tracking-[0.06em]">
                               {displayUser.title}
                             </span>
                           )}
-                        </h3>
+                        </div>
                         {displayUser?.rating && (
-                          <p style={styles.rating}>
-                            Rating: {displayUser.rating}
-                          </p>
+                          <div className="text-[11px] text-[#6B5640]">
+                            {displayUser.rating} Elo
+                          </div>
                         )}
                       </div>
                     </div>
-                    <div style={styles.actionButtons}>
+
+                    <div className="flex gap-2 flex-shrink-0">
                       {isCurrentUserMasterOfBooking &&
                         booking.status === "paid" && (
                           <>
                             <button
-                              style={styles.approveButton}
                               onClick={async (e) => {
                                 e.stopPropagation();
                                 await updateSlotStatus(booking.id, "booked");
                                 loadBookings();
                               }}
+                              className="text-[11px] font-medium px-3 py-1.5 rounded-full bg-[#B8893D] text-[#1F1109] hover:bg-[#A37728] transition-colors"
                             >
                               Approve
                             </button>
                             <button
-                              style={styles.rejectButton}
                               onClick={async (e) => {
                                 e.stopPropagation();
                                 await updateSlotStatus(booking.id, "free");
                                 loadBookings();
                               }}
+                              className="text-[11px] font-medium px-3 py-1.5 rounded-full bg-[#7A2E2E]/10 text-[#7A2E2E] hover:bg-[#7A2E2E]/20 transition-colors"
                             >
                               Reject
                             </button>
                           </>
                         )}
                       <button
-                        style={styles.messageButton}
-                        onClick={async (e) => {
+                        onClick={(e) => {
                           e.stopPropagation();
-                          if (displayUser?.id) {
-                            navigate(`/chat/${displayUser.id}`);
-                          }
+                          if (displayUser?.id) navigate(`/chat/${displayUser.id}`);
                         }}
+                        className="text-[11px] font-medium px-3 py-1.5 rounded-full border border-[#1F1109]/[0.15] text-[#3D2817] hover:bg-[#1F1109]/[0.04] transition-colors"
                       >
-                        send message
+                        Message
                       </button>
                     </div>
                   </div>
-                </div>
 
-                {booking.status === "reserved" &&
-                  !isCurrentUserMasterOfBooking && (
-                    <div style={styles.pendingNote}>
-                      ⏳ Waiting for master approval
-                    </div>
-                  )}
-              </div>
-            );
-          })}
-        </div>
-      )}
+                  {/* Pending note */}
+                  {booking.status === "reserved" &&
+                    !isCurrentUserMasterOfBooking && (
+                      <div className="mt-4 px-3.5 py-2.5 bg-[#B8893D]/10 border-l-2 border-[#B8893D] rounded-r-lg text-[12px] text-[#6B4F1F]">
+                        Waiting for master approval
+                      </div>
+                    )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
-};
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    maxWidth: "1200px",
-    margin: "0 auto",
-    padding: "40px 20px",
-  },
-  loadingContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "60vh",
-  },
-  spinner: {
-    width: "40px",
-    height: "40px",
-    border: "4px solid #e0e0e0",
-    borderTop: "4px solid #3498db",
-    borderRadius: "50%",
-    animation: "spin 1s linear infinite",
-    marginBottom: "20px",
-  },
-  errorContainer: {
-    display: "flex",
-    justifyContent: "center",
-  },
-  error: {
-    color: "#e74c3c",
-    fontSize: "18px",
-    padding: "20px",
-    background: "#fee",
-    borderRadius: "8px",
-  },
-  header: {
-    textAlign: "center",
-    marginBottom: "48px",
-  },
-  title: {
-    fontSize: "42px",
-    fontWeight: 700,
-    color: "#2c3e50",
-    marginBottom: "12px",
-  },
-  subtitle: {
-    fontSize: "18px",
-    color: "#7f8c8d",
-  },
-  emptyState: {
-    textAlign: "center",
-    padding: "60px 20px",
-    background: "white",
-    borderRadius: "16px",
-    boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
-  },
-  emptyIcon: {
-    fontSize: "64px",
-    marginBottom: "20px",
-  },
-  emptyTitle: {
-    fontSize: "24px",
-    fontWeight: 600,
-    marginBottom: "12px",
-  },
-  emptyText: {
-    fontSize: "16px",
-    color: "#7f8c8d",
-  },
-  bookingsList: {
-    display: "grid",
-    gap: "20px",
-  },
-  bookingCard: {
-    background: "white",
-    padding: "24px",
-    borderRadius: "16px",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-    transition: "all 0.3s ease",
-  },
-  cardHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: "20px",
-    paddingBottom: "20px",
-    borderBottom: "1px solid #e0e0e0",
-  },
-  timeInfo: {},
-  date: {
-    fontSize: "18px",
-    fontWeight: 600,
-    marginBottom: "8px",
-  },
-  duration: {
-    fontSize: "14px",
-    color: "#7f8c8d",
-  },
-  statusBadge: {
-    padding: "6px 12px",
-    borderRadius: "20px",
-    color: "white",
-    fontSize: "12px",
-    fontWeight: 600,
-    textTransform: "uppercase",
-  },
-  cardBody: {
-    marginBottom: "16px",
-  },
-  userRow: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: "16px",
-  },
-  userInfo: {
-    display: "flex",
-    alignItems: "center",
-    gap: "16px",
-    cursor: "pointer",
-  },
-  avatar: {
-    width: "56px",
-    height: "56px",
-    borderRadius: "50%",
-    background: "linear-gradient(135deg, #3498db 0%, #2980b9 100%)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "white",
-    fontSize: "24px",
-    fontWeight: 700,
-    flexShrink: 0,
-  },
-  userDetails: {
-    flex: 1,
-  },
-  userName: {
-    fontSize: "20px",
-    fontWeight: 600,
-    marginBottom: "4px",
-  },
-  titleTag: {
-    background: "linear-gradient(135deg, #3498db 0%, #2980b9 100%)",
-    color: "white",
-    padding: "2px 8px",
-    borderRadius: "4px",
-    fontSize: "12px",
-    fontWeight: 600,
-    marginLeft: "8px",
-  },
-  rating: {
-    fontSize: "14px",
-    color: "#7f8c8d",
-  },
-  actionButtons: {
-    display: "flex",
-    gap: "8px",
-    flexShrink: 0,
-  },
-  approveButton: {
-    height: "28px",
-    padding: "0 10px",
-    fontSize: "12px",
-    fontWeight: 600,
-    borderRadius: "6px",
-    border: "none",
-    cursor: "pointer",
-    background: "#27ae60",
-    color: "white",
-  },
-  rejectButton: {
-    height: "28px",
-    padding: "0 10px",
-    fontSize: "12px",
-    fontWeight: 600,
-    borderRadius: "6px",
-    border: "none",
-    cursor: "pointer",
-    background: "#e74c3c",
-    color: "white",
-  },
-  messageButton: {
-    height: "28px",
-    padding: "0 10px",
-    fontSize: "12px",
-    fontWeight: 600,
-    borderRadius: "6px",
-    border: "none",
-    cursor: "pointer",
-    background: "#2563eb",
-    color: "white",
-  },
-  pendingNote: {
-    padding: "12px",
-    background: "#fff9e6",
-    borderLeft: "4px solid #f39c12",
-    borderRadius: "8px",
-    fontSize: "14px",
-    color: "#856404",
-    fontWeight: 500,
-  },
 };
 
 export default MyBookings;

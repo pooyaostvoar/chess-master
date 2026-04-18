@@ -1,5 +1,4 @@
 import React from "react";
-import { Badge } from "../ui/badge";
 import type { User } from "../../services/auth";
 
 type LichessRatings = NonNullable<User["lichessRatings"]>;
@@ -27,26 +26,13 @@ const VARIANT_LABELS: Record<string, string> = {
 };
 
 const DISPLAY_ORDER = [
-  "classical",
-  "rapid",
-  "blitz",
-  "bullet",
-  "correspondence",
-  "chess960",
-  "threeCheck",
-  "atomic",
-  "horde",
-  "kingOfTheHill",
-  "racingKings",
-  "antichess",
-  "ultraBullet",
-  "puzzle",
+  "classical", "rapid", "blitz", "bullet", "correspondence", "chess960",
+  "threeCheck", "atomic", "horde", "kingOfTheHill", "racingKings",
+  "antichess", "ultraBullet", "puzzle",
 ];
 
 const normalizeUrl = (url: string) =>
-  url.startsWith("http://") || url.startsWith("https://")
-    ? url
-    : `https://${url}`;
+  url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;
 
 const getVariantRank = (variant: string) => {
   const index = DISPLAY_ORDER.indexOf(variant);
@@ -71,11 +57,11 @@ export const LichessRatingsSection: React.FC<LichessRatingsSectionProps> = ({
   const entries = getSortedEntries(lichessRatings);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
-          <h3 className="text-xl font-semibold">Imported from Lichess</h3>
-          <p className="text-sm text-muted-foreground">
+          <h3 className="text-sm font-medium text-[#1F1109]">Imported from Lichess</h3>
+          <p className="text-[11px] text-[#6B5640] mt-0.5">
             Ratings are read-only and synced from the connected Lichess account.
           </p>
         </div>
@@ -84,29 +70,32 @@ export const LichessRatingsSection: React.FC<LichessRatingsSectionProps> = ({
             href={normalizeUrl(lichessUrl)}
             target="_blank"
             rel="noreferrer"
-            className="text-sm font-medium text-primary hover:underline"
+            className="text-[11px] font-medium text-[#B8893D] hover:underline"
           >
-            View Lichess profile
+            View Lichess profile →
           </a>
         )}
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-2 sm:grid-cols-2">
         {entries.map(([variant, perf]) => (
           <div
             key={variant}
-            className="rounded-lg border bg-card px-4 py-3 shadow-sm"
+            className="border border-[#1F1109]/[0.08] rounded-lg bg-[#F4ECDD]/30 px-3.5 py-2.5"
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="font-medium">
+              <span className="text-[13px] font-medium text-[#1F1109]">
                 {VARIANT_LABELS[variant] ?? variant}
               </span>
-              <span className="text-lg font-semibold">{perf.rating}</span>
+              <span className="text-base font-medium text-[#1F1109]">{perf.rating}</span>
             </div>
-
-            <div className="mt-2 flex items-center gap-2 flex-wrap text-sm text-muted-foreground">
+            <div className="mt-1 flex items-center gap-2 flex-wrap text-[11px] text-[#6B5640]">
               {typeof perf.games === "number" && <span>{perf.games} games</span>}
-              {perf.prov && <Badge variant="secondary">Provisional</Badge>}
+              {perf.prov && (
+                <span className="bg-[#B8893D]/[0.14] text-[#6B4F1F] px-2 py-0.5 rounded-full text-[10px]">
+                  Provisional
+                </span>
+              )}
             </div>
           </div>
         ))}

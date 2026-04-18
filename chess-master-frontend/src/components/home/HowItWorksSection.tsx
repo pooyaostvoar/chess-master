@@ -1,199 +1,141 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "../ui/button";
-import { Card, CardHeader } from "../ui/card";
-import {
-  Search,
-  CalendarCheck,
-  CreditCard,
-  CheckCircle2,
-  MessageCircle,
-  Target,
-  PlayCircle,
-  ShieldCheck,
-  BadgeCheck,
-  HelpCircle,
-} from "lucide-react";
 
 const STEPS = [
   {
-    id: 1,
-    title: "Browse Masters & Sessions",
+    phase: "Opening",
+    number: "01",
+    title: "Find your master",
     description:
-      "Explore masters, lessons, game reviews, blitz sessions, and play experiences.",
-    icon: Search,
+      "Search titled players by language, opening, or playing style. Watch a short intro before you book.",
+    piece: (
+      <svg viewBox="0 0 45 45" width="34" height="34" className="mt-1">
+        <g fill="#5C4631">
+          <circle cx="22.5" cy="9" r="5" />
+          <path d="M18 14 h9 l-1 5 h-7 z" />
+          <path d="M16 19 h13 l-2 9 h-9 z" />
+          <rect x="13" y="28" width="19" height="3" />
+          <path d="M11 31 h23 l-2 9 h-19 z" />
+        </g>
+      </svg>
+    ),
   },
   {
-    id: 2,
-    title: "Book Your Session",
+    phase: "Middle game",
+    number: "02",
+    title: "Book your session",
     description:
-      "Choose a time/session that fits your goal and submit a booking request.",
-    icon: CalendarCheck,
+      "Pick a time in your timezone. Your master reviews and accepts — only then is your card charged.",
+    piece: (
+      <svg viewBox="0 0 45 45" width="34" height="34" className="mt-1">
+        <g fill="#5C4631" fillRule="evenodd">
+          <path d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18" />
+          <path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,9.506 13.5,8.5 13.5,7.5 C 14.5,5.5 16.5,4.5 16.5,4.5 L 18,7 L 18,3.5 L 19.5,2.5 L 21,5.5 L 21,2.5 L 22.5,4 L 22.5,5.5 C 26.5,4.5 30.5,7 32.5,12 L 32.5,16 L 31,17 L 29.5,18 C 29.5,18 27.5,18.5 26.5,18.5 L 24,18 z" />
+        </g>
+      </svg>
+    ),
   },
   {
-    id: 3,
-    title: "Pay Securely",
-    description: "Complete payment securely to reserve your booking request.",
-    icon: CreditCard,
-  },
-  {
-    id: 4,
-    title: "Master Approves",
-    description: "The master reviews and approves your booking request.",
-    icon: CheckCircle2,
-  },
-  {
-    id: 5,
-    title: "Get Connected",
+    phase: "Endgame",
+    number: "03",
+    title: "Make your move",
     description:
-      "Once approved, you and the master can communicate via internal chat and/or receive a video call link.",
-    icon: MessageCircle,
-  },
-  {
-    id: 6,
-    title: "Discuss the Details",
-    description:
-      "Coordinate how you want to play/train, your goals, and preferred platform/format.",
-    icon: Target,
-  },
-  {
-    id: 7,
-    title: "Play, Learn, or Review",
-    description:
-      "Join the live session and enjoy the experience — whether for improvement or fun.",
-    icon: PlayCircle,
+      "Meet on our integrated board. Drill openings, review games, or play training matches in real time.",
+    piece: (
+      <svg viewBox="0 0 45 45" width="34" height="34" className="mt-1">
+        <g fill="#5C4631">
+          <rect x="21" y="3" width="3" height="9" />
+          <rect x="17" y="6" width="11" height="3" />
+          <path d="M14 14 c 0 -4 4 -7 8.5 -7 s 8.5 3 8.5 7 v 8 h-17 z" />
+          <rect x="13" y="22" width="19" height="3" />
+          <path d="M11 25 h23 l-2 9 h-19 z" />
+        </g>
+      </svg>
+    ),
   },
 ] as const;
 
-const TRUST_ITEMS = [
-  { label: "Verified masters", icon: BadgeCheck },
-  { label: "Secure payments", icon: ShieldCheck },
-  { label: "Clear booking flow", icon: CalendarCheck },
-  { label: "Support if needed", icon: HelpCircle },
+const SESSION_FORMATS = [
+  "1-on-1 coaching",
+  "Game reviews",
+  "Play a master",
+  "Blitz sessions",
+  "Beginner-friendly",
 ] as const;
-
-interface ProcessStepProps {
-  step: (typeof STEPS)[number];
-  isLast?: boolean;
-}
-
-const ProcessStep: React.FC<ProcessStepProps> = ({ step, isLast }) => {
-  const Icon = step.icon;
-  return (
-    <div className="relative flex gap-4 md:gap-6 group">
-      {/* Vertical connector line */}
-      {!isLast && (
-        <div
-          className="absolute left-8 top-16 bottom-0 w-0.5 bg-primary/20 -translate-x-px"
-          aria-hidden
-        />
-      )}
-      <div className="relative z-10 flex-shrink-0">
-        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/30 group-hover:border-primary/60 group-hover:bg-primary/15 transition-colors">
-          <Icon className="h-8 w-8 text-primary" />
-        </div>
-        <span className="absolute -top-1 -left-1 w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
-          {step.id}
-        </span>
-      </div>
-      <div className="flex-1 min-w-0 pb-10 md:pb-14">
-        <h3 className="text-lg font-semibold mb-1">{step.title}</h3>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          {step.description}
-        </p>
-      </div>
-    </div>
-  );
-};
-
-interface StepCardProps {
-  step: (typeof STEPS)[number];
-}
-
-const StepCard: React.FC<StepCardProps> = ({ step }) => {
-  const Icon = step.icon;
-  return (
-    <Card className="h-full transition-shadow hover:shadow-md border-primary/10">
-      <CardHeader className="pb-4">
-        <div className="flex items-start gap-4">
-          <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
-            <Icon className="h-6 w-6 text-primary" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <span className="inline-flex w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold items-center justify-center mb-2">
-              {step.id}
-            </span>
-            <h3 className="font-semibold mb-1">{step.title}</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {step.description}
-            </p>
-          </div>
-        </div>
-      </CardHeader>
-    </Card>
-  );
-};
 
 export const HowItWorksSection: React.FC = () => {
-  const navigate = useNavigate();
-
   return (
-    <section className="py-16 md:py-20 bg-muted/30">
-      <div className="max-w-7xl mx-auto px-5">
+    <section id="how-it-works" className="bg-[#F4ECDD]">
+      <div className="max-w-5xl mx-auto px-5 sm:px-8 py-14 sm:py-16">
         {/* Header */}
-        <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">How It Works</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Book a session with a verified master in just a few steps.
+        <div className="text-center mb-10">
+          <div
+            className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-2.5"
+            style={{ fontFamily: "Georgia, serif" }}
+          >
+            The game plan
+          </div>
+          <h2
+            className="text-[28px] sm:text-[32px] font-medium text-[#1F1109] leading-[1.1] mb-3 tracking-[-0.01em]"
+            style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
+          >
+            How it works
+          </h2>
+          <p className="text-[13px] text-[#5C4631] max-w-[420px] mx-auto leading-relaxed">
+            Three steps from search to first move. No subscription, no
+            commitment — you pay only when a master accepts your request.
           </p>
         </div>
 
-        {/* Steps - Timeline on mobile, card grid on desktop */}
-        <div className="relative max-w-2xl mx-auto lg:hidden">
-          {STEPS.map((step, index) => (
-            <ProcessStep
-              key={step.id}
-              step={step}
-              isLast={index === STEPS.length - 1}
-            />
-          ))}
-        </div>
-        <div className="hidden lg:grid lg:grid-cols-4 gap-4 lg:max-w-6xl lg:mx-auto">
+        {/* Steps grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {STEPS.map((step) => (
-            <StepCard key={step.id} step={step} />
-          ))}
-        </div>
-
-        {/* Trust / Reassurance badges */}
-        <div className="flex flex-wrap justify-center gap-4 md:gap-6 mt-12 md:mt-16 py-6 border-t border-b border-border/60">
-          {TRUST_ITEMS.map(({ label, icon: Icon }) => (
             <div
-              key={label}
-              className="flex items-center gap-2 text-sm text-muted-foreground"
+              key={step.number}
+              className="bg-white border border-[#1F1109]/[0.12] rounded-xl px-5 py-[22px] relative"
             >
-              <Icon className="h-4 w-4 text-primary flex-shrink-0" />
-              <span>{label}</span>
+              {/* Phase label */}
+              <div
+                className="text-[10px] italic text-[#7A2E2E] tracking-[0.08em] uppercase mb-1"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                {step.phase}
+              </div>
+
+              {/* Number + piece */}
+              <div className="flex items-start justify-between mb-3.5">
+                <span
+                  className="text-[44px] font-medium italic text-[#B8893D] leading-none tracking-[-0.02em]"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  {step.number}
+                </span>
+                {step.piece}
+              </div>
+
+              {/* Title + description */}
+              <div className="text-sm font-medium text-[#1F1109] mb-1.5">
+                {step.title}
+              </div>
+              <p className="text-xs text-[#6B5640] leading-relaxed m-0">
+                {step.description}
+              </p>
             </div>
           ))}
         </div>
 
-        {/* CTA buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10 md:mt-12">
-          <Button
-            size="lg"
-            onClick={() => navigate("/signup")}
-            className="text-lg px-8 w-full sm:w-auto"
-          >
-            Book Your First Session
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            onClick={() => navigate("/masters")}
-            className="text-lg px-8 w-full sm:w-auto"
-          >
-            Browse Masters
-          </Button>
+        {/* Session formats footer */}
+        <div className="text-center mt-9 pt-6 border-t border-[#1F1109]/10">
+          <span className="text-[10px] text-[#6B5640] tracking-[0.08em] uppercase mr-3 align-middle">
+            Session formats
+          </span>
+          {SESSION_FORMATS.map((format) => (
+            <span
+              key={format}
+              className="inline-block px-3 py-1 bg-white/70 border border-[#1F1109]/[0.12] rounded-full text-[11px] text-[#3D2817] m-[3px_2px]"
+            >
+              {format}
+            </span>
+          ))}
         </div>
       </div>
     </section>

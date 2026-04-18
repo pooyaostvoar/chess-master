@@ -3,14 +3,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { getMe, updateUser } from "../services/auth";
 import { useUser } from "../contexts/UserContext";
 import { API_URL } from "../services/config";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card";
-import { Button } from "../components/ui/button";
 import { ProfilePictureSection } from "../components/profile/ProfilePictureSection";
 import { BasicInfoSection } from "../components/profile/BasicInfoSection";
 import { ChessProfileSection } from "../components/profile/ChessProfileSection";
@@ -83,9 +75,8 @@ const EditProfile: React.FC = () => {
 
   if (!formData) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <div className="w-10 h-10 border-4 border-gray-200 border-t-primary rounded-full animate-spin mb-5" />
-        <p className="text-muted-foreground">Loading profile...</p>
+      <div className="bg-[#FAF5EB] min-h-screen flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-[#B8893D]/20 border-t-[#B8893D] rounded-full animate-spin" />
       </div>
     );
   }
@@ -191,13 +182,30 @@ const EditProfile: React.FC = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-5 py-10">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-3xl">Edit Profile</CardTitle>
-          <CardDescription>Update your account information</CardDescription>
-        </CardHeader>
-        <CardContent>
+    <div className="bg-[#FAF5EB] min-h-screen">
+      {/* Header */}
+      <div className="bg-[#F4ECDD] border-b border-[#1F1109]/[0.08]">
+        <div className="max-w-3xl mx-auto px-5 sm:px-8 py-8 sm:py-10">
+          <div
+            className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-2"
+            style={{ fontFamily: "Georgia, serif" }}
+          >
+            Settings
+          </div>
+          <h1
+            className="text-2xl sm:text-3xl font-medium text-[#1F1109] leading-[1.1] tracking-[-0.01em]"
+            style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
+          >
+            Edit profile
+          </h1>
+          <p className="text-[13px] text-[#5C4631] mt-1.5">
+            Update your account information
+          </p>
+        </div>
+      </div>
+
+      <div className="max-w-3xl mx-auto px-5 sm:px-8 py-8">
+        <div className="bg-white border border-[#1F1109]/[0.12] rounded-xl p-6 sm:p-8">
           <form onSubmit={handleSubmit} className="space-y-8">
             <ProfilePictureSection
               previewImage={previewImage}
@@ -232,24 +240,26 @@ const EditProfile: React.FC = () => {
               onChange={handleChange}
             />
 
-            <div className="rounded-lg border bg-muted/30 p-4">
+            <div className="rounded-lg border border-[#1F1109]/[0.08] bg-[#F4ECDD]/50 p-4">
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div>
-                  <h3 className="text-lg font-semibold">Sync from Lichess</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <h3 className="text-sm font-medium text-[#1F1109]">
+                    Sync from Lichess
+                  </h3>
+                  <p className="text-xs text-[#6B5640] mt-1 leading-relaxed">
                     Connect your Lichess account to import your title and
                     ratings without changing your coaching or pricing details.
                   </p>
                 </div>
-                <Button
+                <button
                   type="button"
-                  variant="outline"
                   onClick={handleLichessSync}
+                  className="text-xs font-medium text-[#B8893D] border border-[#B8893D]/40 rounded-full px-4 py-1.5 hover:bg-[#B8893D]/10 transition-colors whitespace-nowrap"
                 >
                   {formData.lichessId
                     ? "Refresh from Lichess"
                     : "Connect Lichess"}
-                </Button>
+                </button>
               </div>
             </div>
 
@@ -270,29 +280,32 @@ const EditProfile: React.FC = () => {
               onChange={(isMaster) => setFormData({ ...formData, isMaster })}
             />
 
-            <Button
+            <button
               type="submit"
               disabled={loading}
-              className="w-full"
-              size="lg"
+              className={`w-full rounded-lg px-4 py-3 text-[13px] font-medium text-[#1F1109] transition-colors ${
+                loading
+                  ? "bg-[#8B6F4E] cursor-wait pointer-events-none"
+                  : "bg-[#B8893D] hover:bg-[#A37728] active:scale-[0.99]"
+              }`}
             >
               {loading ? "Saving..." : "Save Changes"}
-            </Button>
+            </button>
 
             {message && (
               <div
-                className={`p-4 rounded-md text-center ${
+                className={`p-3.5 rounded-lg text-center text-[13px] ${
                   messageType === "success"
-                    ? "bg-green-50 text-green-800"
-                    : "bg-red-50 text-red-800"
+                    ? "bg-[#B8893D]/10 border border-[#B8893D]/20 text-[#6B4F1F]"
+                    : "bg-[#7A2E2E]/10 border border-[#7A2E2E]/20 text-[#7A2E2E]"
                 }`}
               >
                 {message}
               </div>
             )}
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,11 +1,7 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-
-import { Button } from "../ui/button";
-import { Clock, DollarSign } from "lucide-react";
+import { Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../contexts/UserContext";
-import { AccountHeader } from "../profile/AccountHeader";
 
 interface Props {
   event: any;
@@ -20,42 +16,66 @@ export const UpcomingEventCard: React.FC<Props> = ({ event, onClick }) => {
   const durationMinutes = (end.getTime() - start.getTime()) / 60000;
 
   return (
-    <Card className="flex flex-col h-full hover:shadow-lg transition-shadow">
-      <CardHeader>
-        <CardTitle className="text-xl m-1">
+    <div className="bg-white border border-[#1F1109]/[0.12] rounded-xl overflow-hidden flex flex-col h-full hover:shadow-md hover:border-[#1F1109]/25 transition-all">
+      <div className="p-4 flex-1">
+        <h3
+          className="text-base font-medium text-[#1F1109] mb-3"
+          style={{ fontFamily: "Georgia, serif" }}
+        >
           {event.title ?? "Blitz session"}
-        </CardTitle>
-        <AccountHeader user={event.master} />
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Clock className="h-4 w-4" />
-          {start.toLocaleString()} · {durationMinutes} min
-        </div>
-      </CardHeader>
+        </h3>
 
-      <CardContent className="flex flex-col flex-1">
-        {/* This pushes everything below it to the bottom */}
-        <div className="mt-auto space-y-4">
-          {/* Price */}
-          <div className="flex items-center gap-2">
-            <DollarSign className="h-4 w-4 text-primary" />
-            <span className="text-lg font-semibold">${event.price ?? 0}</span>
+        {/* Master info */}
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-full bg-[#3D2817] flex items-center justify-center text-[#F4ECDD] text-sm font-medium flex-shrink-0">
+            {event.master?.username?.charAt(0).toUpperCase() || "M"}
           </div>
-
-          {/* Button */}
-          <Button
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-            onClick={() => {
-              if (!user && !isUserloading) {
-                navigate("/login");
-                return;
-              }
-              onClick();
-            }}
-          >
-            Book Now
-          </Button>
+          <div>
+            <span className="text-xs font-medium text-[#1F1109]">{event.master?.username}</span>
+            {event.master?.title && (
+              <span className="ml-1.5 text-[9px] font-medium bg-[#3D2817] text-[#F4ECDD] px-1.5 py-0.5 rounded tracking-[0.06em]">
+                {event.master.title}
+              </span>
+            )}
+          </div>
         </div>
-      </CardContent>
-    </Card>
+
+        {/* Languages */}
+        {event.master?.languages && event.master.languages.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-3">
+            {event.master.languages.slice(0, 3).map((lang: string) => (
+              <span key={lang} className="text-[10px] bg-[#B8893D]/[0.14] text-[#6B4F1F] px-2 py-0.5 rounded-full">
+                {lang}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Time */}
+        <div className="flex items-center gap-1.5 text-[11px] text-[#6B5640]">
+          <Clock className="h-3 w-3" />
+          {start.toLocaleDateString()}, {start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · {durationMinutes} min
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="px-4 pb-4 mt-auto space-y-3">
+        <div className="text-base font-medium text-[#1F1109]">
+          ${event.price ?? 0}
+        </div>
+        <button
+          className="w-full bg-[#B8893D] text-[#1F1109] rounded-lg py-2.5 text-[13px] font-medium hover:bg-[#A37728] transition-colors"
+          onClick={() => {
+            if (!user && !isUserloading) {
+              navigate("/login");
+              return;
+            }
+            onClick();
+          }}
+        >
+          Book Now
+        </button>
+      </div>
+    </div>
   );
 };

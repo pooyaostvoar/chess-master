@@ -1,14 +1,10 @@
 import React, { useState } from "react";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
 
 interface LanguagesSectionProps {
   name: string;
   languages: string[];
   onChange: (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => void;
 }
 
@@ -20,15 +16,12 @@ export const LanguagesSection: React.FC<LanguagesSectionProps> = ({
   const [input, setInput] = useState("");
 
   const emitChange = (value: string[]) => {
-    onChange({
-      target: { name, value },
-    } as any);
+    onChange({ target: { name, value } } as any);
   };
 
   const addLanguage = (value: string) => {
     const lang = value.trim();
     if (!lang || languages.includes(lang)) return;
-
     emitChange([...languages, lang]);
     setInput("");
   };
@@ -42,45 +35,38 @@ export const LanguagesSection: React.FC<LanguagesSectionProps> = ({
       e.preventDefault();
       addLanguage(input);
     }
-
-    // Backspace to remove last tag when input is empty
     if (e.key === "Backspace" && !input && languages.length) {
       removeLanguage(languages[languages.length - 1]);
     }
   };
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-xl font-semibold">Languages</h3>
-
-      <div className="space-y-2">
-        <Label>Languages you speak</Label>
-
-        <div className="flex items-center gap-2 rounded-md border px-2 py-1">
+    <div className="space-y-3">
+      <h3 className="text-sm font-medium text-[#1F1109]">Languages</h3>
+      <div>
+        <label className="block text-[11px] font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]">Languages you speak</label>
+        <div className="flex items-center gap-1.5 flex-wrap bg-white border border-[#1F1109]/[0.18] rounded-lg px-2.5 py-2 focus-within:border-[#B8893D] transition-colors">
           {languages.map((lang) => (
             <span
               key={lang}
-              className="flex items-center gap-1 rounded bg-muted px-2 py-1 text-sm whitespace-nowrap"
+              className="flex items-center gap-1 bg-[#B8893D]/[0.14] text-[#6B4F1F] px-2.5 py-1 rounded-full text-[11px] whitespace-nowrap"
             >
               {lang}
               <button
                 type="button"
                 onClick={() => removeLanguage(lang)}
-                className="text-xs text-muted-foreground hover:text-destructive"
+                className="text-[10px] text-[#6B4F1F] hover:text-[#7A2E2E] transition-colors ml-0.5"
               >
                 ×
               </button>
             </span>
           ))}
-
-          <Input
+          <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={
-              languages.length === 0 ? "Type a language and press comma" : ""
-            }
-            className="flex-1 border-none p-0 focus-visible:ring-0 min-w-[120px]"
+            placeholder={languages.length === 0 ? "Type a language and press comma" : ""}
+            className="flex-1 border-none outline-none p-1 text-[13px] text-[#1F1109] min-w-[120px] bg-transparent placeholder:text-[#9C8366]"
           />
         </div>
       </div>

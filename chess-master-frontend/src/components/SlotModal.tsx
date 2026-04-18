@@ -7,8 +7,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
-import { Button } from "./ui/button";
-import { Card, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { CheckCircle2, XCircle, Trash2, Circle, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -38,7 +36,6 @@ const SlotModal: React.FC<SlotModalProps> = ({
 
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this slot?")) return;
-
     try {
       await deleteSlots([slotId]);
       onDeleted?.(slotId);
@@ -60,31 +57,29 @@ const SlotModal: React.FC<SlotModalProps> = ({
     }
   };
 
-  const handleApprove = () => {
-    updateStatus("booked");
-  };
+  const handleApprove = () => updateStatus("booked");
 
   const handleReject = () => {
     if (
       !window.confirm(
-        `Reject the request from ${
-          reservedBy?.username || "this user"
-        }? The slot will become available again.`
+        `Reject the request from ${reservedBy?.username || "this user"}? The slot will become available again.`
       )
-    ) {
+    )
       return;
-    }
     updateStatus("free");
   };
 
+  const actionBtnClass =
+    "w-full flex items-center gap-3 p-4 rounded-lg border border-[#1F1109]/[0.12] text-[#3D2817] hover:bg-[#1F1109]/[0.04] transition-colors text-left";
+
   return (
     <Dialog open={visible} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] bg-[#FAF5EB] border-[#1F1109]/[0.12]">
         <DialogHeader>
-          <DialogTitle>
-            {isReserved ? "Slot Request" : "Manage Time Slot"}
+          <DialogTitle className="text-[#1F1109]" style={{ fontFamily: "Georgia, serif" }}>
+            {isReserved ? "Slot request" : "Manage time slot"}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-[#6B5640]">
             {isReserved
               ? "Approve or reject this request"
               : "Choose an action for this time slot"}
@@ -92,110 +87,71 @@ const SlotModal: React.FC<SlotModalProps> = ({
         </DialogHeader>
 
         {isReserved && reservedBy && (
-          <Card className="border-yellow-200 bg-yellow-50">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">
-                {reservedBy.username} has requested this time slot
-              </CardTitle>
-              {reservedBy.email && (
-                <CardDescription className="text-sm">
-                  {reservedBy.email}
-                </CardDescription>
-              )}
-            </CardHeader>
-          </Card>
+          <div className="border border-[#B8893D]/30 bg-[#B8893D]/10 rounded-lg p-3.5">
+            <p className="text-sm font-medium text-[#1F1109]">
+              {reservedBy.username} has requested this time slot
+            </p>
+            {reservedBy.email && (
+              <p className="text-xs text-[#6B5640] mt-0.5">{reservedBy.email}</p>
+            )}
+          </div>
         )}
 
-        <div className="flex flex-col gap-3 mt-4">
+        <div className="flex flex-col gap-2.5 mt-4">
           {isReserved ? (
             <>
-              <Button
-                onClick={handleApprove}
-                className="w-full h-auto py-4 justify-start"
-                variant="default"
-              >
-                <CheckCircle2 className="mr-3 h-5 w-5" />
-                <div className="text-left">
-                  <div className="font-semibold">Approve Request</div>
-                  <div className="text-sm opacity-80">Confirm the booking</div>
+              <button onClick={handleApprove} className="w-full flex items-center gap-3 p-4 rounded-lg bg-[#B8893D] text-[#1F1109] hover:bg-[#A37728] transition-colors">
+                <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
+                <div>
+                  <div className="text-sm font-medium">Approve request</div>
+                  <div className="text-xs opacity-70">Confirm the booking</div>
                 </div>
-              </Button>
-
-              <Button
-                onClick={handleReject}
-                className="w-full h-auto py-4 justify-start"
-                variant="destructive"
-              >
-                <XCircle className="mr-3 h-5 w-5" />
-                <div className="text-left">
-                  <div className="font-semibold">Reject Request</div>
-                  <div className="text-sm opacity-80">
-                    Make slot available again
-                  </div>
+              </button>
+              <button onClick={handleReject} className="w-full flex items-center gap-3 p-4 rounded-lg bg-[#7A2E2E]/10 text-[#7A2E2E] hover:bg-[#7A2E2E]/20 transition-colors">
+                <XCircle className="h-5 w-5 flex-shrink-0" />
+                <div>
+                  <div className="text-sm font-medium">Reject request</div>
+                  <div className="text-xs opacity-70">Make slot available again</div>
                 </div>
-              </Button>
+              </button>
             </>
           ) : (
             <>
-              <Button
-                onClick={() => updateStatus("free")}
-                className="w-full h-auto py-4 justify-start"
-                variant="outline"
-              >
-                <Circle className="mr-3 h-5 w-5 text-green-500 fill-green-500" />
-                <div className="text-left">
-                  <div className="font-semibold">Set as Available</div>
-                  <div className="text-sm opacity-80">Open for booking</div>
+              <button onClick={() => updateStatus("free")} className={actionBtnClass}>
+                <Circle className="h-5 w-5 text-[#B8893D] fill-[#B8893D] flex-shrink-0" />
+                <div>
+                  <div className="text-sm font-medium">Set as available</div>
+                  <div className="text-xs text-[#6B5640]">Open for booking</div>
                 </div>
-              </Button>
-
-              <Button
-                onClick={() => updateStatus("reserved")}
-                className="w-full h-auto py-4 justify-start"
-                variant="outline"
-              >
-                <Circle className="mr-3 h-5 w-5 text-yellow-500 fill-yellow-500" />
-                <div className="text-left">
-                  <div className="font-semibold">Mark as Reserved</div>
-                  <div className="text-sm opacity-80">Pending confirmation</div>
+              </button>
+              <button onClick={() => updateStatus("reserved")} className={actionBtnClass}>
+                <Circle className="h-5 w-5 text-[#8B6F4E] fill-[#8B6F4E] flex-shrink-0" />
+                <div>
+                  <div className="text-sm font-medium">Mark as reserved</div>
+                  <div className="text-xs text-[#6B5640]">Pending confirmation</div>
                 </div>
-              </Button>
-
-              <Button
-                onClick={() => updateStatus("booked")}
-                className="w-full h-auto py-4 justify-start"
-                variant="outline"
-              >
-                <Circle className="mr-3 h-5 w-5 text-red-500 fill-red-500" />
-                <div className="text-left">
-                  <div className="font-semibold">Mark as Booked</div>
-                  <div className="text-sm opacity-80">Confirmed session</div>
+              </button>
+              <button onClick={() => updateStatus("booked")} className={actionBtnClass}>
+                <Circle className="h-5 w-5 text-[#3D2817] fill-[#3D2817] flex-shrink-0" />
+                <div>
+                  <div className="text-sm font-medium">Mark as booked</div>
+                  <div className="text-xs text-[#6B5640]">Confirmed session</div>
                 </div>
-              </Button>
-              <Button
-                onClick={() => navigate(`/events/${slotId}/edit`)}
-                className="w-full h-auto py-4 justify-start"
-                variant="outline"
-              >
-                <Pencil className="mr-3 h-5 w-5" />
-                <div className="text-left">
-                  <div className="font-semibold">Edit Slot</div>
-                  <div className="text-sm opacity-80">
-                    Update time, title, or video
-                  </div>
+              </button>
+              <button onClick={() => navigate(`/events/${slotId}/edit`)} className={actionBtnClass}>
+                <Pencil className="h-5 w-5 text-[#8B6F4E] flex-shrink-0" />
+                <div>
+                  <div className="text-sm font-medium">Edit slot</div>
+                  <div className="text-xs text-[#6B5640]">Update time, title, or video</div>
                 </div>
-              </Button>
-              <Button
-                onClick={handleDelete}
-                className="w-full h-auto py-4 justify-start"
-                variant="destructive"
-              >
-                <Trash2 className="mr-3 h-5 w-5" />
-                <div className="text-left">
-                  <div className="font-semibold">Delete Slot</div>
-                  <div className="text-sm opacity-80">Remove permanently</div>
+              </button>
+              <button onClick={handleDelete} className="w-full flex items-center gap-3 p-4 rounded-lg bg-[#7A2E2E]/10 text-[#7A2E2E] hover:bg-[#7A2E2E]/20 transition-colors">
+                <Trash2 className="h-5 w-5 flex-shrink-0" />
+                <div>
+                  <div className="text-sm font-medium">Delete slot</div>
+                  <div className="text-xs opacity-70">Remove permanently</div>
                 </div>
-              </Button>
+              </button>
             </>
           )}
         </div>
