@@ -58,6 +58,39 @@ export class User {
   @Column("text", { nullable: true })
   lichessUrl: string | null;
 
+  @Column("text", { nullable: true })
+  twitchUrl: string | null;
+
+  @Column("text", { nullable: true })
+  youtubeUrl: string | null;
+
+  @Column("text", { nullable: true })
+  instagramUrl: string | null;
+
+  @Column("text", { nullable: true })
+  xUrl: string | null;
+
+  @Column("text", { nullable: true })
+  facebookUrl: string | null;
+
+  @Column("text", { nullable: true })
+  tiktokUrl: string | null;
+
+  @Column({
+    type: "decimal",
+    precision: 4,
+    scale: 2,
+    nullable: true,
+    transformer: {
+      to: (value: number | null) => value,
+      from: (value: string | null) => (value === null ? null : Number(value)),
+    },
+  })
+  avgReviewRating: string | null;
+
+  @Column("integer", { nullable: true })
+  studentsCount: string | null;
+
   @Column("bytea", { nullable: true })
   password: Buffer;
 

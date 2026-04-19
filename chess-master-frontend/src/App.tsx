@@ -26,6 +26,8 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import PaymentResultPage from "./pages/PaymentResultPage";
 
+import MasterProfilePage from "./pages/MasterProfilePage";
+
 const App: React.FC = () => {
   const { user } = useUser();
   return (
@@ -35,6 +37,10 @@ const App: React.FC = () => {
         <Router>
           <Routes>
             <Route path="/" element={<Layout />}>
+              <Route
+                path="/master-profile/:id"
+                element={<MasterProfilePage />}
+              />
               <Route path="/" element={<Home />} />
               <Route path="/home" element={<Home />} />
               <Route path="/dashboard" element={<Dashboard />} />

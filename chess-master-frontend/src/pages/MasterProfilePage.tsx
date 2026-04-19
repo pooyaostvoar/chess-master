@@ -1,0 +1,128 @@
+import { BaseUser } from "@chess-master/schemas";
+import { MasterProfileHeader } from "../components/master-profile/header/MasterProfileHeader";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getPublicUser } from "../services/api/user.api";
+import FreeTime from "../components/master-profile/free-time/FreeTime";
+
+export default function MasterProfilePage() {
+  const { id } = useParams<{ id: string }>();
+  const [user, setUser] = useState<BaseUser | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!id) return;
+
+    const loadUser = async () => {
+      try {
+        const res = await getPublicUser(Number(id));
+        setUser(res);
+      } catch (err) {
+        console.error(err);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUser();
+  }, [id]);
+  const availability = [
+    { day: "Mon", date: "Apr 14", slots: ["10:00", "12:30", "16:00", "19:00"] },
+    { day: "Tue", date: "Apr 15", slots: ["09:00", "11:30", "15:30"] },
+    { day: "Wed", date: "Apr 16", slots: ["10:30", "14:00", "18:30"] },
+    { day: "Thu", date: "Apr 17", slots: ["08:30", "13:00", "17:00", "20:00"] },
+    { day: "Fri", date: "Apr 18", slots: ["09:30", "12:00", "16:30"] },
+  ];
+  if (!user) {
+    return null;
+  }
+
+  const studentsLabel = user.studentsCount ?? 0;
+
+  const stats = [
+    { label: "Fide rating", value: user.rating ?? "—" },
+    { label: "Rapid", value: user.lichessRatings?.rapid?.rating ?? "—" },
+    { label: "Blitz", value: user.lichessRatings?.blitz?.rating ?? "—" },
+    { label: "Students", value: studentsLabel ? `${studentsLabel}+` : "—" },
+  ];
+
+  const masterTags = [
+    "Opening Repertoire",
+    "Calculation Training",
+    "Endgames",
+    "Game Review",
+    "Tournament Prep",
+    "Beginner to Advanced",
+  ];
+
+  return (
+    <div className="min-h-screen bg-slate-100 text-slate-900">
+      <div className="mx-auto md:p-6">
+        <div className="space-y-12">
+          <section>
+            <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+              <section
+                className="overflow-hidden md:rounded-3xl bg-white shadow-sm ring-1 ring-slate-200"
+                style={{
+                  borderBottomLeftRadius: "1.5rem",
+                  borderBottomRightRadius: "1.5rem",
+                }}
+              >
+                <MasterProfileHeader user={user} />
+
+                <div className="grid gap-6 p-3 md:p-8">
+                  <div className="space-y-6">
+                    <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
+                      {stats.map((item) => (
+                        <div
+                          key={item.label}
+                          className="rounded-2xl border border-slate-200 bg-slate-50 md:p-4 p-2"
+                        >
+                          <div className="md:text-2xl font-semibold text-xl">
+                            {item.value}
+                          </div>
+                          <div className="mt-1 text-sm text-slate-600">
+                            {item.label}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div>
+                      <h3 className="text-xl font-semibold">About</h3>
+                      <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base">
+                        {user.bio || "No bio yet."}
+                      </p>
+                    </div>
+
+                    <div>
+                      <h3 className="text-xl font-semibold">Coaching focus</h3>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {masterTags.map((item) => (
+                          <span
+                            key={item}
+                            className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700"
+                          >
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section
+                id="free-time"
+                className="rounded-3xl bg-white shadow-sm ring-1 ring-slate-200 md:p-6 p-3"
+              >
+                <FreeTime userId={Number(id)} />
+              </section>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -12,7 +12,9 @@ export const useScheduleSlots = (
   userId: string | undefined,
   options?: UseScheduleSlotsOptions
 ) => {
+  console.log("useScheduleSlots", userId);
   const [events, setEvents] = useState<any[]>([]);
+  const [rawEvents, setRawEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const loadSlots = async () => {
@@ -26,6 +28,7 @@ export const useScheduleSlots = (
       const res = await getSlotsByMaster(Number(userId));
 
       const slots = res.slots || [];
+      setRawEvents(slots);
       setEvents(
         slots.map((slot: ScheduleSlot) =>
           mapSlotToEvent(slot, {
@@ -65,5 +68,5 @@ export const useScheduleSlots = (
     }
   };
 
-  return { events, loading, error, refreshSlots, setEvents };
+  return { events, loading, error, refreshSlots, setEvents, rawEvents };
 };
