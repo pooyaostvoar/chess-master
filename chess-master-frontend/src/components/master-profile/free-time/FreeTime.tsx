@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { DayCalendar } from "./DayCalendar";
 import { AvailableSlotsPanel } from "./AvailableSlotsPanel";
 import { useScheduleSlots } from "../../../hooks/useScheduleSlots";
@@ -24,7 +24,7 @@ export type ScheduleSlot = {
 };
 
 export type CalendarDayGroup = {
-  date: string; // YYYY-MM-DD in browser local time
+  date: string;
   slots: ScheduleSlot[];
 };
 
@@ -63,40 +63,73 @@ const groupSlotsByDay = (slots: ScheduleSlot[]): CalendarDayGroup[] => {
 };
 
 export default function FreeTime({ userId }: { userId: number }) {
-  const { rawEvents: scheduleSlots, refreshSlots } = useScheduleSlots(
-    userId.toString(),
-    {
-      showBookingHint: true,
+  const calendarRef = useRef<HTMLDivElement | null>(null);
+  const slotsTopRef = useRef<HTMLDivElement | null>(null);
+
+  const { rawEvents: scheduleSlots } = useScheduleSlots(userId.toString(), {
+    showBookingHint: true,
+  });
+
+  const dayGroups = useMemo(
+    () =>
+      groupSlotsByDay(
+        scheduleSlots.filter((slot) => slot.status === SlotStatus.Free)
+      ),
+    [scheduleSlots]
+  );
+
+  const [selectedDate, setSelectedDate] = useState<string>("");
+
+  useEffect(() => {
+    if (!selectedDate && dayGroups.length > 0) {
+      setSelectedDate(dayGroups[0].date);
     }
+  }, [dayGroups, selectedDate]);
+
+  const selectedDay = useMemo(
+    () => dayGroups.find((day) => day.date === selectedDate) ?? dayGroups[0],
+    [dayGroups, selectedDate]
   );
 
-  const dayGroups = groupSlotsByDay(
-    scheduleSlots.filter((slot) => slot.status === SlotStatus.Free)
-  );
-  console.log(
-    dayGroups,
-    "aaaa",
-    scheduleSlots.filter((slot) => slot.status === SlotStatus.Free),
-    scheduleSlots
-  );
+  const scrollToRef = (ref: React.RefObject<HTMLDivElement | null>) => {
+    if (!ref.current) return;
+    if (window.innerWidth >= 768) return;
 
-  const [selectedDate, setSelectedDate] = useState<string>(
-    dayGroups[0]?.date ?? ""
-  );
+    ref.current.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
 
-  const selectedDay =
-    dayGroups.find((day) => day.date === selectedDate) ?? dayGroups[0];
+  const handleDateSelect = (date: string) => {
+    setSelectedDate(date);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        scrollToRef(slotsTopRef);
+      });
+    });
+  };
+
+  const handleBackToCalendar = () => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        scrollToRef(calendarRef);
+      });
+    });
+  };
 
   if (!scheduleSlots?.length) {
     return null;
   }
+
   if (!selectedDay) {
     return (
       <div className="text-slate-900">
         <div className="mb-2">
-          <h2 className="text-[28px] font-semibold tracking-tight text-slate-900">
+          <h3 className="text-[20px] font-semibold tracking-tight text-slate-900">
             Available Time Slots
-          </h2>
+          </h3>
           <p className="mt-2 text-sm text-slate-600">
             No available lessons at the moment.
           </p>
@@ -108,19 +141,25 @@ export default function FreeTime({ userId }: { userId: number }) {
   return (
     <div className="text-slate-900">
       <div className="mb-2">
-        <h2 className="text-[28px] font-semibold tracking-tight text-slate-900">
+        <h3 className="text-[20px] font-semibold tracking-tight text-slate-900">
           Available Time Slots
-        </h2>
+        </h3>
       </div>
 
       <div className="grid gap-6 md:grid-cols-[1.15fr_0.85fr]">
-        <DayCalendar
-          dates={dayGroups}
-          selectedDate={selectedDate}
-          onDateSelect={setSelectedDate}
-        />
+        <div ref={calendarRef}>
+          <DayCalendar
+            dates={dayGroups}
+            selectedDate={selectedDate}
+            onDateSelect={handleDateSelect}
+          />
+        </div>
 
-        <AvailableSlotsPanel selectedDay={selectedDay} />
+        <AvailableSlotsPanel
+          selectedDay={selectedDay}
+          onBack={handleBackToCalendar}
+          topRef={slotsTopRef}
+        />
       </div>
     </div>
   );

@@ -3,6 +3,8 @@ import type { CalendarDayGroup, ScheduleSlot } from "./FreeTime";
 
 type AvailableSlotsPanelProps = {
   selectedDay: CalendarDayGroup;
+  onBack: () => void;
+  topRef?: React.RefObject<HTMLDivElement | null>;
 };
 
 const toDate = (value: Date | string) =>
@@ -32,15 +34,18 @@ const formatPrice = (slot: ScheduleSlot) => {
 
 export const AvailableSlotsPanel: React.FC<AvailableSlotsPanelProps> = ({
   selectedDay,
+  onBack,
+  topRef,
 }) => {
   return (
-    // <div className="min-w-0 rounded-[28px] border border-slate-200 bg-slate-50 md:p-5 p-1 shadow-sm">
     <div>
+      <div ref={topRef} className="h-px scroll-mt-20" />
+
       <div className="free-time-scroll mt-0 max-h-[620px] overflow-y-auto overflow-x-hidden pr-1">
-        {/* <div className="sticky top-0 z-10 -mx-5 border-b border-slate-200 bg-slate-50 px-5 pb-4 pt-1"> */}
         <div className="sticky top-0 z-10 bg-white">
           <button
             type="button"
+            onClick={onBack}
             className="md:hidden inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-100"
           >
             <svg
@@ -56,9 +61,10 @@ export const AvailableSlotsPanel: React.FC<AvailableSlotsPanelProps> = ({
                 strokeLinejoin="round"
               />
             </svg>
-            Back
+            Back to calendar
           </button>
-          <h3 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">
+
+          <h3 className="mt-2 text-xl font-semibold tracking-tight text-slate-900">
             {formatDateLabel(selectedDay.date)}
           </h3>
         </div>
@@ -120,6 +126,5 @@ export const AvailableSlotsPanel: React.FC<AvailableSlotsPanelProps> = ({
         }
       `}</style>
     </div>
-    // </div>
   );
 };
