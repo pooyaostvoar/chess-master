@@ -58,22 +58,28 @@ export default function MasterProfilePage() {
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900">
-      <div className="mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto md:p-6">
         <div className="space-y-12">
           <section>
             <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-              <section className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-200">
+              <section
+                className="overflow-hidden md:rounded-3xl bg-white shadow-sm ring-1 ring-slate-200"
+                style={{
+                  borderBottomLeftRadius: "1.5rem",
+                  borderBottomRightRadius: "1.5rem",
+                }}
+              >
                 <MasterProfileHeader user={user} />
 
-                <div className="grid gap-6 p-6 sm:p-8">
+                <div className="grid gap-6 p-3 md:p-8">
                   <div className="space-y-6">
-                    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                    <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
                       {stats.map((item) => (
                         <div
                           key={item.label}
-                          className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                          className="rounded-2xl border border-slate-200 bg-slate-50 md:p-4 p-2"
                         >
-                          <div className="text-2xl font-semibold">
+                          <div className="md:text-2xl font-semibold text-xl">
                             {item.value}
                           </div>
                           <div className="mt-1 text-sm text-slate-600">
@@ -107,52 +113,8 @@ export default function MasterProfilePage() {
                 </div>
               </section>
 
-              <section className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6">
-                <FreeTime />
-                {/* <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <h2 className="text-2xl font-semibold">Free time</h2>
-                    <p className="mt-1 text-sm text-slate-600">
-                      Select a day and book an available slot.
-                    </p>
-                  </div>
-                  <div className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600">
-                    Time zone: Europe / Tallinn
-                  </div>
-                </div>
-
-                <div className="mt-6 grid gap-4">
-                  {availability.map((day) => (
-                    <div
-                      key={day.date}
-                      className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <div className="text-sm font-semibold text-slate-900">
-                            {day.day}
-                          </div>
-                          <div className="text-sm text-slate-500">
-                            {day.date}
-                          </div>
-                        </div>
-                        <button className="rounded-full border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-white">
-                          Show more
-                        </button>
-                      </div>
-                      <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-                        {day.slots.map((slot) => (
-                          <button
-                            key={slot}
-                            className="rounded-xl border border-amber-300 bg-white px-3 py-2 text-sm font-medium text-slate-900 transition hover:border-amber-500 hover:bg-amber-50"
-                          >
-                            {slot}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div> */}
+              <section className="rounded-3xl bg-white shadow-sm ring-1 ring-slate-200 md:p-6 p-3">
+                <FreeTime userId={Number(id)} />
               </section>
             </div>
           </section>

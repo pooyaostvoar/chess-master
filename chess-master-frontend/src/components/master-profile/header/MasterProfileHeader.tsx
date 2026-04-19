@@ -46,7 +46,7 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
               {priceLabel}
             </span>
           </div>
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+          <h1 className="text-xl font-semibold tracking-tight">
             {displayName}
           </h1>
         </div>

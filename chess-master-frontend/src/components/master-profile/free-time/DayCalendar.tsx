@@ -2,15 +2,10 @@ import React, { useMemo } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-
-type AvailabilityDay = {
-  day: string;
-  date: string;
-  slots: string[];
-};
+import type { CalendarDayGroup } from "./FreeTime";
 
 type DayCalendarProps = {
-  dates: AvailabilityDay[];
+  dates: CalendarDayGroup[];
   selectedDate: string;
   onDateSelect: (date: string) => void;
 };
@@ -33,10 +28,11 @@ export const DayCalendar: React.FC<DayCalendarProps> = ({
   );
 
   const initialDate =
-    selectedDate || dates[0]?.date || new Date().toISOString().slice(0, 10);
+    selectedDate || dates[0]?.date || formatLocalDate(new Date());
 
   return (
-    <div className="min-w-0 rounded-[28px] border border-slate-200 bg-slate-50 p-5 shadow-sm">
+    // <div className="min-w-0 rounded-[28px] border border-slate-200 bg-slate-50 md:p-5 shadow-sm p-1">
+    <div>
       <div className="rounded-[24px] border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
         <div className="free-time-calendar">
           <FullCalendar
@@ -68,9 +64,9 @@ export const DayCalendar: React.FC<DayCalendarProps> = ({
               ];
             }}
             dayCellContent={(arg) => {
-              const isToday =
-                formatLocalDate(arg.date) === formatLocalDate(new Date());
-              const isSelected = selectedDate === formatLocalDate(arg.date);
+              const cellDate = formatLocalDate(arg.date);
+              const isToday = cellDate === formatLocalDate(new Date());
+              const isSelected = selectedDate === cellDate;
 
               return (
                 <div className="ft-day-number relative">
@@ -257,5 +253,6 @@ export const DayCalendar: React.FC<DayCalendarProps> = ({
         }
       `}</style>
     </div>
+    // </div>
   );
 };
