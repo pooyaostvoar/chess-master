@@ -1,8 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { Card, CardContent } from "../ui/card";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { DollarSign, Clock } from "lucide-react";
+import React, { useState } from "react";
 
 interface PricingSectionProps {
   pricing: number;
@@ -16,48 +12,31 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
   const [inputValue, setInputValue] = useState(pricing?.toString() || "");
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2 mb-2">
-        <DollarSign className="h-5 w-5 text-primary" />
-        <h3 className="text-xl font-semibold">Session Pricing</h3>
-      </div>
-      <p className="text-sm text-muted-foreground mb-4">
-        Set your hourly rate.
-      </p>
-      <div className="grid grid-cols-1 gap-4">
-        <Card className="border-2 hover:border-primary transition-colors">
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <Label className="text-sm font-medium">Hourly rate</Label>
-            </div>
-            <div className="relative flex">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                $
-              </span>
-              <Input
-                type="number"
-                name="hourlyRate"
-                value={inputValue}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setInputValue(value);
-
-                  const numValue = value === "" ? null : parseFloat(value);
-                  onPricingChange(numValue);
-                }}
-                placeholder="0.00"
-                step="0.01"
-                className="pl-7"
-              />
-            </div>
-            {pricing && (
-              <p className="text-xs text-muted-foreground mt-2">
-                ${pricing} per hour
-              </p>
-            )}
-          </CardContent>
-        </Card>
+    <div className="space-y-3">
+      <h3 className="text-sm font-medium text-[#1F1109]">Session pricing</h3>
+      <p className="text-[11px] text-[#6B5640]">Set your hourly rate.</p>
+      <div className="border border-[#1F1109]/[0.12] rounded-lg p-4 bg-[#F4ECDD]/30">
+        <label className="block text-[11px] font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]">Hourly rate</label>
+        <div className="relative">
+          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[13px] text-[#8B6F4E]">$</span>
+          <input
+            type="number"
+            name="hourlyRate"
+            value={inputValue}
+            onChange={(e) => {
+              const value = e.target.value;
+              setInputValue(value);
+              const numValue = value === "" ? null : parseFloat(value);
+              onPricingChange(numValue);
+            }}
+            placeholder="0.00"
+            step="0.01"
+            className="w-full bg-white border border-[#1F1109]/[0.18] rounded-lg pl-8 pr-3.5 py-[11px] text-[13px] text-[#1F1109] outline-none transition-colors focus:border-[#B8893D] focus:bg-[#FDF9EE] placeholder:text-[#9C8366]"
+          />
+        </div>
+        {pricing != null && pricing > 0 && (
+          <p className="text-[11px] text-[#6B5640] mt-2">${pricing} per hour</p>
+        )}
       </div>
     </div>
   );

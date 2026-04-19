@@ -83,12 +83,12 @@ const BookCalendarView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#FAF5EB]">
       <div className="flex gap-6 p-6 max-w-[1800px] mx-auto">
         {/* Left Sidebar - Mini Calendar */}
         {isMobile === false && (
           <div className="w-80 flex-shrink-0">
-            <div className="bg-card rounded-lg border p-4 sticky top-6">
+            <div className="bg-white rounded-xl border border-[#1F1109]/[0.12] p-4 sticky top-6">
               <MiniCalendar onDateSelect={handleDateSelect} />
             </div>
           </div>
@@ -98,7 +98,7 @@ const BookCalendarView: React.FC = () => {
         <div className="flex-1 min-w-0">
           {masterInfo && <MasterInfoHeader masterInfo={masterInfo} />}
 
-          <div className="bg-[#fafafa] rounded-2xl border shadow-sm p-6 calendar-main-container mt-6">
+          <div className="bg-white rounded-2xl border border-[#1F1109]/[0.12] shadow-sm p-6 calendar-main-container mt-6">
             <ScheduleCalendar
               ref={calendarRef}
               events={events}

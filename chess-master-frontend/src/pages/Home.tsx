@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import { getMyBookings } from "../services/bookings";
@@ -6,13 +6,12 @@ import { findUsers } from "../services/auth";
 import type { Booking } from "../services/bookings";
 import type { User } from "../services/auth";
 import { HeroSection } from "../components/home/HeroSection";
-import { FeaturesSection } from "../components/home/FeaturesSection";
 import { HowItWorksSection } from "../components/home/HowItWorksSection";
-import { FeaturedSessionTypesSection } from "../components/home/FeaturedSessionTypesSection";
+import { ArchiveSection } from "../components/home/ArchiveSection";
+import { CTASection } from "../components/home/CTASection";
 import { TopMastersSection } from "../components/home/TopMastersSection";
 import { RecommendedMastersSection } from "../components/home/RecommendedMastersSection";
 import { UpcomingSessionsSection } from "../components/home/UpcomingSessionsSection";
-import { CTASection } from "../components/home/CTASection";
 
 import { FinishedEventsSection } from "../components/event/FinishedEventsSection";
 import { HomeSectionWrapper } from "../components/home/HomeSectionWrapper";
@@ -24,11 +23,16 @@ import { sortMastersByEvents } from "../services/users";
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const { user, loading: isUserloading } = useUser();
+  const [allMasters, setAllMasters] = useState<User[]>([]);
   const [topMasters, setTopMasters] = useState<User[]>([]);
   const [recommendedMasters, setRecommendedMasters] = useState<User[]>([]);
   const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [bookingsLoading, setBookingsLoading] = useState(false);
+
+  // Search & filter state for non-logged-in hero
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedLang, setSelectedLang] = useState("All languages");
 
   const {
     events,
@@ -60,18 +64,19 @@ const Home: React.FC = () => {
 
   const loadData = async () => {
     try {
-      const response = await findUsers({ isMaster: true, limit: 3 });
+      const response = await findUsers({ isMaster: true });
       const mastersWithRating = response.users.filter((m) => m.rating);
 
       const sorted = mastersWithRating.sort(
         (a, b) => (b.rating || 0) - (a.rating || 0)
       );
 
+      setAllMasters(sorted);
       setTopMasters(sorted);
 
       if (user) {
         const bookings = await loadBookings();
-        const allMasters = response.users;
+        const allFetched = response.users;
         const bookingMasterIds = new Set<number>();
         if (!user.isMaster) {
           bookings.forEach((b) => {
@@ -81,7 +86,7 @@ const Home: React.FC = () => {
           });
         }
 
-        const recommended = allMasters.sort((a, b) => {
+        const recommended = allFetched.sort((a, b) => {
           if (!user.isMaster) {
             const aHasBooking = bookingMasterIds.has(a.id);
             const bHasBooking = bookingMasterIds.has(b.id);
@@ -106,6 +111,39 @@ const Home: React.FC = () => {
     loadData();
   }, [user]);
 
+  // Client-side filtering for the non-logged-in view
+  const isSearchActive = searchQuery.trim() !== "" || selectedLang !== "All languages";
+
+  const filteredMasters = useMemo(() => {
+    let results = allMasters;
+    const q = searchQuery.trim().toLowerCase();
+
+    if (q) {
+      results = results.filter((m) => {
+        const searchableText = [
+          m.username,
+          m.bio,
+          m.title,
+          ...(m.languages || []),
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        return searchableText.includes(q);
+      });
+    }
+
+    if (selectedLang !== "All languages") {
+      results = results.filter((m) =>
+        m.languages?.some(
+          (lang) => lang.toLowerCase() === selectedLang.toLowerCase()
+        )
+      );
+    }
+
+    return results;
+  }, [allMasters, searchQuery, selectedLang]);
+
   const handleViewSchedule = (userId: number) => {
     if (user) {
       navigate(`/calendar/${userId}`);
@@ -120,68 +158,44 @@ const Home: React.FC = () => {
   return (
     <div className="min-h-screen">
       {user ? (
-        <div className="max-w-7xl mx-auto px-5 py-10">
-          {/* <WelcomeSection user={user} /> */}
-          {recentBookings.length > 0 && (
+        <div className="bg-[#FAF5EB] min-h-screen">
+          {/* Welcome header */}
+          <div className="bg-[#F4ECDD] border-b border-[#1F1109]/[0.08]">
+            <div className="max-w-5xl mx-auto px-5 sm:px-8 py-10 sm:py-12">
+              <div
+                className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-2"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                Welcome back
+              </div>
+              <h1
+                className="text-2xl sm:text-3xl font-medium text-[#1F1109] leading-[1.1] tracking-[-0.01em]"
+                style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
+              >
+                Good to see you, <span className="italic text-[#7A2E2E]">{user.username}</span>
+              </h1>
+            </div>
+          </div>
+
+          <div className="max-w-5xl mx-auto px-5 sm:px-8 py-8 sm:py-10">
+            {recentBookings.length > 0 && (
+              <HomeSectionWrapper
+                title="Your upcoming sessions"
+                path="/bookings"
+                buttonText="View all bookings"
+              >
+                <UpcomingSessionsSection
+                  bookings={recentBookings}
+                  loading={bookingsLoading}
+                  currentUser={user}
+                  loadBookings={loadBookings}
+                />
+              </HomeSectionWrapper>
+            )}
             <HomeSectionWrapper
-              title="Your Upcoming Sessions"
-              path="/bookings"
-              buttonText="View All Bookings"
-            >
-              <UpcomingSessionsSection
-                bookings={recentBookings}
-                loading={bookingsLoading}
-                currentUser={user}
-                loadBookings={loadBookings}
-              />
-            </HomeSectionWrapper>
-          )}
-          <HomeSectionWrapper
-            title="Upcoming Events"
-            path="/upcoming-events"
-            buttonText="View All Events"
-          >
-            <UpcomingEventsSection
-              events={events.slice(0, 3)}
-              loadEvents={loadEvents}
-              loading={loadingUpcomingEvents}
-            />
-          </HomeSectionWrapper>
-          <HomeSectionWrapper
-            title="Recommended Masters"
-            description="Discover talented chess masters to learn from"
-            path="/masters"
-            buttonText="View All Masters"
-          >
-            <RecommendedMastersSection
-              masters={sortMastersByEvents(recommendedMasters, events).slice(
-                0,
-                3
-              )}
-              loading={loading}
-              onViewSchedule={handleViewSchedule}
-            />
-          </HomeSectionWrapper>
-          <HomeSectionWrapper
-            title="Events Archive"
-            description="Watch recordings of past master sessions"
-            path="/events"
-            buttonText="View All Events"
-          >
-            <FinishedEventsSection limit={3} searchPhrase={null} />
-          </HomeSectionWrapper>
-        </div>
-      ) : (
-        <>
-          <HeroSection />
-          <FeaturesSection />
-          <HowItWorksSection />
-          <FeaturedSessionTypesSection />
-          <div className="max-w-7xl mx-auto px-5 py-16">
-            <HomeSectionWrapper
-              title="Upcoming Events"
+              title="Upcoming events"
               path="/upcoming-events"
-              buttonText="View All Events"
+              buttonText="View all events"
             >
               <UpcomingEventsSection
                 events={events.slice(0, 3)}
@@ -190,28 +204,91 @@ const Home: React.FC = () => {
               />
             </HomeSectionWrapper>
             <HomeSectionWrapper
-              title="Top Rated Masters"
-              description="Meet our highest-rated chess masters"
+              title="Recommended masters"
+              description="Discover talented chess masters to learn from"
               path="/masters"
-              buttonText="View All Masters"
+              buttonText="View all masters"
             >
-              <TopMastersSection
-                masters={sortMastersByEvents(topMasters, events).slice(0, 3)}
+              <RecommendedMastersSection
+                masters={sortMastersByEvents(recommendedMasters, events).slice(
+                  0,
+                  3
+                )}
                 loading={loading}
                 onViewSchedule={handleViewSchedule}
               />
             </HomeSectionWrapper>
             <HomeSectionWrapper
-              title="Events Archive"
+              title="From the archive"
               description="Watch recordings of past master sessions"
               path="/events"
-              buttonText="View All Events"
+              buttonText="Browse all"
             >
               <FinishedEventsSection limit={3} searchPhrase={null} />
             </HomeSectionWrapper>
           </div>
+        </div>
+      ) : (
+        <div className="bg-[#FAF5EB]">
+          <HeroSection
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            selectedLang={selectedLang}
+            onLangChange={setSelectedLang}
+          />
+
+          {/* Featured Masters */}
+          <div className="px-5 sm:px-8 py-8 sm:py-10 border-t border-[#1F1109]/[0.08] max-w-5xl mx-auto">
+            <div className="flex justify-between items-baseline mb-5">
+              <div>
+                <h2
+                  className="text-lg font-medium text-[#1F1109]"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  {isSearchActive ? "Search results" : "Featured masters"}
+                </h2>
+                <p className="text-xs text-[#6B5640] mt-0.5">
+                  {isSearchActive
+                    ? `${filteredMasters.length} master${filteredMasters.length !== 1 ? "s" : ""} found`
+                    : "Top rated masters available for sessions"}
+                </p>
+              </div>
+              <button
+                onClick={() => navigate("/masters")}
+                className="text-xs text-[#B8893D] font-medium hover:underline"
+              >
+                View all →
+              </button>
+            </div>
+
+            <TopMastersSection
+              masters={
+                isSearchActive
+                  ? filteredMasters.slice(0, 6)
+                  : sortMastersByEvents(topMasters, events).slice(0, 3)
+              }
+              loading={loading}
+              onViewSchedule={handleViewSchedule}
+            />
+
+            {isSearchActive && filteredMasters.length > 6 && (
+              <div className="text-center mt-4">
+                <button
+                  onClick={() => navigate("/masters")}
+                  className="text-sm text-[#B8893D] font-medium hover:underline"
+                >
+                  View all {filteredMasters.length} results →
+                </button>
+              </div>
+            )}
+          </div>
+
+          <HowItWorksSection />
+
+          <ArchiveSection />
+
           <CTASection />
-        </>
+        </div>
       )}
     </div>
   );

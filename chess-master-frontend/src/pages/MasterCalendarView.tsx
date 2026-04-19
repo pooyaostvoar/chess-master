@@ -179,12 +179,12 @@ const MasterCalendarView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#FAF5EB]">
       <div className="flex gap-6 p-6 max-w-[1800px] mx-auto">
         {/* Left Sidebar - Mini Calendar */}
         {isMobile === false && (
           <div className="w-80 flex-shrink-0">
-            <div className="bg-card rounded-lg border p-4 sticky top-6">
+            <div className="bg-white rounded-xl border border-[#1F1109]/[0.12] p-4 sticky top-6">
               <MiniCalendar onDateSelect={handleDateSelect} />
             </div>
           </div>
@@ -192,14 +192,25 @@ const MasterCalendarView: React.FC = () => {
         {/* Right Side - Main Calendar */}
         <div className="flex-1 min-w-0">
           <div className="mb-6">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">My Schedule</h1>
-            <p className="text-muted-foreground">
+            <div
+              className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-2"
+              style={{ fontFamily: "Georgia, serif" }}
+            >
+              Your calendar
+            </div>
+            <h1
+              className="text-2xl sm:text-3xl font-medium text-[#1F1109] leading-[1.1] tracking-[-0.01em] mb-1"
+              style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
+            >
+              My Schedule
+            </h1>
+            <p className="text-[13px] text-[#5C4631]">
               Click and drag to create time slots, or click existing slots to
               manage them
             </p>
           </div>
 
-          <div className="bg-[#fafafa] rounded-2xl border shadow-sm p-6 calendar-main-container">
+          <div className="bg-white rounded-2xl border border-[#1F1109]/[0.12] shadow-sm p-6 calendar-main-container">
             <ScheduleCalendar
               ref={calendarRef}
               events={events}

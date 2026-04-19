@@ -92,14 +92,15 @@ const Layout: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* ───────── NAVBAR ───────── */}
-      <nav className="sticky top-0 z-50 w-full border-b bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-sm">
+      <nav className="sticky top-0 z-50 w-full border-b shadow-sm bg-[#1F1109] text-[#F4ECDD]">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link
               to="/home"
-              className="flex items-center gap-3 text-xl font-bold"
+              className="flex items-center gap-2.5 font-medium text-base"
+              style={{ fontFamily: "Georgia, serif", letterSpacing: "0.01em" }}
             >
-              <span className="text-3xl">♔</span>
+              <span className="inline-block w-2.5 h-2.5 bg-[#B8893D] rotate-45" />
               <span className={user ? "" : "hidden sm:inline"}>
                 Chess Master
               </span>
@@ -109,7 +110,7 @@ const Layout: React.FC = () => {
               {!isMobile && (
                 <Link
                   to="/home"
-                  className="text-sm font-medium hover:text-primary transition-colors"
+                  className="text-sm font-medium text-[#F4ECDD]/80 hover:text-[#F4ECDD] transition-colors"
                 >
                   Home
                 </Link>
@@ -117,14 +118,32 @@ const Layout: React.FC = () => {
 
               <Link
                 to="/masters"
-                className="text-sm font-medium hover:text-primary transition-colors"
+                className="text-sm font-medium text-[#F4ECDD]/80 hover:text-[#F4ECDD] transition-colors"
               >
                 Browse Masters
               </Link>
 
+              {!user && !isMobile && (
+                <a
+                  href="/#how-it-works"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const el = document.getElementById("how-it-works");
+                    if (el) {
+                      el.scrollIntoView({ behavior: "smooth" });
+                    } else {
+                      navigate("/home#how-it-works");
+                    }
+                  }}
+                  className="text-sm font-medium text-[#F4ECDD]/80 hover:text-[#F4ECDD] transition-colors"
+                >
+                  How it works
+                </a>
+              )}
+
               {/* ───────── USER MENU ───────── */}
               {loading ? (
-                <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="w-8 h-8 border-2 border-[#F4ECDD] border-t-transparent rounded-full animate-spin" />
               ) : user ? (
                 <DropdownMenu onOpenChange={(open) => setDropDownIsOpen(open)}>
                   <DropdownMenuTrigger asChild>
@@ -135,11 +154,11 @@ const Layout: React.FC = () => {
                         </span>
                       )}
                       <button
-                        className={`w-11 h-11 rounded-full bg-white text-slate-900 font-bold text-lg flex items-center justify-center transition-all
+                        className={`w-11 h-11 rounded-full bg-[#F4ECDD] text-[#1F1109] font-bold text-lg flex items-center justify-center transition-all
                           ${
                             showEditProfileHint || showAddSlot
-                              ? "ring-4 ring-primary ring-offset-2 animate-pulse"
-                              : "hover:ring-2 hover:ring-primary"
+                              ? "ring-4 ring-[#B8893D] ring-offset-2 ring-offset-[#1F1109] animate-pulse"
+                              : "hover:ring-2 hover:ring-[#B8893D]"
                           }
                         `}
                       >
@@ -166,30 +185,32 @@ const Layout: React.FC = () => {
                     </div>
                   </DropdownMenuTrigger>
 
-                  <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuContent align="end" className="w-56 bg-[#FAF5EB] border-[#1F1109]/[0.12]">
                     <DropdownMenuLabel>
-                      <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium">{user.username}</p>
-                        <p className="text-xs text-muted-foreground">
+                      <div className="flex flex-col space-y-0.5">
+                        <p className="text-sm font-medium text-[#1F1109]">{user.username}</p>
+                        <p className="text-[11px] text-[#B8893D]">
                           {user.isMaster ? "Master" : "Player"}
                         </p>
                       </div>
                     </DropdownMenuLabel>
 
-                    <DropdownMenuSeparator />
+                    <DropdownMenuSeparator className="bg-[#1F1109]/[0.08]" />
 
-                    <DropdownMenuItem onClick={() => navigate("/dashboard")}>
-                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                    <DropdownMenuItem onClick={() => navigate("/dashboard")} className="text-[#3D2817] focus:bg-[#B8893D]/10 focus:text-[#1F1109]">
+                      <LayoutDashboard className="mr-2 h-4 w-4 text-[#8B6F4E]" />
                       Dashboard
                     </DropdownMenuItem>
 
                     <DropdownMenuItem
                       onClick={() => navigate("/chat")}
-                      className="flex items-center justify-between px-2"
+                      className="flex items-center justify-between text-[#3D2817] focus:bg-[#B8893D]/10 focus:text-[#1F1109]"
                     >
-                      <span>💬 Messages</span>
+                      <span className="flex items-center">
+                        <span className="mr-2 text-[#8B6F4E]">💬</span> Messages
+                      </span>
                       {unreadCount > 0 && (
-                        <span className="bg-red-600 text-white text-xs font-bold rounded-full min-w-[20px] h-5 px-2 flex items-center justify-center">
+                        <span className="bg-[#7A2E2E] text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] px-1.5 flex items-center justify-center">
                           {unreadCount > 99 ? "99+" : unreadCount}
                         </span>
                       )}
@@ -197,40 +218,40 @@ const Layout: React.FC = () => {
 
                     <DropdownMenuItem
                       onClick={() => navigate("/edit-profile")}
-                      className={`flex items-center gap-2 transition-all ${
+                      className={`flex items-center gap-2 transition-all text-[#3D2817] focus:bg-[#B8893D]/10 focus:text-[#1F1109] ${
                         state === "MASTER_NO_INFO"
-                          ? "animate-pulse bg-primary/10 text-primary font-semibold rounded"
+                          ? "animate-pulse bg-[#B8893D]/10 text-[#B8893D] font-semibold rounded"
                           : ""
                       }`}
                     >
-                      <User className="mr-2 h-4 w-4" />
+                      <User className="mr-2 h-4 w-4 text-[#8B6F4E]" />
                       Edit Profile
                     </DropdownMenuItem>
 
                     {user.isMaster && (
                       <DropdownMenuItem
                         onClick={() => navigate(`/calendar/${user.id}`)}
-                        className={`flex items-center gap-2 transition-all ${
+                        className={`flex items-center gap-2 transition-all text-[#3D2817] focus:bg-[#B8893D]/10 focus:text-[#1F1109] ${
                           state === "MASTER_NO_SLOT"
-                            ? "animate-pulse bg-primary/10 text-primary font-semibold rounded"
+                            ? "animate-pulse bg-[#B8893D]/10 text-[#B8893D] font-semibold rounded"
                             : ""
                         }`}
                       >
-                        <Calendar className="mr-2 h-4 w-4" />
+                        <Calendar className="mr-2 h-4 w-4 text-[#8B6F4E]" />
                         My Schedule
                       </DropdownMenuItem>
                     )}
 
-                    <DropdownMenuItem onClick={() => navigate("/bookings")}>
-                      <BookOpen className="mr-2 h-4 w-4" />
+                    <DropdownMenuItem onClick={() => navigate("/bookings")} className="text-[#3D2817] focus:bg-[#B8893D]/10 focus:text-[#1F1109]">
+                      <BookOpen className="mr-2 h-4 w-4 text-[#8B6F4E]" />
                       My Bookings
                     </DropdownMenuItem>
 
-                    <DropdownMenuSeparator />
+                    <DropdownMenuSeparator className="bg-[#1F1109]/[0.08]" />
 
                     <DropdownMenuItem
                       onClick={handleLogout}
-                      className="text-destructive"
+                      className="text-[#7A2E2E] focus:bg-[#7A2E2E]/10 focus:text-[#7A2E2E]"
                     >
                       <LogOut className="mr-2 h-4 w-4" />
                       Logout
@@ -238,22 +259,19 @@ const Layout: React.FC = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <div className="flex items-center gap-4">
-                  <Button
-                    variant="ghost"
-                    size="sm"
+                <div className="flex items-center gap-5">
+                  <button
                     onClick={() => navigate("/login")}
-                    className="text-white hover:bg-white/10"
+                    className="text-[13px] text-[#F4ECDD]/80 hover:text-[#F4ECDD] transition-colors"
                   >
-                    Log In
-                  </Button>
-                  <Button
-                    size="sm"
+                    Log in
+                  </button>
+                  <button
                     onClick={() => navigate("/signup")}
-                    className="bg-white text-slate-900 hover:bg-white/90"
+                    className="bg-[#B8893D] text-[#1F1109] px-4 py-2 rounded-full text-[13px] font-medium hover:bg-[#A67B30] transition-colors"
                   >
-                    Sign Up
-                  </Button>
+                    Sign up
+                  </button>
                 </div>
               )}
             </div>
@@ -287,64 +305,78 @@ const Layout: React.FC = () => {
 
       {/* ───────── FOOTER ───────── */}
 
-      <footer className="border-t bg-slate-900 text-white py-8">
-        <div className="container mx-auto px-6 flex justify-between items-start flex-wrap gap-6">
-          {/* Brand */}
-          <span className="text-lg font-bold">♔ Chess Master</span>
+      {/* Same warm footer for all users */}
+        <footer className="bg-[#1F1109] text-[#F4ECDD]">
+          <div className="max-w-5xl mx-auto px-5 sm:px-8 pt-12 pb-6">
+            {/* 3-column grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-[1.4fr_1fr_1fr] gap-8 mb-9">
+              {/* Brand column */}
+              <div>
+                <div className="flex items-center gap-2.5 mb-3.5" style={{ fontFamily: "Georgia, serif" }}>
+                  <span className="inline-block w-2.5 h-2.5 bg-[#B8893D] rotate-45" />
+                  <span className="font-medium">Chess Master</span>
+                </div>
+                <p className="text-xs text-[#F4ECDD]/55 leading-relaxed mb-4">
+                  Verified chess coaching from the players who've actually been there.
+                </p>
+                {/* Social icons */}
+                <div className="flex gap-2.5">
+                  {/* X / Twitter */}
+                  <a className="w-7 h-7 border border-[#B8893D]/40 rounded-full flex items-center justify-center hover:border-[#B8893D] transition-colors" href="#" aria-label="Twitter">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="#B8893D"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  </a>
+                  {/* YouTube */}
+                  <a className="w-7 h-7 border border-[#B8893D]/40 rounded-full flex items-center justify-center hover:border-[#B8893D] transition-colors" href="#" aria-label="YouTube">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#B8893D"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                  </a>
+                  {/* Discord */}
+                  <a className="w-7 h-7 border border-[#B8893D]/40 rounded-full flex items-center justify-center hover:border-[#B8893D] transition-colors" href="#" aria-label="Discord">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#B8893D"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+                  </a>
+                </div>
+              </div>
 
-          {/* Contact Us */}
-          <div className="text-sm">
-            <p className="font-semibold mb-1">Contact Us</p>
-            <a
-              href="https://wa.me/37256372739"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-green-400 hover:text-green-300"
-            >
-              <span className="flex items-center gap-2">
-                {/* WhatsApp SVG */}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 32 32"
-                  fill="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path d="M16 2C8.28 2 2 8.05 2 15.5c0 2.73.83 5.27 2.26 7.42L2 30l7.3-2.13A14.1 14.1 0 0 0 16 29c7.72 0 14-6.05 14-13.5S23.72 2 16 2zm0 24.5c-2.3 0-4.45-.66-6.26-1.8l-.45-.27-4.33 1.26 1.3-4.1-.3-.42A11.9 11.9 0 0 1 4 15.5C4 9.43 9.38 4.5 16 4.5S28 9.43 28 15.5 22.62 26.5 16 26.5zm6.1-7.06c-.34-.17-2-.98-2.32-1.09-.32-.12-.55-.17-.78.17-.23.35-.9 1.09-1.1 1.32-.2.23-.4.26-.74.09-.34-.17-1.43-.5-2.73-1.6-1-.85-1.68-1.9-1.88-2.23-.2-.35-.02-.53.15-.7.15-.14.34-.38.52-.57.17-.2.23-.35.35-.58.11-.23.05-.44-.03-.61-.09-.17-.78-1.83-1.07-2.5-.28-.67-.57-.58-.78-.59h-.66c-.23 0-.61.09-.93.44-.32.35-1.22 1.18-1.22 2.88s1.25 3.34 1.43 3.58c.17.23 2.46 3.83 5.96 5.37.83.35 1.48.56 1.99.71.84.25 1.6.22 2.2.13.67-.1 2-.81 2.28-1.59.28-.78.28-1.45.2-1.59-.08-.13-.31-.22-.65-.39z" />
-                </svg>
-                : +372 5637 2739
-              </span>
-            </a>
-            {/* Email */}
-            <a
-              href="mailto:team@chesswithmasters.com"
-              className="text-blue-400 hover:text-blue-300"
-            >
-              <span className="flex items-center gap-2">
-                📧 team@chesswithmasters.com
-              </span>
-            </a>
-          </div>
+              {/* Navigate column */}
+              <div>
+                <div className="text-[11px] font-medium text-[#F4ECDD]/50 tracking-[0.08em] uppercase mb-3.5">Navigate</div>
+                <div className="flex flex-col gap-2">
+                  <a onClick={() => navigate("/masters")} className="text-xs text-[#F4ECDD]/85 hover:text-[#F4ECDD] cursor-pointer transition-colors">Browse masters</a>
+                  <a onClick={() => { const el = document.getElementById("how-it-works"); if (el) el.scrollIntoView({ behavior: "smooth" }); else navigate("/home#how-it-works"); }} className="text-xs text-[#F4ECDD]/85 hover:text-[#F4ECDD] cursor-pointer transition-colors">How it works</a>
+                  <a onClick={() => navigate("/events")} className="text-xs text-[#F4ECDD]/85 hover:text-[#F4ECDD] cursor-pointer transition-colors">From the archive</a>
+                </div>
+              </div>
 
-          {/* Legal */}
-          <div className="text-sm flex flex-col gap-2">
-            <a
-              href="/privacy-policy"
-              className="text-muted-foreground hover:text-white underline-offset-4 hover:underline"
-            >
-              Privacy Policy
-            </a>
-            <a
-              href="/terms-of-service"
-              className="text-muted-foreground hover:text-white underline-offset-4 hover:underline"
-            >
-              Terms Of Service
-            </a>
-            <span className="text-muted-foreground">
-              © {new Date().getFullYear()} Chess Master. All rights reserved.
-            </span>
+              {/* Connect column */}
+              <div>
+                <div className="text-[11px] font-medium text-[#F4ECDD]/50 tracking-[0.08em] uppercase mb-3.5">Connect</div>
+                <div className="flex flex-col gap-2">
+                  <a onClick={() => navigate("/signup")} className="text-xs text-[#F4ECDD]/85 hover:text-[#F4ECDD] cursor-pointer transition-colors">Become a master</a>
+                  <a href="mailto:team@chesswithmasters.com" className="text-xs text-[#F4ECDD]/85 hover:text-[#F4ECDD] transition-colors">team@chesswithmasters.com</a>
+                  <a
+                    href="https://wa.me/37256372739"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#B8893D]/15 border border-[#B8893D]/40 rounded-full text-[11px] text-[#B8893D] font-medium w-fit hover:bg-[#B8893D]/25 transition-colors"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#B8893D"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/></svg>
+                    +372 5637 2739
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom bar */}
+            <div className="border-t border-[#F4ECDD]/[0.12] pt-5 flex justify-between items-center gap-4 flex-wrap">
+              <span className="text-[11px] text-[#F4ECDD]/45">
+                © {new Date().getFullYear()} Chess Master OÜ · Tallinn, Estonia
+              </span>
+              <div className="flex items-center gap-4 text-[11px]">
+                <a href="/privacy-policy" className="text-[#F4ECDD]/60 hover:text-[#F4ECDD]/80 transition-colors">Privacy</a>
+                <a href="/terms-of-service" className="text-[#F4ECDD]/60 hover:text-[#F4ECDD]/80 transition-colors">Terms</a>
+              </div>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
     </div>
   );
 };

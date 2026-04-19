@@ -67,3 +67,30 @@
 		transform: rotate(360deg);
 	}
 }
+
+@keyframes knightTour {
+	0%, 12% { transform: translate(110px, 110px); }
+	17%, 29% { transform: translate(290px, 200px); }
+	34%, 46% { transform: translate(470px, 110px); }
+	51%, 63% { transform: translate(380px, 290px); }
+	68%, 80% { transform: translate(200px, 380px); }
+	85%, 97% { transform: translate(20px, 290px); }
+	100% { transform: translate(110px, 110px); }
+}
+
+@keyframes knightMove {
+	0%, 16% { transform: translate(3px, 353px); }
+	20%, 36% { transform: translate(103px, 453px); }
+	40%, 56% { transform: translate(203px, 353px); }
+	60%, 76% { transform: translate(103px, 253px); }
+	80%, 96% { transform: translate(3px, 353px); }
+	100% { transform: translate(3px, 353px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.animate-\[knightTour_32s_infinite_cubic-bezier\(0\.65\,0\,0\.35\,1\)\],
+	.animate-\[knightMove_36s_infinite_cubic-bezier\(0\.65\,0\,0\.35\,1\)\] {
+		animation: none !important;
+		opacity: 0.12 !important;
+	}
+}
