@@ -113,7 +113,10 @@ export default function MasterProfilePage() {
                 </div>
               </section>
 
-              <section className="rounded-3xl bg-white shadow-sm ring-1 ring-slate-200 md:p-6 p-3">
+              <section
+                id="free-time"
+                className="rounded-3xl bg-white shadow-sm ring-1 ring-slate-200 md:p-6 p-3"
+              >
                 <FreeTime userId={Number(id)} />
               </section>
             </div>

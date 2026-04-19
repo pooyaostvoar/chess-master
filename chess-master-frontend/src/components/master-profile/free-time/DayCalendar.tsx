@@ -132,6 +132,37 @@ export const DayCalendar: React.FC<DayCalendarProps> = ({
       </div>
 
       <style>{`
+        .free-time-calendar .fc .fc-header-toolbar {
+          display: flex !important;
+          flex-direction: row !important;
+          flex-wrap: nowrap !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          gap: 8px !important;
+        }
+        
+        .free-time-calendar .fc .fc-toolbar-chunk {
+          display: flex !important;
+          align-items: center !important;
+          flex: 0 1 auto !important;
+          min-width: 0 !important;
+        }
+        
+        .free-time-calendar .fc .fc-toolbar-title {
+          margin: 0 !important;
+          font-size: 1rem !important;
+          line-height: 1.2 !important;
+          white-space: nowrap !important;
+        }
+        
+        .free-time-calendar .fc .fc-button {
+          width: 32px !important;
+          height: 32px !important;
+          padding: 0 !important;
+          flex: 0 0 auto !important;
+        }
+
+
         .free-time-calendar .fc-day-today {
           background: transparent !important;
         }

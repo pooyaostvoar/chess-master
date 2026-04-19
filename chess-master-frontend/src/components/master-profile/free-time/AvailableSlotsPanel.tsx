@@ -38,7 +38,26 @@ export const AvailableSlotsPanel: React.FC<AvailableSlotsPanelProps> = ({
     <div>
       <div className="free-time-scroll mt-0 max-h-[620px] overflow-y-auto overflow-x-hidden pr-1">
         {/* <div className="sticky top-0 z-10 -mx-5 border-b border-slate-200 bg-slate-50 px-5 pb-4 pt-1"> */}
-        <div className="sticky top-0 z-10 ">
+        <div className="sticky top-0 z-10 bg-white">
+          <button
+            type="button"
+            className="md:hidden inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-100"
+          >
+            <svg
+              viewBox="0 0 20 20"
+              fill="none"
+              className="h-4 w-4 text-slate-500"
+            >
+              <path
+                d="M12.5 15 7.5 10l5-5"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            Back
+          </button>
           <h3 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">
             {formatDateLabel(selectedDay.date)}
           </h3>
