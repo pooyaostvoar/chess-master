@@ -450,7 +450,7 @@ const Masters: React.FC = () => {
                       <img
                         src={MEDIA_URL + master.profilePictureThumbnailUrl}
                         alt={master.username}
-                        className="relative w-16 h-16 rounded-full object-cover border-2 border-[#F4ECDD]/40"
+                        className="relative w-24 h-24 rounded-full object-cover border-[3px] border-[#F4ECDD]/40"
                       />
                     ) : (
                       <PieceSvg piece={piece} />
