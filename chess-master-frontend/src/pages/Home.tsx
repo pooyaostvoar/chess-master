@@ -159,24 +159,6 @@ const Home: React.FC = () => {
     <div className="min-h-screen">
       {user ? (
         <div className="bg-[#FAF5EB] min-h-screen">
-          {/* Welcome header */}
-          <div className="bg-[#F4ECDD] border-b border-[#1F1109]/[0.08]">
-            <div className="max-w-5xl mx-auto px-5 sm:px-8 py-10 sm:py-12">
-              <div
-                className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-2"
-                style={{ fontFamily: "Georgia, serif" }}
-              >
-                Welcome back
-              </div>
-              <h1
-                className="text-2xl sm:text-3xl font-medium text-[#1F1109] leading-[1.1] tracking-[-0.01em]"
-                style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
-              >
-                Good to see you, <span className="italic text-[#7A2E2E]">{user.username}</span>
-              </h1>
-            </div>
-          </div>
-
           <div className="max-w-5xl mx-auto px-5 sm:px-8 py-8 sm:py-10">
             {recentBookings.length > 0 && (
               <HomeSectionWrapper
