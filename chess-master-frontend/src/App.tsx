@@ -38,7 +38,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route
-                path="/master-profile/:id"
+                path="/master-profile/:username"
                 element={<MasterProfilePage />}
               />
               <Route path="/" element={<Home />} />

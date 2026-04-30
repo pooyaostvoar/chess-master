@@ -2,20 +2,20 @@ import { BaseUser } from "@chess-master/schemas";
 import { MasterProfileHeader } from "../components/master-profile/header/MasterProfileHeader";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getPublicUser } from "../services/api/user.api";
+import { getPublicUserByUsername } from "../services/api/user.api";
 import FreeTime from "../components/master-profile/free-time/FreeTime";
 
 export default function MasterProfilePage() {
-  const { id } = useParams<{ id: string }>();
+  const { username } = useParams<{ username: string }>();
   const [user, setUser] = useState<BaseUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!id) return;
+    if (!username) return;
 
     const loadUser = async () => {
       try {
-        const res = await getPublicUser(Number(id));
+        const res = await getPublicUserByUsername(username);
         setUser(res);
       } catch (err) {
         console.error(err);
@@ -26,7 +26,7 @@ export default function MasterProfilePage() {
     };
 
     loadUser();
-  }, [id]);
+  }, [username]);
 
   if (!user) {
     return null;
@@ -110,7 +110,7 @@ export default function MasterProfilePage() {
                 id="free-time"
                 className="rounded-3xl bg-white shadow-sm ring-1 ring-slate-200 md:p-6 p-3"
               >
-                <FreeTime userId={Number(id)} />
+                <FreeTime userId={user.id} />
               </section>
             </div>
           </section>

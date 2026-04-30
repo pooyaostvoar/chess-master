@@ -106,6 +106,14 @@ export async function getUserById(userId: number): Promise<User | null> {
 }
 
 /**
+ * Get user by username
+ */
+export async function getUserByUsername(username: string): Promise<User | null> {
+  const userRepo = AppDataSource.getRepository(User);
+  return await userRepo.findOne({ where: { username } });
+}
+
+/**
  * Update user by ID
  */
 export async function updateUser(

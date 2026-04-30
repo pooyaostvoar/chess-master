@@ -109,6 +109,12 @@ export const getPublicUser = async (userId: number) => {
   return res.data.user;
 };
 
+export const getPublicUserByUsername = async (username: string) => {
+  const res = await apiClient.get(`/users/username/${encodeURIComponent(username)}`);
+  if (!res.data.user) throw new Error("User not found");
+  return res.data.user;
+};
+
 export const uploadProfilePicture = async (file: File) => {
   const formData = new FormData();
   formData.append("image", file);
