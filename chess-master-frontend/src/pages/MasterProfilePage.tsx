@@ -27,13 +27,7 @@ export default function MasterProfilePage() {
 
     loadUser();
   }, [id]);
-  const availability = [
-    { day: "Mon", date: "Apr 14", slots: ["10:00", "12:30", "16:00", "19:00"] },
-    { day: "Tue", date: "Apr 15", slots: ["09:00", "11:30", "15:30"] },
-    { day: "Wed", date: "Apr 16", slots: ["10:30", "14:00", "18:30"] },
-    { day: "Thu", date: "Apr 17", slots: ["08:30", "13:00", "17:00", "20:00"] },
-    { day: "Fri", date: "Apr 18", slots: ["09:30", "12:00", "16:30"] },
-  ];
+
   if (!user) {
     return null;
   }
