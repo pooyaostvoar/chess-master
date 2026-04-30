@@ -32,6 +32,12 @@ export class User {
   username: string;
 
   @Column({ type: "text", nullable: true })
+  name: string | null;
+
+  @Column({ type: "text", nullable: true })
+  lastname: string | null;
+
+  @Column({ type: "text", nullable: true })
   phoneNumber: string | null;
 
   @Column("boolean", { default: false })

@@ -4,6 +4,8 @@ import { LichessRatingsMap, User } from "../database/entity/user";
 export interface UpdateUserData {
   email?: string;
   username?: string;
+  name?: string | null;
+  lastname?: string | null;
   title?: string | null;
   rating?: number | null;
   bio?: string | null;
@@ -38,6 +40,8 @@ export interface SafeUser {
   id: number;
   username: string;
   email: string;
+  name: string | null;
+  lastname: string | null;
   title: string | null;
   rating: number | null;
   bio: string | null;
@@ -65,6 +69,8 @@ export function formatUser(user: User): SafeUser {
     id: user.id,
     username: user.username,
     email: user.email,
+    name: user.name,
+    lastname: user.lastname,
     title: user.title,
     rating: user.rating,
     bio: user.bio,
@@ -132,6 +138,8 @@ export async function updateUser(
   // Update user fields
   if (data.email !== undefined) user.email = data.email;
   if (data.username !== undefined) user.username = data.username;
+  if (data.name !== undefined) user.name = data.name;
+  if (data.lastname !== undefined) user.lastname = data.lastname;
   if (data.title !== undefined) user.title = data.title;
   if (data.rating !== undefined) user.rating = data.rating;
   if (data.bio !== undefined) user.bio = data.bio;

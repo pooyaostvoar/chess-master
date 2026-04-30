@@ -152,6 +152,8 @@ const EditProfile: React.FC = () => {
       const data = await updateUser(formData.id, {
         email: formData.email,
         username: formData.username,
+        name: formData.name,
+        lastname: formData.lastname,
         title: formData.title,
         rating: formData.rating,
         bio: formData.bio,
@@ -227,6 +229,8 @@ const EditProfile: React.FC = () => {
             <BasicInfoSection
               username={formData.username}
               email={formData.email}
+              name={formData.name}
+              lastname={formData.lastname}
               phoneNumber={formData.phoneNumber}
               onChange={handleChange}
             />

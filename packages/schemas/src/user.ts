@@ -18,6 +18,10 @@ export const userSchemaBase = z.object({
 
   username: z.string(),
 
+  name: z.string().nullish(),
+
+  lastname: z.string().nullish(),
+
   isMaster: z.boolean().default(false),
 
   title: z.string().nullish(),

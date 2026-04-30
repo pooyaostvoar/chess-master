@@ -3,6 +3,8 @@ import React from "react";
 interface BasicInfoSectionProps {
   username: string;
   email: string;
+  name?: string | null;
+  lastname?: string | null;
   phoneNumber?: string | null;
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -12,6 +14,8 @@ interface BasicInfoSectionProps {
 export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
   username,
   email,
+  name,
+  lastname,
   phoneNumber,
   onChange,
 }) => {
@@ -29,6 +33,16 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
         <div>
           <label htmlFor="email" className="block text-[11px] font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]">Email</label>
           <input id="email" type="email" name="email" value={email || ""} onChange={onChange} placeholder="your.email@example.com" className={inputClass} />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label htmlFor="name" className="block text-[11px] font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]">First name</label>
+            <input id="name" type="text" name="name" value={name || ""} onChange={onChange} placeholder="First name" className={inputClass} />
+          </div>
+          <div>
+            <label htmlFor="lastname" className="block text-[11px] font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]">Last name</label>
+            <input id="lastname" type="text" name="lastname" value={lastname || ""} onChange={onChange} placeholder="Last name" className={inputClass} />
+          </div>
         </div>
         <div>
           <label htmlFor="phoneNumber" className="block text-[11px] font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]">Phone number</label>

@@ -6,6 +6,8 @@ export interface User {
   id: number;
   username: string;
   email: string;
+  name?: string | null;
+  lastname?: string | null;
   isMaster: boolean;
   title?: string | null;
   rating?: number | null;

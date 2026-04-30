@@ -14,6 +14,8 @@ export type LichessRatings = Record<string, LichessPerf>;
 export interface UpdateUserData {
   email?: string;
   username?: string;
+  name?: string | null;
+  lastname?: string | null;
   title?: string | null;
   rating?: number | null;
   bio?: string | null;
@@ -37,6 +39,8 @@ export interface User {
   id: number;
   username: string;
   email: string;
+  name?: string | null;
+  lastname?: string | null;
   title?: string | null;
   rating?: number | null;
   bio?: string | null;

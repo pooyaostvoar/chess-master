@@ -19,6 +19,8 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
     const {
       email,
       username,
+      name,
+      lastname,
       title,
       rating,
       bio,
@@ -40,6 +42,8 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
     const updatedUser = await updateUser(userId, {
       email,
       username,
+      name,
+      lastname,
       title,
       rating,
       bio,
