@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { bookSlot } from "../services/schedule";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,6 +8,8 @@ import {
 } from "./ui/dialog";
 import { CalendarCheck, XCircle } from "lucide-react";
 import { checkoutSlot } from "../services/payment";
+import { useUser } from "../contexts/UserContext";
+import { useNavigate } from "react-router-dom";
 
 interface BookingModalProps {
   visible: boolean;
@@ -28,6 +29,16 @@ const BookingModal: React.FC<BookingModalProps> = ({
     type: "success" | "error";
     text: string;
   } | null>(null);
+  const { user, loading: userLoading } = useUser();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!visible || userLoading) return;
+    if (!user?.id) {
+      onClose();
+      navigate("/login");
+    }
+  }, [visible, userLoading, user?.id, onClose, navigate]);
 
   if (!visible || slotId == null) return null;
 

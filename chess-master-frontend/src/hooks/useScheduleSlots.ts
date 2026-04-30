@@ -55,6 +55,7 @@ export const useScheduleSlots = (
     try {
       const res = await getSlotsByMaster(Number(userId));
       const slots = res.slots || [];
+      setRawEvents(slots);
       setEvents(
         slots.map((slot: ScheduleSlot) =>
           mapSlotToEvent(slot, {

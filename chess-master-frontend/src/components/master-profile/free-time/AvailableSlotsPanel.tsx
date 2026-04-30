@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import type { CalendarDayGroup, ScheduleSlot } from "./FreeTime";
+import BookingModal from "../../BookingModal";
 
 type AvailableSlotsPanelProps = {
   selectedDay: CalendarDayGroup;
   onBack: () => void;
+  onSlotBooked?: () => void;
   topRef?: React.RefObject<HTMLDivElement | null>;
 };
 
@@ -35,8 +37,11 @@ const formatPrice = (slot: ScheduleSlot) => {
 export const AvailableSlotsPanel: React.FC<AvailableSlotsPanelProps> = ({
   selectedDay,
   onBack,
+  onSlotBooked,
   topRef,
 }) => {
+  const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null);
+
   return (
     <div>
       <div ref={topRef} className="h-px scroll-mt-20" />
@@ -74,6 +79,7 @@ export const AvailableSlotsPanel: React.FC<AvailableSlotsPanelProps> = ({
             <button
               key={slot.id}
               type="button"
+              onClick={() => setSelectedSlotId(slot.id)}
               className="flex w-full items-center justify-between rounded-2xl border border-amber-200 bg-white px-4 py-4 text-left transition hover:border-amber-300 hover:bg-amber-50"
             >
               <div className="min-w-0">
@@ -125,6 +131,15 @@ export const AvailableSlotsPanel: React.FC<AvailableSlotsPanelProps> = ({
           scrollbar-color: rgba(100, 116, 139, 0.35) transparent;
         }
       `}</style>
+      <BookingModal
+        visible={Boolean(selectedSlotId)}
+        onClose={() => setSelectedSlotId(null)}
+        onBooked={() => {
+          onSlotBooked?.();
+          setSelectedSlotId(null);
+        }}
+        slotId={selectedSlotId}
+      />
     </div>
   );
 };

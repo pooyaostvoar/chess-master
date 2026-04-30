@@ -62,13 +62,20 @@ const groupSlotsByDay = (slots: ScheduleSlot[]): CalendarDayGroup[] => {
     .sort((a, b) => a.date.localeCompare(b.date));
 };
 
-export default function FreeTime({ userId }: { userId: number }) {
+type FreeTimeProps = {
+  userId: number;
+};
+
+export default function FreeTime({ userId }: FreeTimeProps) {
   const calendarRef = useRef<HTMLDivElement | null>(null);
   const slotsTopRef = useRef<HTMLDivElement | null>(null);
 
-  const { rawEvents: scheduleSlots } = useScheduleSlots(userId.toString(), {
-    showBookingHint: true,
-  });
+  const { rawEvents: scheduleSlots, refreshSlots } = useScheduleSlots(
+    userId.toString(),
+    {
+      showBookingHint: true,
+    }
+  );
 
   const dayGroups = useMemo(
     () =>
@@ -158,6 +165,7 @@ export default function FreeTime({ userId }: { userId: number }) {
         <AvailableSlotsPanel
           selectedDay={selectedDay}
           onBack={handleBackToCalendar}
+          onSlotBooked={refreshSlots}
           topRef={slotsTopRef}
         />
       </div>
