@@ -10,7 +10,9 @@ import { ChessPlatformSection } from "../components/profile/ChessPlatformSection
 import { PricingSection } from "../components/profile/PricingSection";
 import { AccountTypeSection } from "../components/profile/AccountTypeSection";
 import { LanguagesSection } from "../components/profile/LanguagesSection";
+import { TeachingFocusesSection } from "../components/profile/TeachingFocusesSection";
 import { LichessRatingsSection } from "../components/profile/LichessRatingsSection";
+import { SocialMediaSection } from "../components/profile/SocialMediaSection";
 import { uploadProfilePicture } from "../services/api/user.api";
 
 const EditProfile: React.FC = () => {
@@ -34,6 +36,7 @@ const EditProfile: React.FC = () => {
       } else {
         const userData = {
           ...response.user,
+          teachingFocuses: response.user.teachingFocuses ?? [],
         };
         setFormData(userData);
         if (response.user.profilePictureUrl) {
@@ -157,7 +160,14 @@ const EditProfile: React.FC = () => {
         lichessUrl: formData.lichessUrl,
         hourlyRate: formData.hourlyRate,
         languages: formData.languages,
+        teachingFocuses: formData.teachingFocuses,
         phoneNumber: formData.phoneNumber,
+        twitchUrl: formData.twitchUrl,
+        youtubeUrl: formData.youtubeUrl,
+        instagramUrl: formData.instagramUrl,
+        xUrl: formData.xUrl,
+        facebookUrl: formData.facebookUrl,
+        tiktokUrl: formData.tiktokUrl,
       });
 
       if (data.status === "success") {
@@ -234,9 +244,24 @@ const EditProfile: React.FC = () => {
               onChange={handleChange}
             />
 
+            <TeachingFocusesSection
+              teachingFocuses={formData.teachingFocuses ?? []}
+              onChange={handleChange}
+            />
+
             <ChessPlatformSection
               chesscomUrl={formData.chesscomUrl}
               lichessUrl={formData.lichessUrl}
+              onChange={handleChange}
+            />
+
+            <SocialMediaSection
+              twitchUrl={formData.twitchUrl}
+              youtubeUrl={formData.youtubeUrl}
+              instagramUrl={formData.instagramUrl}
+              xUrl={formData.xUrl}
+              facebookUrl={formData.facebookUrl}
+              tiktokUrl={formData.tiktokUrl}
               onChange={handleChange}
             />
 

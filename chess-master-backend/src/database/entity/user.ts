@@ -127,6 +127,9 @@ export class User {
   @Column("text", { array: true, nullable: true })
   languages?: string[] | null;
 
+  @Column("text", { array: true, nullable: true })
+  teachingFocuses?: string[] | null;
+
   @Column({
     type: "decimal",
     precision: 10,

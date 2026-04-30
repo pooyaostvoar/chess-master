@@ -23,7 +23,14 @@ export interface UpdateUserData {
   lichessRatings?: LichessRatings | null;
   hourlyRate?: number | null;
   languages?: string[] | null;
+  teachingFocuses?: string[] | null;
   phoneNumber?: string | null;
+  twitchUrl?: string | null;
+  youtubeUrl?: string | null;
+  instagramUrl?: string | null;
+  xUrl?: string | null;
+  facebookUrl?: string | null;
+  tiktokUrl?: string | null;
 }
 
 export interface User {
@@ -41,6 +48,13 @@ export interface User {
   lichessRatings?: LichessRatings | null;
   hourlyRate?: number | null;
   languages?: string[] | null;
+  teachingFocuses?: string[] | null;
+  twitchUrl?: string | null;
+  youtubeUrl?: string | null;
+  instagramUrl?: string | null;
+  xUrl?: string | null;
+  facebookUrl?: string | null;
+  tiktokUrl?: string | null;
 }
 
 /**

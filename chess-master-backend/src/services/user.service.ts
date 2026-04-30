@@ -14,7 +14,14 @@ export interface UpdateUserData {
   lichessRatings?: LichessRatingsMap | null;
   hourlyRate?: number | null;
   languages?: string[] | null;
+  teachingFocuses?: string[] | null;
   phoneNumber?: string | null;
+  twitchUrl?: string | null;
+  youtubeUrl?: string | null;
+  instagramUrl?: string | null;
+  xUrl?: string | null;
+  facebookUrl?: string | null;
+  tiktokUrl?: string | null;
 }
 
 export interface UserFilters {
@@ -41,6 +48,13 @@ export interface SafeUser {
   lichessRatings: LichessRatingsMap | null;
   hourlyRate: number | null;
   languages?: string[] | null;
+  teachingFocuses?: string[] | null;
+  twitchUrl?: string | null;
+  youtubeUrl?: string | null;
+  instagramUrl?: string | null;
+  xUrl?: string | null;
+  facebookUrl?: string | null;
+  tiktokUrl?: string | null;
 }
 
 /**
@@ -61,6 +75,13 @@ export function formatUser(user: User): SafeUser {
     lichessRatings: user.lichessRatings,
     hourlyRate: user.hourlyRate,
     languages: user.languages,
+    teachingFocuses: user.teachingFocuses,
+    twitchUrl: user.twitchUrl,
+    youtubeUrl: user.youtubeUrl,
+    instagramUrl: user.instagramUrl,
+    xUrl: user.xUrl,
+    facebookUrl: user.facebookUrl,
+    tiktokUrl: user.tiktokUrl,
   };
 }
 
@@ -120,8 +141,29 @@ export async function updateUser(
   if (data.languages !== undefined) {
     user.languages = data.languages;
   }
+  if (data.teachingFocuses !== undefined) {
+    user.teachingFocuses = data.teachingFocuses;
+  }
   if (data.phoneNumber !== undefined) {
     user.phoneNumber = data.phoneNumber;
+  }
+  if (data.twitchUrl !== undefined) {
+    user.twitchUrl = data.twitchUrl;
+  }
+  if (data.youtubeUrl !== undefined) {
+    user.youtubeUrl = data.youtubeUrl;
+  }
+  if (data.instagramUrl !== undefined) {
+    user.instagramUrl = data.instagramUrl;
+  }
+  if (data.xUrl !== undefined) {
+    user.xUrl = data.xUrl;
+  }
+  if (data.facebookUrl !== undefined) {
+    user.facebookUrl = data.facebookUrl;
+  }
+  if (data.tiktokUrl !== undefined) {
+    user.tiktokUrl = data.tiktokUrl;
   }
 
   await userRepo.save(user);

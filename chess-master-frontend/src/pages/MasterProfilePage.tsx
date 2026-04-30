@@ -47,14 +47,7 @@ export default function MasterProfilePage() {
     { label: "Students", value: studentsLabel ? `${studentsLabel}+` : "—" },
   ];
 
-  const masterTags = [
-    "Opening Repertoire",
-    "Calculation Training",
-    "Endgames",
-    "Game Review",
-    "Tournament Prep",
-    "Beginner to Advanced",
-  ];
+  const masterTags = user.teachingFocuses ?? [];
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900">
@@ -99,14 +92,20 @@ export default function MasterProfilePage() {
                     <div>
                       <h3 className="text-xl font-semibold">Coaching focus</h3>
                       <div className="mt-3 flex flex-wrap gap-2">
-                        {masterTags.map((item) => (
-                          <span
-                            key={item}
-                            className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700"
-                          >
-                            {item}
+                        {masterTags.length > 0 ? (
+                          masterTags.map((item) => (
+                            <span
+                              key={item}
+                              className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700"
+                            >
+                              {item}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-sm text-slate-500">
+                            No coaching focus added yet.
                           </span>
-                        ))}
+                        )}
                       </div>
                     </div>
                   </div>

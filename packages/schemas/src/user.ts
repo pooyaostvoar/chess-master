@@ -42,6 +42,8 @@ export const userSchemaBase = z.object({
 
   languages: z.array(z.string()).nullish(),
 
+  teachingFocuses: z.array(z.string()).nullish(),
+
   phoneNumber: z.string().nullish(),
 
   twitchUrl: z.string().nullable().optional(),
