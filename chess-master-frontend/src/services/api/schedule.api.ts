@@ -9,7 +9,9 @@ export interface ScheduleSlot {
   id: number;
   startTime: string;
   endTime: string;
-  status: "free" | "reserved" | "booked";
+  status: "free" | "reserved" | "booked" | "paid";
+  title?: string | null;
+  price?: number | null;
   master?: any;
   reservedBy?: any;
 }
@@ -36,6 +38,22 @@ export const getSlotsByMaster = async (
 ): Promise<{ success: boolean; slots: ScheduleSlot[] }> => {
   try {
     const response = await apiClient.get(`/schedule/slot/user/${userId}`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(handleApiError(error));
+  }
+};
+
+/**
+ * Future free slots for a master (public booking surface)
+ */
+export const getMasterActiveSlots = async (
+  userId: number
+): Promise<{ success: boolean; slots: ScheduleSlot[] }> => {
+  try {
+    const response = await apiClient.get(
+      `/schedule/slot/user/${userId}/active`
+    );
     return response.data;
   } catch (error: any) {
     throw new Error(handleApiError(error));

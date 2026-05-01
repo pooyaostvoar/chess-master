@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { getSlotsByMaster } from "../services/schedule";
+import { getSlotsByMaster, getMasterActiveSlots } from "../services/schedule";
 import { mapSlotToEvent } from "../utils/slotUtils";
 import type { ScheduleSlot } from "../services/schedule";
 
 interface UseScheduleSlotsOptions {
   showBookingHint?: boolean;
   isMasterView?: boolean;
+  /** Use GET .../user/:id/active (future free slots only) */
+  activeOnly?: boolean;
 }
 
 export const useScheduleSlots = (
@@ -25,7 +27,9 @@ export const useScheduleSlots = (
 
     try {
       setLoading(true);
-      const res = await getSlotsByMaster(Number(userId));
+      const res = options?.activeOnly
+        ? await getMasterActiveSlots(Number(userId))
+        : await getSlotsByMaster(Number(userId));
 
       const slots = res.slots || [];
       setRawEvents(slots);
@@ -47,13 +51,15 @@ export const useScheduleSlots = (
   };
   useEffect(() => {
     loadSlots();
-  }, [userId, options?.showBookingHint]);
+  }, [userId, options?.showBookingHint, options?.activeOnly]);
 
   const refreshSlots = async () => {
     if (!userId) return;
 
     try {
-      const res = await getSlotsByMaster(Number(userId));
+      const res = options?.activeOnly
+        ? await getMasterActiveSlots(Number(userId))
+        : await getSlotsByMaster(Number(userId));
       const slots = res.slots || [];
       setRawEvents(slots);
       setEvents(

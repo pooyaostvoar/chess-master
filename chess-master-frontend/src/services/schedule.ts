@@ -2,6 +2,7 @@
 export {
   createSlot,
   getSlotsByMaster,
+  getMasterActiveSlots,
   deleteSlots,
   bookSlot,
   updateSlot,

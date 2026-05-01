@@ -74,14 +74,12 @@ export default function FreeTime({ userId }: FreeTimeProps) {
     userId.toString(),
     {
       showBookingHint: true,
+      activeOnly: true,
     }
   );
 
   const dayGroups = useMemo(
-    () =>
-      groupSlotsByDay(
-        scheduleSlots.filter((slot) => slot.status === SlotStatus.Free)
-      ),
+    () => groupSlotsByDay(scheduleSlots),
     [scheduleSlots]
   );
 

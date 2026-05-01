@@ -116,6 +116,24 @@ export async function getSlotsByMaster(
 }
 
 /**
+ * Master's slots that are still free and start in the future
+ */
+export async function getMasterActiveFreeSlots(
+  masterId: number
+): Promise<ScheduleSlot[]> {
+  const repo = AppDataSource.getRepository(ScheduleSlot);
+  const now = new Date();
+
+  return await repo
+    .createQueryBuilder("slot")
+    .where("slot.master = :masterId", { masterId })
+    .andWhere("slot.status = :status", { status: SlotStatus.Free })
+    .andWhere("slot.startTime > :now", { now })
+    .orderBy("slot.startTime", "ASC")
+    .getMany();
+}
+
+/**
  * Get slot by ID with relations
  */
 export async function getSlotById(
