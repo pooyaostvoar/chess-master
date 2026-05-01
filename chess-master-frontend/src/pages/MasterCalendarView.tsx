@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { useScheduleSlots } from "../hooks/useScheduleSlots";
@@ -10,7 +10,10 @@ import MiniCalendar from "../components/calendar/MiniCalendar";
 import SlotModal from "../components/SlotModal";
 import { useIsMobile } from "../hooks/useIsMobile";
 import EditSlotModal from "../components/slots/EditSlotModal";
-import { useCurrentUserSchedule } from "../contexts/ScheduleContext";
+import CreateSlotDraftModal from "../components/slots/CreateSlotDraftModal";
+import { createBatchSlots } from "../services/schedule";
+
+const DRAFT_EVENT_ID = "draft-slot-pending";
 
 const MasterCalendarView: React.FC = () => {
   const isMobile = useIsMobile();
@@ -23,7 +26,31 @@ const MasterCalendarView: React.FC = () => {
   const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<any>(null);
   const calendarRef = useRef<ScheduleCalendarRef>(null);
-  const { createSlot } = useCurrentUserSchedule();
+
+  const [draftRange, setDraftRange] = useState<{
+    startStr: string;
+    endStr: string;
+  } | null>(null);
+  const [isCreatingSlots, setIsCreatingSlots] = useState(false);
+
+  const calendarEvents = useMemo(() => {
+    const list = [...events];
+    if (draftRange) {
+      list.push({
+        id: DRAFT_EVENT_ID,
+        title: "Draft — confirm below",
+        start: draftRange.startStr,
+        end: draftRange.endStr,
+        backgroundColor: "#95a5a6",
+        borderColor: "#7f8c8d",
+        editable: false,
+        durationEditable: false,
+        extendedProps: { isDraft: true },
+      });
+    }
+    return list;
+  }, [events, draftRange]);
+
   const handleDateSelect = (date: Date) => {
     if (calendarRef.current && date) {
       // Ensure date is valid
@@ -66,12 +93,11 @@ const MasterCalendarView: React.FC = () => {
     }
   };
 
-  // Create new slot
-  const handleSelect = async (info: any) => {
+  // Drag-select: draft only, then confirm in modal
+  const handleSelect = (info: any) => {
     const start = new Date(info.startStr);
     const now = new Date();
 
-    // Prevent creating slots in the past
     if (start < now) {
       alert(
         "Cannot create time slots in the past. Please select a future date and time."
@@ -79,25 +105,61 @@ const MasterCalendarView: React.FC = () => {
       return;
     }
 
+    setDraftRange({
+      startStr: info.startStr,
+      endStr: info.endStr,
+    });
+  };
+
+  const clearDraft = () => {
+    setDraftRange(null);
+  };
+
+  const handleDraftModalOpenChange = (open: boolean) => {
+    if (!open) {
+      clearDraft();
+    }
+  };
+
+  const handleDraftConfirm = async (payload: {
+    recurring: boolean;
+    period: "daily" | "weekly" | "monthly";
+    repeatCount: number;
+  }) => {
+    if (!draftRange) return;
+
+    setIsCreatingSlots(true);
     try {
-      const newSlot = await createSlot({
-        startTime: info.startStr,
-        endTime: info.endStr,
+      const result = await createBatchSlots({
+        interval: {
+          start: draftRange.startStr,
+          end: draftRange.endStr,
+        },
+        period: payload.recurring ? payload.period : "daily",
+        repeatCount: payload.recurring ? payload.repeatCount : 1,
       });
 
-      setEvents((prev) => [...prev, mapSlotToEvent(newSlot)]);
-      setSelectedSlotId(newSlot.id);
-      setIsEditSlotModalVisible(true);
+      await refreshSlots();
+
+      clearDraft();
+
+      if (result.createdSlots === 1 && result.slots[0]?.id) {
+        setSelectedSlotId(result.slots[0].id);
+        setIsEditSlotModalVisible(true);
+      }
     } catch (err: any) {
-      console.error("Failed to create slot", err);
-      alert(
-        err.response?.data?.error || "Failed to create slot. Please try again."
-      );
+      console.error("Failed to create slots", err);
+      alert(err.message || "Failed to create slots. Please try again.");
+    } finally {
+      setIsCreatingSlots(false);
     }
   };
 
   // Open modal to manage slot
   const handleEventClick = (info: any) => {
+    if (info.event.id === DRAFT_EVENT_ID) {
+      return;
+    }
     setSelectedSlotId(Number(info.event.id));
     setSelectedSlot(info.event.extendedProps?.fullSlot || null);
     setModalVisible(true);
@@ -105,6 +167,10 @@ const MasterCalendarView: React.FC = () => {
 
   // Drag & drop update
   const handleEventDrop = async (info: any) => {
+    if (info.event.id === DRAFT_EVENT_ID) {
+      info.revert();
+      return;
+    }
     const newStart = new Date(info.event.start);
     const now = new Date();
 
@@ -134,6 +200,10 @@ const MasterCalendarView: React.FC = () => {
 
   // Resize update
   const handleEventResize = async (info: any) => {
+    if (info.event.id === DRAFT_EVENT_ID) {
+      info.revert();
+      return;
+    }
     const newStart = new Date(info.event.start);
     const now = new Date();
 
@@ -161,9 +231,10 @@ const MasterCalendarView: React.FC = () => {
     }
   };
 
-  // Handle delete from modal
-  const handleDeleted = (deletedId: number) => {
-    setEvents((prev) => prev.filter((e) => e.id !== deletedId));
+  // Handle delete from modal (single id or whole series)
+  const handleDeleted = (deletedIds: number[]) => {
+    const idSet = new Set(deletedIds.map(Number));
+    setEvents((prev) => prev.filter((e) => !idSet.has(Number(e.id))));
   };
 
   const handleStatusChange = (updatedSlot: any) => {
@@ -177,6 +248,8 @@ const MasterCalendarView: React.FC = () => {
     // Refresh to get updated relations
     refreshSlots();
   };
+
+  const blockCalendarInteraction = isCreatingSlots;
 
   return (
     <div className="min-h-screen bg-[#FAF5EB]">
@@ -205,17 +278,17 @@ const MasterCalendarView: React.FC = () => {
               My Schedule
             </h1>
             <p className="text-[13px] text-[#5C4631]">
-              Click and drag to create time slots, or click existing slots to
-              manage them
+              Click and drag to choose a time window, then confirm one-time or
+              recurring slots
             </p>
           </div>
 
           <div className="bg-white rounded-2xl border border-[#1F1109]/[0.12] shadow-sm p-6 calendar-main-container">
             <ScheduleCalendar
               ref={calendarRef}
-              events={events}
-              selectable={true}
-              editable={true}
+              events={calendarEvents}
+              selectable={!blockCalendarInteraction}
+              editable={!blockCalendarInteraction}
               onSelect={handleSelect}
               onEventClick={handleEventClick}
               onEventDrop={handleEventDrop}
@@ -226,10 +299,20 @@ const MasterCalendarView: React.FC = () => {
         </div>
       </div>
 
+      <CreateSlotDraftModal
+        open={Boolean(draftRange)}
+        onOpenChange={handleDraftModalOpenChange}
+        intervalStartIso={draftRange?.startStr ?? ""}
+        intervalEndIso={draftRange?.endStr ?? ""}
+        isSubmitting={isCreatingSlots}
+        onConfirm={handleDraftConfirm}
+      />
+
       <SlotModal
         visible={modalVisible}
         slotId={selectedSlotId}
         slot={selectedSlot}
+        offerSeriesDeleteChoice
         onClose={() => {
           setModalVisible(false);
           setSelectedSlot(null);

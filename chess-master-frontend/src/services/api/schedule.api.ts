@@ -1,4 +1,8 @@
 import { apiClient, handleApiError } from "./client";
+import type {
+  DeleteBatchSlotResponse,
+  GetMasterSlotsResponse,
+} from "@chess-master/schemas";
 
 export interface CreateSlotData {
   startTime: string;
@@ -7,13 +11,63 @@ export interface CreateSlotData {
 
 export interface ScheduleSlot {
   id: number;
-  startTime: string;
-  endTime: string;
+  /** ISO string from JSON or `Date` when aligned with `scheduleSlotSchema` / `GetMasterSlotsResponse` */
+  startTime: string | Date;
+  endTime: string | Date;
   status: "free" | "reserved" | "booked" | "paid";
   title?: string | null;
+  youtubeId?: string | null;
   price?: number | null;
   master?: any;
   reservedBy?: any;
+  chunkIndex?: number | null;
+  periodicSlotConfig?: PeriodicSlotConfigSummary | null;
+}
+
+export interface CreateBatchSlotsInput {
+  interval: {
+    start: string;
+    end: string;
+  };
+  chunkSizeMinutes?: number;
+  period: "daily" | "weekly" | "monthly";
+  repeatCount?: number;
+}
+
+export interface PeriodicSlotConfigSummary {
+  id: number;
+  chunkSizeMinutes: number;
+  period: "daily" | "weekly" | "monthly";
+  repeatCount: number;
+}
+
+export interface CreateBatchSlotsResponse {
+  success: boolean;
+  createdSlots: number;
+  slots: ScheduleSlot[];
+  periodicSlotConfig?: PeriodicSlotConfigSummary;
+}
+
+function normalizeBatchSlotRow(row: Record<string, unknown>): ScheduleSlot {
+  const id = Number(row.id ?? row.Id);
+  const startRaw = row.startTime ?? row.starttime;
+  const endRaw = row.endTime ?? row.endtime;
+  const statusRaw = (row.status ?? row.Status ?? "free") as string;
+  return {
+    id,
+    startTime:
+      startRaw instanceof Date
+        ? startRaw.toISOString()
+        : String(startRaw ?? ""),
+    endTime:
+      endRaw instanceof Date ? endRaw.toISOString() : String(endRaw ?? ""),
+    status: statusRaw as ScheduleSlot["status"],
+    title: (row.title as string | null | undefined) ?? null,
+    price:
+      row.price != null && row.price !== ""
+        ? Number(row.price)
+        : null,
+  };
 }
 
 /**
@@ -31,11 +85,39 @@ export const createSlot = async (
 };
 
 /**
- * Get slots for a specific master
+ * Create many slots from a time range (bulk insert)
+ */
+export const createBatchSlots = async (
+  data: CreateBatchSlotsInput
+): Promise<CreateBatchSlotsResponse> => {
+  try {
+    const response = await apiClient.post(
+      "/schedule/slot/create-batch-slots",
+      data
+    );
+    const raw = response.data?.slots ?? [];
+    const slots = Array.isArray(raw)
+      ? raw.map((row: Record<string, unknown>) =>
+          normalizeBatchSlotRow(row)
+        )
+      : [];
+    return {
+      success: Boolean(response.data?.success),
+      createdSlots: Number(response.data?.createdSlots ?? slots.length),
+      slots,
+      periodicSlotConfig: response.data?.periodicSlotConfig,
+    };
+  } catch (error: any) {
+    throw new Error(handleApiError(error));
+  }
+};
+
+/**
+ * Get slots for a specific master (API body matches `getMasterSlotsResponseSchema` / `scheduleSlotSchema`)
  */
 export const getSlotsByMaster = async (
   userId: number
-): Promise<{ success: boolean; slots: ScheduleSlot[] }> => {
+): Promise<GetMasterSlotsResponse> => {
   try {
     const response = await apiClient.get(`/schedule/slot/user/${userId}`);
     return response.data;
@@ -66,6 +148,22 @@ export const getMasterActiveSlots = async (
 export const deleteSlots = async (ids: number[]): Promise<void> => {
   try {
     await apiClient.delete("/schedule/slot", { data: { ids } });
+  } catch (error: any) {
+    throw new Error(handleApiError(error));
+  }
+};
+
+/**
+ * Delete one slot and all slots sharing the same periodic config + chunk index
+ */
+export const deleteBatchSlots = async (
+  slotId: number
+): Promise<DeleteBatchSlotResponse> => {
+  try {
+    const response = await apiClient.post("/schedule/slot/delete-batch", {
+      slotId,
+    });
+    return response.data;
   } catch (error: any) {
     throw new Error(handleApiError(error));
   }

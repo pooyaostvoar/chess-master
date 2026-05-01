@@ -1,9 +1,13 @@
 import { Router } from "express";
-import { activeSlotsOutputSchema } from "@chess-master/schemas";
+import {
+  activeSlotsOutputSchema,
+  getMasterSlotsResponseSchema,
+} from "@chess-master/schemas";
 import {
   getSlotsByMaster,
   getMasterActiveFreeSlots,
   formatSlot,
+  formatMasterScheduleSlot,
 } from "../../../services/schedule.service";
 
 export const router = Router();
@@ -41,9 +45,12 @@ router.get("/user/:userId", async (req, res) => {
   try {
     const userId = parseInt(req.params.userId, 10);
     const slots = await getSlotsByMaster(userId);
-    const formattedSlots = slots.map(formatSlot);
+    const payload = getMasterSlotsResponseSchema.parse({
+      success: true,
+      slots: slots.map(formatMasterScheduleSlot),
+    });
 
-    res.json({ success: true, slots: formattedSlots });
+    res.json(payload);
   } catch (err) {
     console.error("Error fetching slots:", err);
     res.status(500).json({ error: "Internal server error" });

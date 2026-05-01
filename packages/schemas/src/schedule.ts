@@ -16,6 +16,16 @@ export enum Period {
 
 export const slotStatusSchema = z.nativeEnum(SlotStatus);
 
+/** Bulk-create metadata saved on `schedule_slots.periodicSlotConfig` */
+export const periodicSlotConfigSchema = z.object({
+  id: z.number().int().positive(),
+  chunkSizeMinutes: z.number().int().positive(),
+  period: z.nativeEnum(Period),
+  repeatCount: z.number().int().positive(),
+});
+
+export type PeriodicSlotConfigShape = z.infer<typeof periodicSlotConfigSchema>;
+
 export const scheduleSlotSchema = z.object({
   id: z.number().int().positive(),
 
@@ -34,7 +44,24 @@ export const scheduleSlotSchema = z.object({
   reservedBy: userSchemaBase.nullish(),
 
   price: z.number().nullish(),
+
+  /** Chunk position within one occurrence of the interval (0-based; resets each repeat). */
+  chunkIndex: z.number().int().min(0).nullish(),
+
+  periodicSlotConfig: periodicSlotConfigSchema.nullish(),
 });
+
+export type ScheduleSlot = z.infer<typeof scheduleSlotSchema>;
+
+/** GET /schedule/slot/user/:userId — full slots for master calendar */
+export const getMasterSlotsResponseSchema = z.object({
+  success: z.boolean(),
+  slots: z.array(scheduleSlotSchema),
+});
+
+export type GetMasterSlotsResponse = z.infer<
+  typeof getMasterSlotsResponseSchema
+>;
 
 /** Single slot returned by GET /schedule/slot/user/:userId/active */
 export const activeSlotItemSchema = z.object({
@@ -76,3 +103,20 @@ export const createBatchSlotsInputSchema = z
   });
 
 export type CreateBatchSlotsInput = z.infer<typeof createBatchSlotsInputSchema>;
+
+/** POST /schedule/slot/delete-batch */
+export const deleteBatchSlotInputSchema = z.object({
+  slotId: z.number().int().positive(),
+});
+
+export type DeleteBatchSlotInput = z.infer<typeof deleteBatchSlotInputSchema>;
+
+export const deleteBatchSlotResponseSchema = z.object({
+  success: z.boolean().default(true),
+  deletedIds: z.array(z.number().int().positive()),
+  deletedCount: z.number().int().nonnegative(),
+});
+
+export type DeleteBatchSlotResponse = z.infer<
+  typeof deleteBatchSlotResponseSchema
+>;

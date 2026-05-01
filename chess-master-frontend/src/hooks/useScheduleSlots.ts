@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { getSlotsByMaster, getMasterActiveSlots } from "../services/schedule";
 import { mapSlotToEvent } from "../utils/slotUtils";
-import type { ScheduleSlot } from "../services/schedule";
 
 interface UseScheduleSlotsOptions {
   showBookingHint?: boolean;
@@ -34,7 +33,7 @@ export const useScheduleSlots = (
       const slots = res.slots || [];
       setRawEvents(slots);
       setEvents(
-        slots.map((slot: ScheduleSlot) =>
+        slots.map((slot) =>
           mapSlotToEvent(slot, {
             showBookingHint: options?.showBookingHint,
             isMasterView: options?.isMasterView,
@@ -63,7 +62,7 @@ export const useScheduleSlots = (
       const slots = res.slots || [];
       setRawEvents(slots);
       setEvents(
-        slots.map((slot: ScheduleSlot) =>
+        slots.map((slot) =>
           mapSlotToEvent(slot, {
             showBookingHint: options?.showBookingHint,
             isMasterView: options?.isMasterView,

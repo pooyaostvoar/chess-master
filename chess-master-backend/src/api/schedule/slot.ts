@@ -4,6 +4,7 @@ import {
   createBatchSlotsRouter,
   getRouter,
   deleteRouter,
+  deleteBatchRouter,
   reserveRouter,
   updateRouter,
   updateStatusRouter,
@@ -19,6 +20,7 @@ slotRouter.use("", createRouter);
 slotRouter.use("", createBatchSlotsRouter);
 slotRouter.use("", getRouter);
 slotRouter.use("", deleteRouter);
+slotRouter.use("", deleteBatchRouter);
 slotRouter.use("", reserveRouter);
 slotRouter.use("", updateRouter);
 slotRouter.use("", updateStatusRouter);

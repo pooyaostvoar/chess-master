@@ -4,10 +4,12 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   OneToMany,
+  JoinColumn,
 } from "typeorm";
 import { User } from "./user";
 import { SlotStatus } from "./types";
 import { Payment } from "./payment";
+import { PeriodicSlotConfig } from "./periodic-slot-config";
 
 @Entity("schedule_slots")
 export class ScheduleSlot {
@@ -64,6 +66,17 @@ export class ScheduleSlot {
     },
   })
   priceCents: number | null;
+
+  /** Index of this chunk within one occurrence of the interval (0-based; resets each repeat). */
+  @Column("int", { nullable: true })
+  chunkIndex: number | null;
+
+  @ManyToOne(() => PeriodicSlotConfig, {
+    nullable: true,
+    onDelete: "SET NULL",
+  })
+  @JoinColumn({ name: "periodicSlotConfigId" })
+  periodicSlotConfig: PeriodicSlotConfig | null;
 
   @OneToMany(() => Payment, (payment) => payment.slot)
   payments: Payment[];

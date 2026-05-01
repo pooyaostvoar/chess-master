@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { ScheduleSlot } from "./schedule-slots";
+import { PeriodicSlotConfig } from "./periodic-slot-config";
 import { Payment } from "./payment";
 
 export interface LichessPerfData {
@@ -105,6 +106,9 @@ export class User {
 
   @OneToMany(() => ScheduleSlot, (slot) => slot.master)
   schedule: ScheduleSlot[];
+
+  @OneToMany(() => PeriodicSlotConfig, (config) => config.user)
+  periodicSlotConfigs: PeriodicSlotConfig[];
 
   @CreateDateColumn()
   createdAt: Date;
