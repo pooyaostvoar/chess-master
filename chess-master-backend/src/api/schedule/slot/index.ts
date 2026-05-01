@@ -1,4 +1,5 @@
 export { router as createRouter } from "./create";
+export { router as createBatchSlotsRouter } from "./create-batch-slots";
 export { router as getRouter } from "./get-user-slots";
 export { router as deleteRouter } from "./delete";
 export { router as reserveRouter } from "./reserve";
