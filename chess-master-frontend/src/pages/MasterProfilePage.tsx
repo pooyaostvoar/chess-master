@@ -1,14 +1,17 @@
 import { BaseUser } from "@chess-master/schemas";
 import { MasterProfileHeader } from "../components/master-profile/header/MasterProfileHeader";
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { getPublicUserByUsername } from "../services/api/user.api";
 import FreeTime from "../components/master-profile/free-time/FreeTime";
 
 export default function MasterProfilePage() {
   const { username } = useParams<{ username: string }>();
   const [user, setUser] = useState<BaseUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
+  const [bioExpanded, setBioExpanded] = useState(false);
+  const [bioOverflows, setBioOverflows] = useState(false);
+  const bioRef = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
     if (!username) return;
@@ -27,6 +30,24 @@ export default function MasterProfilePage() {
 
     loadUser();
   }, [username]);
+
+  useEffect(() => {
+    setBioExpanded(false);
+  }, [username]);
+
+  const bioText = user?.bio?.trim() ?? "";
+
+  useLayoutEffect(() => {
+    if (!bioText || bioExpanded) {
+      return;
+    }
+    const measure = () => {
+      if (!bioRef.current) return;
+      setBioOverflows(bioRef.current.scrollHeight > bioRef.current.clientHeight);
+    };
+    measure();
+    requestAnimationFrame(measure);
+  }, [bioText, bioExpanded, user?.bio]);
 
   if (!user) {
     return null;
@@ -78,9 +99,40 @@ export default function MasterProfilePage() {
 
                     <div>
                       <h3 className="text-xl font-semibold">About</h3>
-                      <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base">
-                        {user.bio || "No bio yet."}
-                      </p>
+                      {bioText ? (
+                        <div className="mt-3 max-w-3xl">
+                          <p
+                            ref={bioRef}
+                            className={`text-sm leading-6 text-slate-600 sm:text-base whitespace-pre-wrap ${
+                              !bioExpanded ? "line-clamp-5" : ""
+                            }`}
+                          >
+                            {bioText}
+                          </p>
+                          {!bioExpanded && bioOverflows && (
+                            <button
+                              type="button"
+                              onClick={() => setBioExpanded(true)}
+                              className="mt-1.5 text-sm font-medium text-amber-700 hover:text-amber-800 hover:underline"
+                            >
+                              See more
+                            </button>
+                          )}
+                          {bioExpanded && (
+                            <button
+                              type="button"
+                              onClick={() => setBioExpanded(false)}
+                              className="mt-1.5 text-sm font-medium text-amber-700 hover:text-amber-800 hover:underline"
+                            >
+                              See less
+                            </button>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base">
+                          No bio yet.
+                        </p>
+                      )}
                     </div>
 
                     <div>
