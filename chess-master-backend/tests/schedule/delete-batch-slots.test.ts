@@ -5,7 +5,7 @@ import { authAgent, unauthAgent } from "../setup";
 
 describe("POST /schedule/slot/delete-batch", () => {
   it("deletes all slots with the same periodicSlotConfig and chunkIndex", async () => {
-    await authAgent.post("/schedule/slot/create-batch-slots").send({
+    await authAgent.post("/schedule/slot/create-periodic-batch-slots").send({
       interval: {
         start: "2026-09-01T10:00:00.000Z",
         end: "2026-09-01T10:45:00.000Z",

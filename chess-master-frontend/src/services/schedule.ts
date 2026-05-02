@@ -1,11 +1,12 @@
 // Re-export from organized API modules
 export {
   createSlot,
-  createBatchSlots,
+  createPeriodicBatchSlots,
   getSlotsByMaster,
   getMasterActiveSlots,
   deleteSlots,
   deleteBatchSlots,
+  updatePeriodicBatchSlots,
   bookSlot,
   updateSlot,
   updateSlotStatus,
@@ -14,11 +15,13 @@ export {
 export type {
   CreateSlotData,
   ScheduleSlot,
-  CreateBatchSlotsInput,
-  CreateBatchSlotsResponse,
+  CreatePeriodicBatchSlotsInput,
+  CreatePeriodicBatchSlotsResponse,
   PeriodicSlotConfigSummary,
 } from "./api/schedule.api";
 export type {
   DeleteBatchSlotResponse,
   GetMasterSlotsResponse,
+  UpdatePeriodicBatchSlotInput,
+  UpdatePeriodicBatchSlotResponse,
 } from "@chess-master/schemas";

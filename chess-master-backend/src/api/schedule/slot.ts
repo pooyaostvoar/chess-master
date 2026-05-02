@@ -1,10 +1,11 @@
 import { Router } from "express";
 import {
   createRouter,
-  createBatchSlotsRouter,
+  createPeriodicBatchSlotsRouter,
   getRouter,
   deleteRouter,
   deleteBatchRouter,
+  updatePeriodicBatchSlotsRouter,
   reserveRouter,
   updateRouter,
   updateStatusRouter,
@@ -17,10 +18,11 @@ export const slotRouter = Router();
 
 // Mount all slot route handlers
 slotRouter.use("", createRouter);
-slotRouter.use("", createBatchSlotsRouter);
+slotRouter.use("", createPeriodicBatchSlotsRouter);
 slotRouter.use("", getRouter);
 slotRouter.use("", deleteRouter);
 slotRouter.use("", deleteBatchRouter);
+slotRouter.use("", updatePeriodicBatchSlotsRouter);
 slotRouter.use("", reserveRouter);
 slotRouter.use("", updateRouter);
 slotRouter.use("", updateStatusRouter);

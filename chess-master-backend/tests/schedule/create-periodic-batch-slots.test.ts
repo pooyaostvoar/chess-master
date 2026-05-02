@@ -4,16 +4,18 @@ import { PeriodicSlotConfig } from "../../src/database/entity/periodic-slot-conf
 import { User } from "../../src/database/entity/user";
 import { authAgent, unauthAgent } from "../setup";
 
-describe("POST /schedule/slot/create-batch-slots", () => {
+describe("POST /schedule/slot/create-periodic-batch-slots", () => {
   it("creates slots in chunks with defaults and saves all in DB", async () => {
-    const response = await authAgent.post("/schedule/slot/create-batch-slots").send({
-      interval: {
-        start: "2026-05-10T10:00:00.000Z",
-        end: "2026-05-10T12:30:00.000Z",
-      },
-      period: "daily",
-      repeatCount: 2,
-    });
+    const response = await authAgent
+      .post("/schedule/slot/create-periodic-batch-slots")
+      .send({
+        interval: {
+          start: "2026-05-10T10:00:00.000Z",
+          end: "2026-05-10T12:30:00.000Z",
+        },
+        period: "daily",
+        repeatCount: 2,
+      });
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
@@ -44,28 +46,43 @@ describe("POST /schedule/slot/create-batch-slots", () => {
     expect(savedSlots[0].periodicSlotConfig?.id).toBe(
       response.body.periodicSlotConfig.id
     );
-    expect(savedSlots[0].startTime.toISOString()).toBe("2026-05-10T10:00:00.000Z");
-    expect(savedSlots[0].endTime.toISOString()).toBe("2026-05-10T11:00:00.000Z");
-    expect(savedSlots[2].startTime.toISOString()).toBe("2026-05-10T12:00:00.000Z");
-    expect(savedSlots[2].endTime.toISOString()).toBe("2026-05-10T12:30:00.000Z");
-    expect(savedSlots[3].startTime.toISOString()).toBe("2026-05-11T10:00:00.000Z");
-    expect(savedSlots[5].endTime.toISOString()).toBe("2026-05-11T12:30:00.000Z");
+    expect(savedSlots[0].startTime.toISOString()).toBe(
+      "2026-05-10T10:00:00.000Z"
+    );
+    expect(savedSlots[0].endTime.toISOString()).toBe(
+      "2026-05-10T11:00:00.000Z"
+    );
+    expect(savedSlots[2].startTime.toISOString()).toBe(
+      "2026-05-10T12:00:00.000Z"
+    );
+    expect(savedSlots[2].endTime.toISOString()).toBe(
+      "2026-05-10T12:30:00.000Z"
+    );
+    expect(savedSlots[3].startTime.toISOString()).toBe(
+      "2026-05-11T10:00:00.000Z"
+    );
+    expect(savedSlots[5].endTime.toISOString()).toBe(
+      "2026-05-11T12:30:00.000Z"
+    );
 
     const durationsMinutes = savedSlots.map(
-      (slot) => (slot.endTime.getTime() - slot.startTime.getTime()) / (60 * 1000)
+      (slot) =>
+        (slot.endTime.getTime() - slot.startTime.getTime()) / (60 * 1000)
     );
     expect(durationsMinutes).toEqual([60, 60, 30, 60, 60, 30]);
   });
 
   it("creates one slot when interval is under one hour and chunkSizeMinutes is omitted", async () => {
-    const response = await authAgent.post("/schedule/slot/create-batch-slots").send({
-      interval: {
-        start: "2026-05-10T10:00:00.000Z",
-        end: "2026-05-10T10:45:00.000Z",
-      },
-      period: "daily",
-      repeatCount: 1,
-    });
+    const response = await authAgent
+      .post("/schedule/slot/create-periodic-batch-slots")
+      .send({
+        interval: {
+          start: "2026-05-10T10:00:00.000Z",
+          end: "2026-05-10T10:45:00.000Z",
+        },
+        period: "daily",
+        repeatCount: 1,
+      });
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
@@ -86,19 +103,25 @@ describe("POST /schedule/slot/create-batch-slots", () => {
     expect(savedSlots).toHaveLength(1);
     expect(savedSlots[0].chunkIndex).toBe(0);
     expect(savedSlots[0].periodicSlotConfig).not.toBeNull();
-    expect(savedSlots[0].startTime.toISOString()).toBe("2026-05-10T10:00:00.000Z");
-    expect(savedSlots[0].endTime.toISOString()).toBe("2026-05-10T10:45:00.000Z");
+    expect(savedSlots[0].startTime.toISOString()).toBe(
+      "2026-05-10T10:00:00.000Z"
+    );
+    expect(savedSlots[0].endTime.toISOString()).toBe(
+      "2026-05-10T10:45:00.000Z"
+    );
   });
 
   it("creates repeated weekly slots with 7-day shifts", async () => {
-    const response = await authAgent.post("/schedule/slot/create-batch-slots").send({
-      interval: {
-        start: "2026-05-10T10:00:00.000Z",
-        end: "2026-05-10T11:30:00.000Z",
-      },
-      period: "weekly",
-      repeatCount: 2,
-    });
+    const response = await authAgent
+      .post("/schedule/slot/create-periodic-batch-slots")
+      .send({
+        interval: {
+          start: "2026-05-10T10:00:00.000Z",
+          end: "2026-05-10T11:30:00.000Z",
+        },
+        period: "weekly",
+        repeatCount: 2,
+      });
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
@@ -117,22 +140,34 @@ describe("POST /schedule/slot/create-batch-slots", () => {
 
     expect(savedSlots).toHaveLength(4);
     expect(savedSlots.map((s) => s.chunkIndex)).toEqual([0, 1, 0, 1]);
-    expect(savedSlots[0].startTime.toISOString()).toBe("2026-05-10T10:00:00.000Z");
-    expect(savedSlots[1].startTime.toISOString()).toBe("2026-05-10T11:00:00.000Z");
-    expect(savedSlots[2].startTime.toISOString()).toBe("2026-05-17T10:00:00.000Z");
-    expect(savedSlots[3].startTime.toISOString()).toBe("2026-05-17T11:00:00.000Z");
-    expect(savedSlots[3].endTime.toISOString()).toBe("2026-05-17T11:30:00.000Z");
+    expect(savedSlots[0].startTime.toISOString()).toBe(
+      "2026-05-10T10:00:00.000Z"
+    );
+    expect(savedSlots[1].startTime.toISOString()).toBe(
+      "2026-05-10T11:00:00.000Z"
+    );
+    expect(savedSlots[2].startTime.toISOString()).toBe(
+      "2026-05-17T10:00:00.000Z"
+    );
+    expect(savedSlots[3].startTime.toISOString()).toBe(
+      "2026-05-17T11:00:00.000Z"
+    );
+    expect(savedSlots[3].endTime.toISOString()).toBe(
+      "2026-05-17T11:30:00.000Z"
+    );
   });
 
   it("creates repeated monthly slots with month-based shifts", async () => {
-    const response = await authAgent.post("/schedule/slot/create-batch-slots").send({
-      interval: {
-        start: "2026-01-10T09:00:00.000Z",
-        end: "2026-01-10T10:30:00.000Z",
-      },
-      period: "monthly",
-      repeatCount: 2,
-    });
+    const response = await authAgent
+      .post("/schedule/slot/create-periodic-batch-slots")
+      .send({
+        interval: {
+          start: "2026-01-10T09:00:00.000Z",
+          end: "2026-01-10T10:30:00.000Z",
+        },
+        period: "monthly",
+        repeatCount: 2,
+      });
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
@@ -151,61 +186,79 @@ describe("POST /schedule/slot/create-batch-slots", () => {
 
     expect(savedSlots).toHaveLength(4);
     expect(savedSlots.map((s) => s.chunkIndex)).toEqual([0, 1, 0, 1]);
-    expect(savedSlots[0].startTime.toISOString()).toBe("2026-01-10T09:00:00.000Z");
-    expect(savedSlots[1].startTime.toISOString()).toBe("2026-01-10T10:00:00.000Z");
-    expect(savedSlots[2].startTime.toISOString()).toBe("2026-02-10T09:00:00.000Z");
-    expect(savedSlots[3].startTime.toISOString()).toBe("2026-02-10T10:00:00.000Z");
-    expect(savedSlots[3].endTime.toISOString()).toBe("2026-02-10T10:30:00.000Z");
+    expect(savedSlots[0].startTime.toISOString()).toBe(
+      "2026-01-10T09:00:00.000Z"
+    );
+    expect(savedSlots[1].startTime.toISOString()).toBe(
+      "2026-01-10T10:00:00.000Z"
+    );
+    expect(savedSlots[2].startTime.toISOString()).toBe(
+      "2026-02-10T09:00:00.000Z"
+    );
+    expect(savedSlots[3].startTime.toISOString()).toBe(
+      "2026-02-10T10:00:00.000Z"
+    );
+    expect(savedSlots[3].endTime.toISOString()).toBe(
+      "2026-02-10T10:30:00.000Z"
+    );
   });
 
   it("returns 400 for invalid period", async () => {
-    const response = await authAgent.post("/schedule/slot/create-batch-slots").send({
-      interval: {
-        start: "2026-05-10T10:00:00.000Z",
-        end: "2026-05-10T11:00:00.000Z",
-      },
-      period: "yearly",
-    });
+    const response = await authAgent
+      .post("/schedule/slot/create-periodic-batch-slots")
+      .send({
+        interval: {
+          start: "2026-05-10T10:00:00.000Z",
+          end: "2026-05-10T11:00:00.000Z",
+        },
+        period: "yearly",
+      });
 
     expect(response.status).toBe(400);
     expect(response.body.error).toBe("Invalid request body");
   });
 
   it("returns 400 when interval.start is not before interval.end", async () => {
-    const response = await authAgent.post("/schedule/slot/create-batch-slots").send({
-      interval: {
-        start: "2026-05-10T12:00:00.000Z",
-        end: "2026-05-10T10:00:00.000Z",
-      },
-      period: "daily",
-    });
+    const response = await authAgent
+      .post("/schedule/slot/create-periodic-batch-slots")
+      .send({
+        interval: {
+          start: "2026-05-10T12:00:00.000Z",
+          end: "2026-05-10T10:00:00.000Z",
+        },
+        period: "daily",
+      });
 
     expect(response.status).toBe(400);
     expect(response.body.error).toBe("Invalid request body");
   });
 
   it("returns 401 for unauthenticated users", async () => {
-    const response = await unauthAgent.post("/schedule/slot/create-batch-slots").send({
-      interval: {
-        start: "2026-05-10T10:00:00.000Z",
-        end: "2026-05-10T12:00:00.000Z",
-      },
-      period: "daily",
-    });
+    const response = await unauthAgent
+      .post("/schedule/slot/create-periodic-batch-slots")
+      .send({
+        interval: {
+          start: "2026-05-10T10:00:00.000Z",
+          end: "2026-05-10T12:00:00.000Z",
+        },
+        period: "daily",
+      });
 
     expect(response.status).toBe(401);
   });
 
   it("stores PeriodicSlotConfig in DB matching response and links all slots to it", async () => {
-    const response = await authAgent.post("/schedule/slot/create-batch-slots").send({
-      interval: {
-        start: "2026-06-01T14:00:00.000Z",
-        end: "2026-06-01T15:00:00.000Z",
-      },
-      chunkSizeMinutes: 30,
-      period: "monthly",
-      repeatCount: 2,
-    });
+    const response = await authAgent
+      .post("/schedule/slot/create-periodic-batch-slots")
+      .send({
+        interval: {
+          start: "2026-06-01T14:00:00.000Z",
+          end: "2026-06-01T15:00:00.000Z",
+        },
+        chunkSizeMinutes: 30,
+        period: "monthly",
+        repeatCount: 2,
+      });
 
     expect(response.status).toBe(200);
     const apiCfg = response.body.periodicSlotConfig;
@@ -232,26 +285,33 @@ describe("POST /schedule/slot/create-batch-slots", () => {
 
     const slotRepo = AppDataSource.getRepository(ScheduleSlot);
     const slots = await slotRepo.find({
-      where: { master: { id: seedUser!.id }, periodicSlotConfig: { id: apiCfg.id } },
+      where: {
+        master: { id: seedUser!.id },
+        periodicSlotConfig: { id: apiCfg.id },
+      },
       relations: ["periodicSlotConfig"],
       order: { startTime: "ASC" },
     });
     // 1h interval / 30m => 2 chunks per repeat; 2 repeats => 4 slots
     expect(slots).toHaveLength(4);
-    expect(slots.every((s) => s.periodicSlotConfig?.id === apiCfg.id)).toBe(true);
+    expect(slots.every((s) => s.periodicSlotConfig?.id === apiCfg.id)).toBe(
+      true
+    );
     expect(slots.map((s) => s.chunkIndex)).toEqual([0, 1, 0, 1]);
   });
 
   it("chunkIndex resets each repeat: 4 chunks per day × 2 daily repeats => [0,1,2,3,0,1,2,3]", async () => {
-    const response = await authAgent.post("/schedule/slot/create-batch-slots").send({
-      interval: {
-        start: "2026-07-01T09:00:00.000Z",
-        end: "2026-07-01T11:00:00.000Z",
-      },
-      chunkSizeMinutes: 30,
-      period: "daily",
-      repeatCount: 2,
-    });
+    const response = await authAgent
+      .post("/schedule/slot/create-periodic-batch-slots")
+      .send({
+        interval: {
+          start: "2026-07-01T09:00:00.000Z",
+          end: "2026-07-01T11:00:00.000Z",
+        },
+        chunkSizeMinutes: 30,
+        period: "daily",
+        repeatCount: 2,
+      });
 
     expect(response.status).toBe(200);
     expect(response.body.createdSlots).toBe(8);
@@ -274,15 +334,17 @@ describe("POST /schedule/slot/create-batch-slots", () => {
   });
 
   it("chunkIndex is only 0 when one chunk fits the whole interval per repeat", async () => {
-    const response = await authAgent.post("/schedule/slot/create-batch-slots").send({
-      interval: {
-        start: "2026-08-01T16:00:00.000Z",
-        end: "2026-08-01T16:40:00.000Z",
-      },
-      chunkSizeMinutes: 60,
-      period: "daily",
-      repeatCount: 3,
-    });
+    const response = await authAgent
+      .post("/schedule/slot/create-periodic-batch-slots")
+      .send({
+        interval: {
+          start: "2026-08-01T16:00:00.000Z",
+          end: "2026-08-01T16:40:00.000Z",
+        },
+        chunkSizeMinutes: 60,
+        period: "daily",
+        repeatCount: 3,
+      });
 
     expect(response.status).toBe(200);
     expect(response.body.createdSlots).toBe(3);

@@ -11,7 +11,7 @@ import SlotModal from "../components/SlotModal";
 import { useIsMobile } from "../hooks/useIsMobile";
 import EditSlotModal from "../components/slots/EditSlotModal";
 import CreateSlotDraftModal from "../components/slots/CreateSlotDraftModal";
-import { createBatchSlots } from "../services/schedule";
+import { createPeriodicBatchSlots } from "../services/schedule";
 
 const DRAFT_EVENT_ID = "draft-slot-pending";
 
@@ -130,7 +130,7 @@ const MasterCalendarView: React.FC = () => {
 
     setIsCreatingSlots(true);
     try {
-      const result = await createBatchSlots({
+      const result = await createPeriodicBatchSlots({
         interval: {
           start: draftRange.startStr,
           end: draftRange.endStr,

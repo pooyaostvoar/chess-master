@@ -82,14 +82,15 @@ export const activeSlotsOutputSchema = z.object({
 export type ActiveSlotItem = z.infer<typeof activeSlotItemSchema>;
 export type ActiveSlotsOutput = z.infer<typeof activeSlotsOutputSchema>;
 
-export const createBatchSlotsInputSchema = z
+/** POST /schedule/slot/create-periodic-batch-slots */
+export const createPeriodicBatchSlotsInputSchema = z
   .object({
     interval: z.object({
       start: z.coerce.date(),
       end: z.coerce.date(),
     }),
     chunkSizeMinutes: z.number().positive().default(60),
-    period: z.nativeEnum(Period),
+    period: z.nativeEnum(Period).default(Period.Weekly),
     repeatCount: z.number().int().positive().default(50),
   })
   .superRefine((value, ctx) => {
@@ -102,7 +103,9 @@ export const createBatchSlotsInputSchema = z
     }
   });
 
-export type CreateBatchSlotsInput = z.infer<typeof createBatchSlotsInputSchema>;
+export type CreatePeriodicBatchSlotsInput = z.infer<
+  typeof createPeriodicBatchSlotsInputSchema
+>;
 
 /** POST /schedule/slot/delete-batch */
 export const deleteBatchSlotInputSchema = z.object({
@@ -119,4 +122,63 @@ export const deleteBatchSlotResponseSchema = z.object({
 
 export type DeleteBatchSlotResponse = z.infer<
   typeof deleteBatchSlotResponseSchema
+>;
+
+/** POST /schedule/slot/update-periodic-batch-slots */
+export const updatePeriodicBatchSlotInputSchema = z
+  .object({
+    slotId: z.number().int().positive(),
+    startTime: z.coerce.date().optional(),
+    endTime: z.coerce.date().optional(),
+    title: z.string().nullable().optional(),
+    youtubeId: z.string().nullable().optional(),
+    price: z.number().nullable().optional(),
+  })
+  .superRefine((data, ctx) => {
+    const hasUpdate =
+      data.startTime !== undefined ||
+      data.endTime !== undefined ||
+      data.title !== undefined ||
+      data.youtubeId !== undefined ||
+      data.price !== undefined;
+    if (!hasUpdate) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "At least one field to update is required",
+      });
+    }
+    const hasStart = data.startTime !== undefined;
+    const hasEnd = data.endTime !== undefined;
+    if (hasStart !== hasEnd) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: hasStart ? ["endTime"] : ["startTime"],
+        message:
+          "startTime and endTime must both be provided when updating times",
+      });
+    }
+  });
+
+export type UpdatePeriodicBatchSlotInput = z.infer<
+  typeof updatePeriodicBatchSlotInputSchema
+>;
+
+/** Response slot shape — omits user relations. */
+export const updatePeriodicBatchSlotItemSchema = scheduleSlotSchema.omit({
+  master: true,
+  reservedBy: true,
+});
+
+export type UpdatePeriodicBatchSlotItem = z.infer<
+  typeof updatePeriodicBatchSlotItemSchema
+>;
+
+export const updatePeriodicBatchSlotResponseSchema = z.object({
+  success: z.boolean().default(true),
+  updatedCount: z.number().int().nonnegative(),
+  slots: z.array(updatePeriodicBatchSlotItemSchema),
+});
+
+export type UpdatePeriodicBatchSlotResponse = z.infer<
+  typeof updatePeriodicBatchSlotResponseSchema
 >;

@@ -2,6 +2,8 @@ import { apiClient, handleApiError } from "./client";
 import type {
   DeleteBatchSlotResponse,
   GetMasterSlotsResponse,
+  UpdatePeriodicBatchSlotInput,
+  UpdatePeriodicBatchSlotResponse,
 } from "@chess-master/schemas";
 
 export interface CreateSlotData {
@@ -24,7 +26,7 @@ export interface ScheduleSlot {
   periodicSlotConfig?: PeriodicSlotConfigSummary | null;
 }
 
-export interface CreateBatchSlotsInput {
+export interface CreatePeriodicBatchSlotsInput {
   interval: {
     start: string;
     end: string;
@@ -41,14 +43,14 @@ export interface PeriodicSlotConfigSummary {
   repeatCount: number;
 }
 
-export interface CreateBatchSlotsResponse {
+export interface CreatePeriodicBatchSlotsResponse {
   success: boolean;
   createdSlots: number;
   slots: ScheduleSlot[];
   periodicSlotConfig?: PeriodicSlotConfigSummary;
 }
 
-function normalizeBatchSlotRow(row: Record<string, unknown>): ScheduleSlot {
+function normalizePeriodicBatchSlotRow(row: Record<string, unknown>): ScheduleSlot {
   const id = Number(row.id ?? row.Id);
   const startRaw = row.startTime ?? row.starttime;
   const endRaw = row.endTime ?? row.endtime;
@@ -85,20 +87,20 @@ export const createSlot = async (
 };
 
 /**
- * Create many slots from a time range (bulk insert)
+ * Create many slots from a time range (periodic bulk insert)
  */
-export const createBatchSlots = async (
-  data: CreateBatchSlotsInput
-): Promise<CreateBatchSlotsResponse> => {
+export const createPeriodicBatchSlots = async (
+  data: CreatePeriodicBatchSlotsInput
+): Promise<CreatePeriodicBatchSlotsResponse> => {
   try {
     const response = await apiClient.post(
-      "/schedule/slot/create-batch-slots",
+      "/schedule/slot/create-periodic-batch-slots",
       data
     );
     const raw = response.data?.slots ?? [];
     const slots = Array.isArray(raw)
       ? raw.map((row: Record<string, unknown>) =>
-          normalizeBatchSlotRow(row)
+          normalizePeriodicBatchSlotRow(row)
         )
       : [];
     return {
@@ -163,6 +165,23 @@ export const deleteBatchSlots = async (
     const response = await apiClient.post("/schedule/slot/delete-batch", {
       slotId,
     });
+    return response.data;
+  } catch (error: any) {
+    throw new Error(handleApiError(error));
+  }
+};
+
+/**
+ * Update one slot or all slots in the same periodic chunk (same as delete-batch grouping)
+ */
+export const updatePeriodicBatchSlots = async (
+  data: UpdatePeriodicBatchSlotInput
+): Promise<UpdatePeriodicBatchSlotResponse> => {
+  try {
+    const response = await apiClient.post(
+      "/schedule/slot/update-periodic-batch-slots",
+      data
+    );
     return response.data;
   } catch (error: any) {
     throw new Error(handleApiError(error));

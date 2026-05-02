@@ -98,8 +98,7 @@ export function mapUserToSchemaBase(user: User): BaseUser {
     lichessUrl: user.lichessUrl,
     lichessRatings: user.lichessRatings as BaseUser["lichessRatings"],
     schedule: undefined,
-    hourlyRate:
-      user.hourlyRate != null ? Number(user.hourlyRate) : null,
+    hourlyRate: user.hourlyRate != null ? Number(user.hourlyRate) : null,
     languages: user.languages ?? undefined,
     teachingFocuses: user.teachingFocuses ?? undefined,
     phoneNumber: user.phoneNumber,
@@ -135,9 +134,29 @@ export function formatMasterScheduleSlot(slot: ScheduleSlot) {
     status: slot.status as SlotStatus,
     title: slot.title,
     youtubeId: slot.youtubeId,
-    reservedBy: slot.reservedBy
-      ? mapUserToSchemaBase(slot.reservedBy)
+    reservedBy: slot.reservedBy ? mapUserToSchemaBase(slot.reservedBy) : null,
+    price: slot.price != null ? Number(slot.price) : null,
+    chunkIndex: slot.chunkIndex,
+    periodicSlotConfig: slot.periodicSlotConfig
+      ? {
+          id: slot.periodicSlotConfig.id,
+          chunkSizeMinutes: slot.periodicSlotConfig.chunkSizeMinutes,
+          period: slot.periodicSlotConfig.period,
+          repeatCount: slot.periodicSlotConfig.repeatCount,
+        }
       : null,
+  };
+}
+
+/** Periodic batch UPDATE response: same slot fields as the calendar GET, without user relations. */
+export function formatUpdatePeriodicBatchSlotResponse(slot: ScheduleSlot) {
+  return {
+    id: slot.id,
+    startTime: slot.startTime,
+    endTime: slot.endTime,
+    status: slot.status as SlotStatus,
+    title: slot.title,
+    youtubeId: slot.youtubeId,
     price: slot.price != null ? Number(slot.price) : null,
     chunkIndex: slot.chunkIndex,
     periodicSlotConfig: slot.periodicSlotConfig
@@ -265,7 +284,11 @@ export async function deleteSlots(
  */
 function rowsFromSqlQueryResult(result: unknown): Record<string, unknown>[] {
   if (result == null) return [];
-  if (typeof result === "object" && !Array.isArray(result) && "rows" in result) {
+  if (
+    typeof result === "object" &&
+    !Array.isArray(result) &&
+    "rows" in result
+  ) {
     const rows = (result as { rows: unknown }).rows;
     return Array.isArray(rows) ? (rows as Record<string, unknown>[]) : [];
   }
@@ -324,6 +347,82 @@ export async function deleteBatchSlotsBySharedChunk(
   );
 
   return idsFromReturningRows(rowsFromSqlQueryResult(raw));
+}
+
+/**
+ * Update one slot or every slot sharing the same periodic config row + chunk index (same
+ * grouping as delete-batch). Uses a single UPDATE … WHERE. Time edits shift each row by the
+ * anchor slot’s start/end delta via interval arithmetic.
+ */
+export async function updatePeriodicBatchSlotsBySharedChunk(
+  slotId: number,
+  masterId: number,
+  data: {
+    startTime?: Date;
+    endTime?: Date;
+    title?: string | null;
+    youtubeId?: string | null;
+    price?: number | null;
+  }
+): Promise<ScheduleSlot[]> {
+  const repo = AppDataSource.getRepository(ScheduleSlot);
+
+  const slot = await repo
+    .createQueryBuilder("slot")
+    .select("slot.periodicSlotConfigId", "configId")
+    .addSelect("slot.chunkIndex", "chunkIndex")
+    .addSelect("slot.startTime", "startTime")
+    .addSelect("slot.endTime", "endTime")
+    .where("slot.id = :slotId", { slotId })
+    .andWhere("slot.masterId = :masterId", { masterId })
+    .getRawOne<{
+      configId: number | null;
+      chunkIndex: number | null;
+      startTime: Date;
+      endTime: Date;
+    }>();
+
+  if (!slot) {
+    throw new Error("Slot not found or you are not the master");
+  }
+
+  const { startTime, endTime, price, ...rest } = data;
+
+  const updateTimes = startTime !== undefined && endTime !== undefined;
+
+  let deltaStartMs = 0;
+  let deltaEndMs = 0;
+
+  if (updateTimes) {
+    deltaStartMs = startTime!.getTime() - new Date(slot.startTime).getTime();
+    deltaEndMs = endTime!.getTime() - new Date(slot.endTime).getTime();
+  }
+
+  const qb = AppDataSource.createQueryBuilder()
+    .update(ScheduleSlot)
+    .set({
+      ...rest,
+      ...(price !== undefined && {
+        price,
+        priceCents: () => `"price" * 100`,
+      }),
+      ...(updateTimes && {
+        startTime: () =>
+          `"startTime" + (interval '1 millisecond' * ${deltaStartMs})`,
+        endTime: () => `"endTime" + (interval '1 millisecond' * ${deltaEndMs})`,
+      }),
+    })
+    .where("chunkIndex = :chunkIndex", {
+      chunkIndex: slot.chunkIndex,
+    })
+    .andWhere("periodicSlotConfigId = :configId", {
+      configId: slot.configId,
+    })
+    .returning("*");
+
+  const result = await qb.execute();
+
+  return result.raw as ScheduleSlot[];
 }
 
 /**
@@ -394,7 +493,7 @@ export async function updateSlot(
   slotId: number,
   masterId: number,
   data: {
-    strartTime?: Date;
+    startTime?: Date;
     endTime?: Date;
     title?: string;
     youtubeId?: string;

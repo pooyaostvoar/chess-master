@@ -4,7 +4,7 @@ import { AppDataSource } from "../../../database/datasource";
 import { ScheduleSlot } from "../../../database/entity/schedule-slots";
 import { PeriodicSlotConfig } from "../../../database/entity/periodic-slot-config";
 import { User } from "../../../database/entity/user";
-import { createBatchSlotsInputSchema, Period } from "@chess-master/schemas";
+import { createPeriodicBatchSlotsInputSchema, Period } from "@chess-master/schemas";
 
 export const router = Router();
 
@@ -25,10 +25,10 @@ function shiftDate(base: Date, period: Period, iteration: number): Date {
   return shifted;
 }
 
-// POST /schedule/slot/create-batch-slots - Create slots in bulk
-router.post("/create-batch-slots", isAuthenticated, async (req, res) => {
+// POST /schedule/slot/create-periodic-batch-slots - Create slots in bulk
+router.post("/create-periodic-batch-slots", isAuthenticated, async (req, res) => {
   try {
-    const parsedBody = createBatchSlotsInputSchema.safeParse(req.body);
+    const parsedBody = createPeriodicBatchSlotsInputSchema.safeParse(req.body);
     if (!parsedBody.success) {
       return res.status(400).json({
         error: "Invalid request body",
@@ -109,7 +109,7 @@ router.post("/create-batch-slots", isAuthenticated, async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("Error creating batch slots:", err);
+    console.error("Error creating periodic batch slots:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
