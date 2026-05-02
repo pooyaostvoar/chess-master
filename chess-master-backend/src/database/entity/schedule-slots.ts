@@ -5,13 +5,16 @@ import {
   ManyToOne,
   OneToMany,
   JoinColumn,
+  Index,
 } from "typeorm";
 import { User } from "./user";
 import { SlotStatus } from "./types";
 import { Payment } from "./payment";
 import { PeriodicSlotConfig } from "./periodic-slot-config";
 
+/** Index name matches `1776400000000-periodic-slot-config.ts`. */
 @Entity("schedule_slots")
+@Index("IDX_schedule_slots_periodicSlotConfigId", ["periodicSlotConfig"])
 export class ScheduleSlot {
   @PrimaryGeneratedColumn()
   id: number;
@@ -75,7 +78,10 @@ export class ScheduleSlot {
     nullable: true,
     onDelete: "SET NULL",
   })
-  @JoinColumn({ name: "periodicSlotConfigId" })
+  @JoinColumn({
+    name: "periodicSlotConfigId",
+    foreignKeyConstraintName: "FK_schedule_slots_periodic_slot_config",
+  })
   periodicSlotConfig: PeriodicSlotConfig | null;
 
   @OneToMany(() => Payment, (payment) => payment.slot)
