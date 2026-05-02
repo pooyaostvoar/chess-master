@@ -4,12 +4,17 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   OneToMany,
+  JoinColumn,
+  Index,
 } from "typeorm";
 import { User } from "./user";
 import { SlotStatus } from "./types";
 import { Payment } from "./payment";
+import { PeriodicSlotConfig } from "./periodic-slot-config";
 
+/** Index name matches `1776400000000-periodic-slot-config.ts`. */
 @Entity("schedule_slots")
+@Index("IDX_schedule_slots_periodicSlotConfigId", ["periodicSlotConfig"])
 export class ScheduleSlot {
   @PrimaryGeneratedColumn()
   id: number;
@@ -64,6 +69,20 @@ export class ScheduleSlot {
     },
   })
   priceCents: number | null;
+
+  /** Index of this chunk within one occurrence of the interval (0-based; resets each repeat). */
+  @Column("int", { nullable: true })
+  chunkIndex: number | null;
+
+  @ManyToOne(() => PeriodicSlotConfig, {
+    nullable: true,
+    onDelete: "SET NULL",
+  })
+  @JoinColumn({
+    name: "periodicSlotConfigId",
+    foreignKeyConstraintName: "FK_schedule_slots_periodic_slot_config",
+  })
+  periodicSlotConfig: PeriodicSlotConfig | null;
 
   @OneToMany(() => Payment, (payment) => payment.slot)
   payments: Payment[];

@@ -2,6 +2,7 @@ import { AppDataSource } from "../database/datasource";
 import { ScheduleSlot } from "../database/entity/schedule-slots";
 import { SlotStatus } from "../database/entity/types";
 import { User } from "../database/entity/user";
+import type { BaseUser } from "@chess-master/schemas";
 import { EntityManager, In } from "typeorm";
 import { formatUserMinimal } from "./user.service";
 import {
@@ -79,6 +80,96 @@ export function formatSlot(slot: ScheduleSlot): SafeSlot {
   return formatted;
 }
 
+/** Maps a User entity to `userSchemaBase` shape for Zod-validated API payloads */
+export function mapUserToSchemaBase(user: User): BaseUser {
+  return {
+    id: user.id,
+    email: user.email,
+    username: user.username,
+    name: user.name,
+    lastname: user.lastname,
+    isMaster: user.isMaster,
+    title: user.title,
+    rating: user.rating,
+    bio: user.bio,
+    profilePictureThumbnailUrl: user.profilePictureThumbnailUrl,
+    profilePictureUrl: user.profilePictureUrl,
+    chesscomUrl: user.chesscomUrl,
+    lichessUrl: user.lichessUrl,
+    lichessRatings: user.lichessRatings as BaseUser["lichessRatings"],
+    schedule: undefined,
+    hourlyRate: user.hourlyRate != null ? Number(user.hourlyRate) : null,
+    languages: user.languages ?? undefined,
+    teachingFocuses: user.teachingFocuses ?? undefined,
+    phoneNumber: user.phoneNumber,
+    twitchUrl: user.twitchUrl,
+    youtubeUrl: user.youtubeUrl,
+    instagramUrl: user.instagramUrl,
+    xUrl: user.xUrl,
+    facebookUrl: user.facebookUrl,
+    tiktokUrl: user.tiktokUrl,
+    avgReviewRating:
+      user.avgReviewRating != null && user.avgReviewRating !== ""
+        ? Number(user.avgReviewRating)
+        : null,
+    studentsCount:
+      user.studentsCount != null && user.studentsCount !== ""
+        ? Number(user.studentsCount)
+        : null,
+  };
+}
+
+/**
+ * Slot shape validated by `scheduleSlotSchema` — use for GET /schedule/slot/user/:userId
+ */
+export function formatMasterScheduleSlot(slot: ScheduleSlot) {
+  if (!slot.master) {
+    throw new Error("formatMasterScheduleSlot requires slot.master");
+  }
+  return {
+    id: slot.id,
+    master: mapUserToSchemaBase(slot.master),
+    startTime: slot.startTime,
+    endTime: slot.endTime,
+    status: slot.status as SlotStatus,
+    title: slot.title,
+    youtubeId: slot.youtubeId,
+    reservedBy: slot.reservedBy ? mapUserToSchemaBase(slot.reservedBy) : null,
+    price: slot.price != null ? Number(slot.price) : null,
+    chunkIndex: slot.chunkIndex,
+    periodicSlotConfig: slot.periodicSlotConfig
+      ? {
+          id: slot.periodicSlotConfig.id,
+          chunkSizeMinutes: slot.periodicSlotConfig.chunkSizeMinutes,
+          period: slot.periodicSlotConfig.period,
+          repeatCount: slot.periodicSlotConfig.repeatCount,
+        }
+      : null,
+  };
+}
+
+/** Periodic batch UPDATE response: same slot fields as the calendar GET, without user relations. */
+export function formatUpdatePeriodicBatchSlotResponse(slot: ScheduleSlot) {
+  return {
+    id: slot.id,
+    startTime: slot.startTime,
+    endTime: slot.endTime,
+    status: slot.status as SlotStatus,
+    title: slot.title,
+    youtubeId: slot.youtubeId,
+    price: slot.price != null ? Number(slot.price) : null,
+    chunkIndex: slot.chunkIndex,
+    periodicSlotConfig: slot.periodicSlotConfig
+      ? {
+          id: slot.periodicSlotConfig.id,
+          chunkSizeMinutes: slot.periodicSlotConfig.chunkSizeMinutes,
+          period: slot.periodicSlotConfig.period,
+          repeatCount: slot.periodicSlotConfig.repeatCount,
+        }
+      : null,
+  };
+}
+
 /**
  * Create a new schedule slot
  */
@@ -109,7 +200,9 @@ export async function getSlotsByMaster(
 
   return await repo
     .createQueryBuilder("slot")
+    .leftJoinAndSelect("slot.master", "master")
     .leftJoinAndSelect("slot.reservedBy", "reservedBy")
+    .leftJoinAndSelect("slot.periodicSlotConfig", "periodicSlotConfig")
     .where("slot.master = :userId", { userId })
     .orderBy("slot.startTime", "ASC")
     .getMany();
@@ -142,7 +235,7 @@ export async function getSlotById(
   const repo = AppDataSource.getRepository(ScheduleSlot);
   return await repo.findOne({
     where: { id: slotId },
-    relations: ["master", "reservedBy"],
+    relations: ["master", "reservedBy", "periodicSlotConfig"],
   });
 }
 
@@ -183,6 +276,154 @@ export async function deleteSlots(
 
   await repo.remove(slots);
   return slots.map((s) => s.id);
+}
+
+/**
+ * `DataSource.query` / `manager.query` with pg may return a plain row array, `{ rows }`, or
+ * the node-pg tuple `[rows, fieldMetadata]`. Unwrap so we always map over row objects.
+ */
+function rowsFromSqlQueryResult(result: unknown): Record<string, unknown>[] {
+  if (result == null) return [];
+  if (
+    typeof result === "object" &&
+    !Array.isArray(result) &&
+    "rows" in result
+  ) {
+    const rows = (result as { rows: unknown }).rows;
+    return Array.isArray(rows) ? (rows as Record<string, unknown>[]) : [];
+  }
+  if (!Array.isArray(result)) return [];
+  if (result.length === 0) return [];
+  // Tuple [rows, fields] — first element is the row list
+  if (Array.isArray(result[0])) {
+    return result[0] as Record<string, unknown>[];
+  }
+  return result as Record<string, unknown>[];
+}
+
+function idsFromReturningRows(rows: Record<string, unknown>[]): number[] {
+  const out: number[] = [];
+  for (const r of rows) {
+    const raw = r.id ?? r.Id;
+    const n = typeof raw === "number" ? raw : Number(raw);
+    if (Number.isFinite(n)) out.push(n);
+  }
+  return out;
+}
+
+/**
+ * Delete a slot and every other row in `schedule_slots` for the same master with the same
+ * `periodicSlotConfigId` and `chunkIndex` (no relation joins — uses columns on the slot table).
+ * If the row has no config or chunk index, only that id is deleted.
+ */
+export async function deleteBatchSlotsBySharedChunk(
+  slotId: number,
+  masterId: number
+): Promise<number[]> {
+  const repo = AppDataSource.getRepository(ScheduleSlot);
+
+  const meta = await repo
+    .createQueryBuilder("slot")
+    .select("slot.periodicSlotConfigId", "configId")
+    .addSelect("slot.chunkIndex", "chunkIndex")
+    .where("slot.id = :slotId", { slotId })
+    .andWhere("slot.masterId = :masterId", { masterId })
+    .getRawOne<{ configId: number | null; chunkIndex: number | null }>();
+
+  if (!meta) {
+    throw new Error("Slot not found or you are not the master");
+  }
+
+  if (meta.configId == null || meta.chunkIndex == null) {
+    await repo.delete({ id: slotId, master: { id: masterId } });
+    return [slotId];
+  }
+
+  const raw = await repo.manager.query(
+    `DELETE FROM "schedule_slots"
+     WHERE "masterId" = $1 AND "periodicSlotConfigId" = $2 AND "chunkIndex" = $3
+     RETURNING id`,
+    [masterId, meta.configId, meta.chunkIndex]
+  );
+
+  return idsFromReturningRows(rowsFromSqlQueryResult(raw));
+}
+
+/**
+ * Update one slot or every slot sharing the same periodic config row + chunk index (same
+ * grouping as delete-batch). Uses a single UPDATE … WHERE. Time edits shift each row by the
+ * anchor slot’s start/end delta via interval arithmetic.
+ */
+export async function updatePeriodicBatchSlotsBySharedChunk(
+  slotId: number,
+  masterId: number,
+  data: {
+    startTime?: Date;
+    endTime?: Date;
+    title?: string | null;
+    youtubeId?: string | null;
+    price?: number | null;
+  }
+): Promise<ScheduleSlot[]> {
+  const repo = AppDataSource.getRepository(ScheduleSlot);
+
+  const slot = await repo
+    .createQueryBuilder("slot")
+    .select("slot.periodicSlotConfigId", "configId")
+    .addSelect("slot.chunkIndex", "chunkIndex")
+    .addSelect("slot.startTime", "startTime")
+    .addSelect("slot.endTime", "endTime")
+    .where("slot.id = :slotId", { slotId })
+    .andWhere("slot.masterId = :masterId", { masterId })
+    .getRawOne<{
+      configId: number | null;
+      chunkIndex: number | null;
+      startTime: Date;
+      endTime: Date;
+    }>();
+
+  if (!slot) {
+    throw new Error("Slot not found or you are not the master");
+  }
+
+  const { startTime, endTime, price, ...rest } = data;
+
+  const updateTimes = startTime !== undefined && endTime !== undefined;
+
+  let deltaStartMs = 0;
+  let deltaEndMs = 0;
+
+  if (updateTimes) {
+    deltaStartMs = startTime!.getTime() - new Date(slot.startTime).getTime();
+    deltaEndMs = endTime!.getTime() - new Date(slot.endTime).getTime();
+  }
+
+  const qb = AppDataSource.createQueryBuilder()
+    .update(ScheduleSlot)
+    .set({
+      ...rest,
+      ...(price !== undefined && {
+        price,
+        priceCents: () => `CAST(${price} AS DECIMAL) * 100`,
+      }),
+      ...(updateTimes && {
+        startTime: () =>
+          `"startTime" + (interval '1 millisecond' * ${deltaStartMs})`,
+        endTime: () => `"endTime" + (interval '1 millisecond' * ${deltaEndMs})`,
+      }),
+    })
+    .where("chunkIndex = :chunkIndex", {
+      chunkIndex: slot.chunkIndex,
+    })
+    .andWhere("periodicSlotConfigId = :configId", {
+      configId: slot.configId,
+    })
+    .andWhere("status = :status", { status: SlotStatus.Free })
+    .returning("*");
+
+  const result = await qb.execute();
+
+  return result.raw as ScheduleSlot[];
 }
 
 /**
@@ -253,7 +494,7 @@ export async function updateSlot(
   slotId: number,
   masterId: number,
   data: {
-    strartTime?: Date;
+    startTime?: Date;
     endTime?: Date;
     title?: string;
     youtubeId?: string;
@@ -277,6 +518,8 @@ export async function updateSlot(
     .update(ScheduleSlot)
     .set({
       ...data,
+      periodicSlotConfig: null,
+      chunkIndex: null,
       priceCents: () => "CAST(:price AS DECIMAL) * 100",
     })
     .setParameter("price", data.price)

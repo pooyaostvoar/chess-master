@@ -3,6 +3,7 @@ import { User } from "./entity/user";
 import { AdminUser } from "./entity/admin-user";
 import { Game } from "./entity/game";
 import { ScheduleSlot } from "./entity/schedule-slots";
+import { PeriodicSlotConfig } from "./entity/periodic-slot-config";
 import { readSecret } from "../utils/secret";
 import { ensureTestDatabase } from "./utils";
 import { Message } from "./entity/message";
@@ -31,6 +32,7 @@ const defaultConfig: DataSourceOptions = {
     AdminUser,
     Game,
     ScheduleSlot,
+    PeriodicSlotConfig,
     Message,
     PushSubscription,
     Payment,

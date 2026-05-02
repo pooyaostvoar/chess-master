@@ -1,8 +1,8 @@
-import React, { useState, useRef } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { useScheduleSlots } from "../hooks/useScheduleSlots";
-import { mapSlotToEvent } from "../utils/slotUtils";
+import { mapSlotToEvent, slotIsPeriodicSeriesChunk } from "../utils/slotUtils";
 import ScheduleCalendar, {
   ScheduleCalendarRef,
 } from "../components/ScheduleCalendar";
@@ -10,7 +10,31 @@ import MiniCalendar from "../components/calendar/MiniCalendar";
 import SlotModal from "../components/SlotModal";
 import { useIsMobile } from "../hooks/useIsMobile";
 import EditSlotModal from "../components/slots/EditSlotModal";
-import { useCurrentUserSchedule } from "../contexts/ScheduleContext";
+import CreateSlotDraftModal from "../components/slots/CreateSlotDraftModal";
+import PeriodicSeriesMoveModal from "../components/slots/PeriodicSeriesMoveModal";
+import EditSlotSection from "../components/slots/EditSlotSection";
+import type { PeriodicScopeSubmitPayload } from "../components/slots/EditSlotSection";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../components/ui/dialog";
+import { createPeriodicBatchSlots } from "../services/schedule";
+
+const DRAFT_EVENT_ID = "draft-slot-pending";
+
+type PendingSeriesMove = {
+  revert: () => void;
+  slotId: number;
+  startIso: string;
+  endIso: string;
+};
+
+type PendingPeriodicEdit = {
+  slotId: number;
+  payload: PeriodicScopeSubmitPayload;
+};
 
 const MasterCalendarView: React.FC = () => {
   const isMobile = useIsMobile();
@@ -23,7 +47,182 @@ const MasterCalendarView: React.FC = () => {
   const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<any>(null);
   const calendarRef = useRef<ScheduleCalendarRef>(null);
-  const { createSlot } = useCurrentUserSchedule();
+
+  const [draftRange, setDraftRange] = useState<{
+    startStr: string;
+    endStr: string;
+  } | null>(null);
+  const [isCreatingSlots, setIsCreatingSlots] = useState(false);
+
+  const [inlineEditOpen, setInlineEditOpen] = useState(false);
+  const [periodicEditPayload, setPeriodicEditPayload] =
+    useState<PendingPeriodicEdit | null>(null);
+  const [periodicEditSubmitting, setPeriodicEditSubmitting] = useState(false);
+  const closePeriodicEditModalWithoutClearRef = useRef(false);
+  /** After opening inline edit from SlotModal, reopen slot modal when edit closes. */
+  const resumeSlotModalAfterInlineEditRef = useRef(false);
+
+  const reopenSlotModalAfterInlineEditIfNeeded = () => {
+    if (resumeSlotModalAfterInlineEditRef.current) {
+      resumeSlotModalAfterInlineEditRef.current = false;
+      setModalVisible(true);
+    }
+  };
+
+  /** After “Apply changes” (recurring save), close slot + edit flow entirely and show the calendar. */
+  const closeAllModalsAfterPeriodicEditSave = () => {
+    resumeSlotModalAfterInlineEditRef.current = false;
+    setModalVisible(false);
+    setInlineEditOpen(false);
+    setSelectedSlot(null);
+    setSelectedSlotId(null);
+  };
+
+  const [pendingSeriesMove, setPendingSeriesMove] =
+    useState<PendingSeriesMove | null>(null);
+  const [seriesMoveSubmitting, setSeriesMoveSubmitting] = useState(false);
+  const closeSeriesModalWithoutRevertRef = useRef(false);
+
+  const handleSeriesMoveDialogOpenChange = (open: boolean) => {
+    if (open) return;
+    if (closeSeriesModalWithoutRevertRef.current) {
+      closeSeriesModalWithoutRevertRef.current = false;
+      setPendingSeriesMove(null);
+      return;
+    }
+    pendingSeriesMove?.revert();
+    setPendingSeriesMove(null);
+  };
+
+  const handleSeriesMoveUpdateAll = async () => {
+    const pending = pendingSeriesMove;
+    if (!pending) return;
+    setSeriesMoveSubmitting(true);
+    try {
+      const { updatePeriodicBatchSlots } = await import("../services/schedule");
+      await updatePeriodicBatchSlots({
+        slotId: pending.slotId,
+        startTime: new Date(pending.startIso),
+        endTime: new Date(pending.endIso),
+      });
+      closeSeriesModalWithoutRevertRef.current = true;
+      setPendingSeriesMove(null);
+      await refreshSlots();
+    } catch (err: any) {
+      console.error("Failed to update series", err);
+      alert(err.message || "Failed to update series.");
+      pending.revert();
+      setPendingSeriesMove(null);
+    } finally {
+      setSeriesMoveSubmitting(false);
+    }
+  };
+
+  const handleSeriesMoveUpdateThis = async () => {
+    const pending = pendingSeriesMove;
+    if (!pending) return;
+    setSeriesMoveSubmitting(true);
+    try {
+      const { updateSlot } = await import("../services/schedule");
+      await updateSlot(pending.slotId, {
+        startTime: pending.startIso,
+        endTime: pending.endIso,
+      });
+      closeSeriesModalWithoutRevertRef.current = true;
+      setPendingSeriesMove(null);
+      await refreshSlots();
+    } catch (err: any) {
+      console.error("Failed to update slot", err);
+      alert(err.message || "Failed to update slot.");
+      pending.revert();
+      setPendingSeriesMove(null);
+    } finally {
+      setSeriesMoveSubmitting(false);
+    }
+  };
+
+  const handlePeriodicEditDialogOpenChange = (open: boolean) => {
+    if (open) return;
+    if (closePeriodicEditModalWithoutClearRef.current) {
+      closePeriodicEditModalWithoutClearRef.current = false;
+      setPeriodicEditPayload(null);
+      return;
+    }
+    setPeriodicEditPayload(null);
+  };
+
+  const handlePeriodicEditUpdateAll = async () => {
+    const pending = periodicEditPayload;
+    if (!pending) return;
+    setPeriodicEditSubmitting(true);
+    try {
+      const { updatePeriodicBatchSlots } = await import("../services/schedule");
+      await updatePeriodicBatchSlots({
+        slotId: pending.slotId,
+        startTime: new Date(pending.payload.startTime),
+        endTime: new Date(pending.payload.endTime),
+        title: pending.payload.title ?? null,
+        youtubeId: pending.payload.youtubeId ?? null,
+        price: Number.isFinite(pending.payload.price)
+          ? pending.payload.price
+          : null,
+      });
+      closePeriodicEditModalWithoutClearRef.current = true;
+      setPeriodicEditPayload(null);
+      closeAllModalsAfterPeriodicEditSave();
+      await refreshSlots();
+    } catch (err: any) {
+      console.error("Failed to update series", err);
+      alert(err.message || "Failed to update series.");
+    } finally {
+      setPeriodicEditSubmitting(false);
+    }
+  };
+
+  const handlePeriodicEditUpdateThis = async () => {
+    const pending = periodicEditPayload;
+    if (!pending) return;
+    setPeriodicEditSubmitting(true);
+    try {
+      const { updateSlot } = await import("../services/schedule");
+      await updateSlot(pending.slotId, {
+        startTime: pending.payload.startTime,
+        endTime: pending.payload.endTime,
+        title: pending.payload.title,
+        youtubeId: pending.payload.youtubeId,
+        price: pending.payload.price,
+        description: pending.payload.description,
+      });
+      closePeriodicEditModalWithoutClearRef.current = true;
+      setPeriodicEditPayload(null);
+      closeAllModalsAfterPeriodicEditSave();
+      await refreshSlots();
+    } catch (err: any) {
+      console.error("Failed to update slot", err);
+      alert(err.message || "Failed to update slot.");
+    } finally {
+      setPeriodicEditSubmitting(false);
+    }
+  };
+
+  const calendarEvents = useMemo(() => {
+    const list = [...events];
+    if (draftRange) {
+      list.push({
+        id: DRAFT_EVENT_ID,
+        title: "Draft — confirm below",
+        start: draftRange.startStr,
+        end: draftRange.endStr,
+        backgroundColor: "#95a5a6",
+        borderColor: "#7f8c8d",
+        editable: false,
+        durationEditable: false,
+        extendedProps: { isDraft: true },
+      });
+    }
+    return list;
+  }, [events, draftRange]);
+
   const handleDateSelect = (date: Date) => {
     if (calendarRef.current && date) {
       // Ensure date is valid
@@ -66,12 +265,11 @@ const MasterCalendarView: React.FC = () => {
     }
   };
 
-  // Create new slot
-  const handleSelect = async (info: any) => {
+  // Drag-select: draft only, then confirm in modal
+  const handleSelect = (info: any) => {
     const start = new Date(info.startStr);
     const now = new Date();
 
-    // Prevent creating slots in the past
     if (start < now) {
       alert(
         "Cannot create time slots in the past. Please select a future date and time."
@@ -79,25 +277,61 @@ const MasterCalendarView: React.FC = () => {
       return;
     }
 
+    setDraftRange({
+      startStr: info.startStr,
+      endStr: info.endStr,
+    });
+  };
+
+  const clearDraft = () => {
+    setDraftRange(null);
+  };
+
+  const handleDraftModalOpenChange = (open: boolean) => {
+    if (!open) {
+      clearDraft();
+    }
+  };
+
+  const handleDraftConfirm = async (payload: {
+    recurring: boolean;
+    period: "daily" | "weekly" | "monthly";
+    repeatCount: number;
+  }) => {
+    if (!draftRange) return;
+
+    setIsCreatingSlots(true);
     try {
-      const newSlot = await createSlot({
-        startTime: info.startStr,
-        endTime: info.endStr,
+      const result = await createPeriodicBatchSlots({
+        interval: {
+          start: draftRange.startStr,
+          end: draftRange.endStr,
+        },
+        period: payload.recurring ? payload.period : "daily",
+        repeatCount: payload.recurring ? payload.repeatCount : 1,
       });
 
-      setEvents((prev) => [...prev, mapSlotToEvent(newSlot)]);
-      setSelectedSlotId(newSlot.id);
-      setIsEditSlotModalVisible(true);
+      await refreshSlots();
+
+      clearDraft();
+
+      if (result.createdSlots === 1 && result.slots[0]?.id) {
+        setSelectedSlotId(result.slots[0].id);
+        setIsEditSlotModalVisible(true);
+      }
     } catch (err: any) {
-      console.error("Failed to create slot", err);
-      alert(
-        err.response?.data?.error || "Failed to create slot. Please try again."
-      );
+      console.error("Failed to create slots", err);
+      alert(err.message || "Failed to create slots. Please try again.");
+    } finally {
+      setIsCreatingSlots(false);
     }
   };
 
   // Open modal to manage slot
   const handleEventClick = (info: any) => {
+    if (info.event.id === DRAFT_EVENT_ID) {
+      return;
+    }
     setSelectedSlotId(Number(info.event.id));
     setSelectedSlot(info.event.extendedProps?.fullSlot || null);
     setModalVisible(true);
@@ -105,6 +339,10 @@ const MasterCalendarView: React.FC = () => {
 
   // Drag & drop update
   const handleEventDrop = async (info: any) => {
+    if (info.event.id === DRAFT_EVENT_ID) {
+      info.revert();
+      return;
+    }
     const newStart = new Date(info.event.start);
     const now = new Date();
 
@@ -117,23 +355,38 @@ const MasterCalendarView: React.FC = () => {
       return;
     }
 
-    try {
-      const { updateSlot } = await import("../services/schedule");
-      await updateSlot(Number(info.event.id), {
-        startTime: info.event.start.toISOString(),
-        endTime: info.event.end.toISOString(),
-      });
-      // Refresh slots to get updated data
-      await refreshSlots();
-    } catch (err: any) {
-      console.error("Failed to update slot", err);
-      info.revert();
-      alert(err.message || "Failed to update slot. Please try again.");
+    const slotId = Number(info.event.id);
+    const fullSlot = info.event.extendedProps?.fullSlot;
+    const startIso = info.event.start.toISOString();
+    const endIso = info.event.end.toISOString();
+
+    if (!slotIsPeriodicSeriesChunk(fullSlot)) {
+      try {
+        const { updateSlot } = await import("../services/schedule");
+        await updateSlot(slotId, { startTime: startIso, endTime: endIso });
+        await refreshSlots();
+      } catch (err: any) {
+        console.error("Failed to update slot", err);
+        info.revert();
+        alert(err.message || "Failed to update slot. Please try again.");
+      }
+      return;
     }
+
+    setPendingSeriesMove({
+      revert: () => info.revert(),
+      slotId,
+      startIso,
+      endIso,
+    });
   };
 
   // Resize update
   const handleEventResize = async (info: any) => {
+    if (info.event.id === DRAFT_EVENT_ID) {
+      info.revert();
+      return;
+    }
     const newStart = new Date(info.event.start);
     const now = new Date();
 
@@ -146,24 +399,36 @@ const MasterCalendarView: React.FC = () => {
       return;
     }
 
-    try {
-      const { updateSlot } = await import("../services/schedule");
-      await updateSlot(Number(info.event.id), {
-        startTime: info.event.start.toISOString(),
-        endTime: info.event.end.toISOString(),
-      });
-      // Refresh slots to get updated data
-      await refreshSlots();
-    } catch (err: any) {
-      console.error("Failed to resize slot", err);
-      info.revert();
-      alert(err.message || "Failed to resize slot. Please try again.");
+    const slotId = Number(info.event.id);
+    const fullSlot = info.event.extendedProps?.fullSlot;
+    const startIso = info.event.start.toISOString();
+    const endIso = info.event.end.toISOString();
+
+    if (!slotIsPeriodicSeriesChunk(fullSlot)) {
+      try {
+        const { updateSlot } = await import("../services/schedule");
+        await updateSlot(slotId, { startTime: startIso, endTime: endIso });
+        await refreshSlots();
+      } catch (err: any) {
+        console.error("Failed to resize slot", err);
+        info.revert();
+        alert(err.message || "Failed to resize slot. Please try again.");
+      }
+      return;
     }
+
+    setPendingSeriesMove({
+      revert: () => info.revert(),
+      slotId,
+      startIso,
+      endIso,
+    });
   };
 
-  // Handle delete from modal
-  const handleDeleted = (deletedId: number) => {
-    setEvents((prev) => prev.filter((e) => e.id !== deletedId));
+  // Handle delete from modal (single id or whole series)
+  const handleDeleted = (deletedIds: number[]) => {
+    const idSet = new Set(deletedIds.map(Number));
+    setEvents((prev) => prev.filter((e) => !idSet.has(Number(e.id))));
   };
 
   const handleStatusChange = (updatedSlot: any) => {
@@ -177,6 +442,14 @@ const MasterCalendarView: React.FC = () => {
     // Refresh to get updated relations
     refreshSlots();
   };
+
+  const blockCalendarInteraction =
+    isCreatingSlots ||
+    Boolean(pendingSeriesMove) ||
+    seriesMoveSubmitting ||
+    inlineEditOpen ||
+    Boolean(periodicEditPayload) ||
+    periodicEditSubmitting;
 
   return (
     <div className="min-h-screen bg-[#FAF5EB]">
@@ -205,17 +478,17 @@ const MasterCalendarView: React.FC = () => {
               My Schedule
             </h1>
             <p className="text-[13px] text-[#5C4631]">
-              Click and drag to create time slots, or click existing slots to
-              manage them
+              Click and drag to choose a time window, then confirm one-time or
+              recurring slots
             </p>
           </div>
 
           <div className="bg-white rounded-2xl border border-[#1F1109]/[0.12] shadow-sm p-6 calendar-main-container">
             <ScheduleCalendar
               ref={calendarRef}
-              events={events}
-              selectable={true}
-              editable={true}
+              events={calendarEvents}
+              selectable={!blockCalendarInteraction}
+              editable={!blockCalendarInteraction}
               onSelect={handleSelect}
               onEventClick={handleEventClick}
               onEventDrop={handleEventDrop}
@@ -226,10 +499,82 @@ const MasterCalendarView: React.FC = () => {
         </div>
       </div>
 
+      <PeriodicSeriesMoveModal
+        open={pendingSeriesMove !== null}
+        isSubmitting={seriesMoveSubmitting}
+        onOpenChange={handleSeriesMoveDialogOpenChange}
+        onUpdateAll={handleSeriesMoveUpdateAll}
+        onUpdateThis={handleSeriesMoveUpdateThis}
+      />
+
+      <PeriodicSeriesMoveModal
+        open={periodicEditPayload !== null}
+        isSubmitting={periodicEditSubmitting}
+        onOpenChange={handlePeriodicEditDialogOpenChange}
+        onUpdateAll={handlePeriodicEditUpdateAll}
+        onUpdateThis={handlePeriodicEditUpdateThis}
+        heading="Apply changes"
+        description="This slot is part of a recurring series. Save your edits to every matching slot in the series, or only to this occurrence?"
+      />
+
+      <Dialog
+        open={inlineEditOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            setInlineEditOpen(false);
+            reopenSlotModalAfterInlineEditIfNeeded();
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto border-[#1F1109]/[0.12] bg-[#FAF5EB]">
+          <DialogHeader>
+            <DialogTitle
+              className="text-[#1F1109]"
+              style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
+            >
+              Edit slot
+            </DialogTitle>
+          </DialogHeader>
+          {selectedSlotId != null && (
+            <EditSlotSection
+              key={selectedSlotId}
+              id={selectedSlotId}
+              embedded
+              onUpdate={() => {
+                setInlineEditOpen(false);
+                reopenSlotModalAfterInlineEditIfNeeded();
+                refreshSlots();
+              }}
+              onRequirePeriodicScopeChoice={(args) =>
+                setPeriodicEditPayload({
+                  slotId: args.slotId,
+                  payload: args.payload,
+                })
+              }
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <CreateSlotDraftModal
+        open={Boolean(draftRange)}
+        onOpenChange={handleDraftModalOpenChange}
+        intervalStartIso={draftRange?.startStr ?? ""}
+        intervalEndIso={draftRange?.endStr ?? ""}
+        isSubmitting={isCreatingSlots}
+        onConfirm={handleDraftConfirm}
+      />
+
       <SlotModal
         visible={modalVisible}
         slotId={selectedSlotId}
         slot={selectedSlot}
+        offerSeriesDeleteChoice
+        onEditSlot={() => {
+          resumeSlotModalAfterInlineEditRef.current = true;
+          setModalVisible(false);
+          setInlineEditOpen(true);
+        }}
         onClose={() => {
           setModalVisible(false);
           setSelectedSlot(null);

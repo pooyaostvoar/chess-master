@@ -1,6 +1,9 @@
 export { router as createRouter } from "./create";
+export { router as createPeriodicBatchSlotsRouter } from "./create-periodic-batch-slots";
 export { router as getRouter } from "./get-user-slots";
 export { router as deleteRouter } from "./delete";
+export { router as deleteBatchRouter } from "./delete-batch";
+export { router as updatePeriodicBatchSlotsRouter } from "./update-periodic-batch-slots";
 export { router as reserveRouter } from "./reserve";
 export { router as updateRouter } from "./update";
 export { router as updateStatusRouter } from "./update-status";
