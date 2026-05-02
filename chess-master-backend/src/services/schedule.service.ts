@@ -235,7 +235,7 @@ export async function getSlotById(
   const repo = AppDataSource.getRepository(ScheduleSlot);
   return await repo.findOne({
     where: { id: slotId },
-    relations: ["master", "reservedBy"],
+    relations: ["master", "reservedBy", "periodicSlotConfig"],
   });
 }
 
@@ -404,7 +404,7 @@ export async function updatePeriodicBatchSlotsBySharedChunk(
       ...rest,
       ...(price !== undefined && {
         price,
-        priceCents: () => `"price" * 100`,
+        priceCents: () => `CAST(${price} AS DECIMAL) * 100`,
       }),
       ...(updateTimes && {
         startTime: () =>
@@ -418,6 +418,7 @@ export async function updatePeriodicBatchSlotsBySharedChunk(
     .andWhere("periodicSlotConfigId = :configId", {
       configId: slot.configId,
     })
+    .andWhere("status = :status", { status: SlotStatus.Free })
     .returning("*");
 
   const result = await qb.execute();
@@ -517,6 +518,8 @@ export async function updateSlot(
     .update(ScheduleSlot)
     .set({
       ...data,
+      periodicSlotConfig: null,
+      chunkIndex: null,
       priceCents: () => "CAST(:price AS DECIMAL) * 100",
     })
     .setParameter("price", data.price)

@@ -1,23 +1,189 @@
-import React, { useEffect, useState } from "react";
-import {
-  deleteSlots,
-  deleteBatchSlots,
-  updateSlotStatus,
-} from "../services/schedule";
+import React, { useEffect, useRef, useState } from "react";
+import { deleteSlots, updateSlotStatus } from "../services/schedule";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
 import { CheckCircle2, XCircle, Trash2, Circle, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import {
+  slotIsPeriodicSeriesChunk,
+  slotStatusCalendarColor,
+} from "../utils/slotUtils";
+import type { PeriodicSlotConfigSummary } from "../services/api/schedule.api";
+import { cn } from "../lib/utils";
+import DeleteRecurringSlotModal from "./slots/DeleteRecurringSlotModal";
 
-function slotIsPeriodicSeriesChunk(slot: unknown): boolean {
-  if (!slot || typeof slot !== "object") return false;
-  const s = slot as Record<string, unknown>;
-  return s.periodicSlotConfig != null && s.chunkIndex != null;
+/** Date + time on one line (Google Calendar–style). */
+function formatSlotDateAndTimeOneLine(
+  startRaw: string | Date | undefined,
+  endRaw: string | Date | undefined
+): string | null {
+  if (startRaw == null || endRaw == null) return null;
+  const start = new Date(startRaw);
+  const end = new Date(endRaw);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return null;
+  const dateLine = start.toLocaleDateString(undefined, {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+  const timeFmt: Intl.DateTimeFormatOptions = {
+    hour: "numeric",
+    minute: "2-digit",
+  };
+  let timeLine: string;
+  if (start.toDateString() === end.toDateString()) {
+    timeLine = `${start.toLocaleTimeString(undefined, timeFmt)} – ${end.toLocaleTimeString(undefined, timeFmt)}`;
+  } else {
+    timeLine = `${start.toLocaleString(undefined, { ...timeFmt, month: "short", day: "numeric" })} – ${end.toLocaleString(undefined, { ...timeFmt, month: "short", day: "numeric" })}`;
+  }
+  return `${dateLine} · ${timeLine}`;
+}
+
+/** Short recurrence label from `periodicSlotConfig`, or null if not recurring. */
+function formatPeriodicPeriodLine(fullSlot: any): string | null {
+  const cfg = fullSlot?.periodicSlotConfig as PeriodicSlotConfigSummary | null | undefined;
+  if (!cfg) return null;
+  switch (cfg.period) {
+    case "daily":
+      return "Daily event";
+    case "weekly":
+      return "Weekly event";
+    case "monthly":
+      return "Monthly event";
+    default:
+      return "Recurring event";
+  }
+}
+
+/** Title line aligned with calendar labeling (master view). */
+function slotModalDisplayTitle(fullSlot: any, isMasterView = true): string {
+  if (!fullSlot) return "Time slot";
+  if (fullSlot.status === "free") {
+    const base =
+      (fullSlot.title && String(fullSlot.title).trim()) || "Available";
+    if (fullSlot?.price != null && fullSlot.price !== "") {
+      return `${base} · $${fullSlot.price}`;
+    }
+    return base;
+  }
+  const t = fullSlot?.title && String(fullSlot.title).trim();
+  if (t) return t;
+  if (isMasterView && fullSlot?.status === "reserved" && fullSlot?.reservedBy?.username) {
+    return `Request from ${fullSlot.reservedBy.username}`;
+  }
+  if (isMasterView && fullSlot?.status === "paid" && fullSlot?.reservedBy?.username) {
+    return `Pending: ${fullSlot.reservedBy.username}`;
+  }
+  switch (fullSlot?.status) {
+    case "reserved":
+      return "Reserved";
+    case "paid":
+      return "Payment received";
+    case "booked":
+      return "Booked";
+    default:
+      return "Time slot";
+  }
+}
+
+function SlotModalEventSummary({
+  fullSlot,
+  statusColor,
+  headerRight,
+}: {
+  fullSlot: any;
+  statusColor: string;
+  headerRight?: React.ReactNode;
+}) {
+  const whenLine = formatSlotDateAndTimeOneLine(
+    fullSlot?.startTime,
+    fullSlot?.endTime
+  );
+  const periodLine = formatPeriodicPeriodLine(fullSlot);
+  const displayTitle = slotModalDisplayTitle(fullSlot, true);
+  const displayDescription =
+    typeof fullSlot?.description === "string" && fullSlot.description.trim()
+      ? fullSlot.description.trim()
+      : "";
+
+  return (
+    <div className="flex min-h-[3rem] gap-3">
+      <div
+        className="w-1 shrink-0 self-stretch rounded-sm"
+        style={{ backgroundColor: statusColor }}
+        aria-hidden
+      />
+      <div className="min-w-0 flex-1 space-y-1">
+        <div className="flex flex-row items-start justify-between gap-2">
+          <DialogTitle
+            className="min-w-0 flex-1 pr-2 text-left text-lg font-semibold leading-snug text-[#1F1109]"
+            style={{ fontFamily: "Georgia, serif" }}
+          >
+            {displayTitle}
+          </DialogTitle>
+          {headerRight ? (
+            <div className="flex shrink-0 items-center gap-0.5 pt-0.5">
+              {headerRight}
+            </div>
+          ) : null}
+        </div>
+        {whenLine ? (
+          <p className="text-sm text-[#6B5640]">{whenLine}</p>
+        ) : (
+          <p className="text-sm text-[#6B5640]">Time not available</p>
+        )}
+        {periodLine ? (
+          <p className="text-sm text-[#6B5640]">{periodLine}</p>
+        ) : null}
+        {displayDescription ? (
+          <p className="pt-1 text-sm leading-relaxed text-[#5C4A3A]">
+            {displayDescription}
+          </p>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function HeaderIconButton({
+  label,
+  onClick,
+  children,
+  variant = "default",
+}: {
+  label: string;
+  onClick: () => void;
+  children: React.ReactNode;
+  variant?: "default" | "danger";
+}) {
+  return (
+    <div className="group relative flex">
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={label}
+        className={cn(
+          "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8893D]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF5EB]",
+          variant === "danger"
+            ? "text-[#8B4343] hover:bg-[#7A2E2E]/12"
+            : "text-[#5C4A3A] hover:bg-[#1F1109]/10"
+        )}
+      >
+        {children}
+      </button>
+      <span
+        role="tooltip"
+        className="pointer-events-none absolute left-1/2 top-full z-[60] mt-1.5 -translate-x-1/2 whitespace-nowrap rounded-md bg-[#32261C] px-2 py-1 text-xs font-medium text-[#FAF5EB] opacity-0 shadow-md transition-opacity duration-150 group-hover:opacity-100"
+      >
+        {label}
+      </span>
+    </div>
+  );
 }
 
 interface SlotModalProps {
@@ -27,6 +193,8 @@ interface SlotModalProps {
   slot?: any;
   /** When true and slot is from a recurring batch, deleting asks “this only” vs “all in series”. */
   offerSeriesDeleteChoice?: boolean;
+  /** When set, “Edit slot” opens this instead of navigating to /events/:id/edit */
+  onEditSlot?: () => void;
   onDeleted?: (deletedIds: number[]) => void;
   onStatusChange?: (slot: any) => void;
 }
@@ -37,23 +205,26 @@ const SlotModal: React.FC<SlotModalProps> = ({
   slotId,
   slot,
   offerSeriesDeleteChoice = false,
+  onEditSlot,
   onDeleted,
   onStatusChange,
 }) => {
   const navigate = useNavigate();
-  const [deletePanel, setDeletePanel] = useState<"main" | "seriesScope">(
-    "main"
-  );
+  const [seriesDeleteOpen, setSeriesDeleteOpen] = useState(false);
+  const seriesDeleteOpenRef = useRef(false);
+  seriesDeleteOpenRef.current = seriesDeleteOpen;
 
   useEffect(() => {
-    if (!visible) setDeletePanel("main");
+    if (!visible) setSeriesDeleteOpen(false);
   }, [visible]);
 
   if (!visible || slotId == null) return null;
 
   const fullSlot =
     slot?.extendedProps?.fullSlot ?? slot ?? undefined;
+  const statusColor = slotStatusCalendarColor(fullSlot?.status);
   const isReserved = fullSlot?.status === "paid";
+  const isFree = fullSlot?.status === "free";
   const reservedBy =
     fullSlot?.reservedBy ||
     slot?.extendedProps?.fullSlot?.reservedBy ||
@@ -64,7 +235,8 @@ const SlotModal: React.FC<SlotModalProps> = ({
 
   const handleDeleteClick = () => {
     if (showSeriesDeleteStep) {
-      setDeletePanel("seriesScope");
+      seriesDeleteOpenRef.current = true;
+      setSeriesDeleteOpen(true);
       return;
     }
     void confirmDeleteSingle();
@@ -79,30 +251,6 @@ const SlotModal: React.FC<SlotModalProps> = ({
     } catch (err) {
       console.error(err);
       alert("Error deleting slot. Please try again.");
-    }
-  };
-
-  const handleDeleteThisOccurrenceOnly = async () => {
-    try {
-      await deleteSlots([slotId]);
-      onDeleted?.([slotId]);
-      setDeletePanel("main");
-      onClose();
-    } catch (err) {
-      console.error(err);
-      alert("Error deleting slot. Please try again.");
-    }
-  };
-
-  const handleDeleteAllInSeries = async () => {
-    try {
-      const res = await deleteBatchSlots(slotId);
-      onDeleted?.(res.deletedIds);
-      setDeletePanel("main");
-      onClose();
-    } catch (err) {
-      console.error(err);
-      alert("Error deleting slots. Please try again.");
     }
   };
 
@@ -132,76 +280,59 @@ const SlotModal: React.FC<SlotModalProps> = ({
   const actionBtnClass =
     "w-full flex items-center gap-3 p-4 rounded-lg border border-[#1F1109]/[0.12] text-[#3D2817] hover:bg-[#1F1109]/[0.04] transition-colors text-left";
 
-  if (deletePanel === "seriesScope") {
-    return (
-      <Dialog open={visible} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-[500px] bg-[#FAF5EB] border-[#1F1109]/[0.12]">
-          <DialogHeader>
-            <DialogTitle
-              className="text-[#1F1109]"
-              style={{ fontFamily: "Georgia, serif" }}
-            >
-              Delete slot
-            </DialogTitle>
-            <DialogDescription className="text-[#6B5640]">
-              This slot is part of a recurring series. Delete only this
-              occurrence, or every matching slot in the series (same time window
-              across repeats).
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="flex flex-col gap-2.5 mt-4">
-            <button
-              type="button"
-              onClick={handleDeleteThisOccurrenceOnly}
-              className={actionBtnClass}
-            >
-              <Trash2 className="h-5 w-5 text-[#8B6F4E] flex-shrink-0" />
-              <div>
-                <div className="text-sm font-medium">Only this slot</div>
-                <div className="text-xs text-[#6B5640]">
-                  Remove this date only
-                </div>
-              </div>
-            </button>
-            <button
-              type="button"
-              onClick={handleDeleteAllInSeries}
-              className="w-full flex items-center gap-3 p-4 rounded-lg bg-[#7A2E2E]/10 text-[#7A2E2E] hover:bg-[#7A2E2E]/20 transition-colors text-left"
-            >
-              <Trash2 className="h-5 w-5 flex-shrink-0" />
-              <div>
-                <div className="text-sm font-medium">All events in series</div>
-                <div className="text-xs opacity-70">
-                  Delete every occurrence for this time chunk
-                </div>
-              </div>
-            </button>
-            <button
-              type="button"
-              onClick={() => setDeletePanel("main")}
-              className="w-full py-2 text-sm text-[#6B5640] hover:text-[#1F1109]"
-            >
-              Back
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
   return (
-    <Dialog open={visible} onOpenChange={onClose}>
+    <>
+      <DeleteRecurringSlotModal
+        open={seriesDeleteOpen}
+        onOpenChange={setSeriesDeleteOpen}
+        slotId={slotId}
+        onDeleted={(ids) => {
+          onDeleted?.(ids);
+          onClose();
+        }}
+      />
+      <Dialog
+        open={visible && !seriesDeleteOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            // Main content is unmounted while recurring delete is open; don’t end the whole flow.
+            if (seriesDeleteOpenRef.current) return;
+            onClose();
+          }
+        }}
+      >
       <DialogContent className="sm:max-w-[500px] bg-[#FAF5EB] border-[#1F1109]/[0.12]">
-        <DialogHeader>
-          <DialogTitle className="text-[#1F1109]" style={{ fontFamily: "Georgia, serif" }}>
-            {isReserved ? "Slot request" : "Manage time slot"}
-          </DialogTitle>
-          <DialogDescription className="text-[#6B5640]">
-            {isReserved
-              ? "Approve or reject this request"
-              : "Choose an action for this time slot"}
-          </DialogDescription>
+        <DialogHeader
+          className={cn(
+            "space-y-0 border-b border-[#1F1109]/[0.08] pb-4 text-left",
+            isFree ? "pr-10 sm:pr-11" : "pr-10"
+          )}
+        >
+          <SlotModalEventSummary
+            fullSlot={fullSlot}
+            statusColor={statusColor}
+            headerRight={
+              isFree ? (
+                <>
+                  <HeaderIconButton
+                    label="Edit"
+                    onClick={() =>
+                      onEditSlot ? onEditSlot() : navigate(`/events/${slotId}/edit`)
+                    }
+                  >
+                    <Pencil className="h-[18px] w-[18px]" strokeWidth={2} />
+                  </HeaderIconButton>
+                  <HeaderIconButton
+                    label="Delete"
+                    variant="danger"
+                    onClick={handleDeleteClick}
+                  >
+                    <Trash2 className="h-[18px] w-[18px]" strokeWidth={2} />
+                  </HeaderIconButton>
+                </>
+              ) : undefined
+            }
+          />
         </DialogHeader>
 
         {isReserved && reservedBy && (
@@ -256,25 +387,12 @@ const SlotModal: React.FC<SlotModalProps> = ({
                   <div className="text-xs text-[#6B5640]">Confirmed session</div>
                 </div>
               </button>
-              <button onClick={() => navigate(`/events/${slotId}/edit`)} className={actionBtnClass}>
-                <Pencil className="h-5 w-5 text-[#8B6F4E] flex-shrink-0" />
-                <div>
-                  <div className="text-sm font-medium">Edit slot</div>
-                  <div className="text-xs text-[#6B5640]">Update time, title, or video</div>
-                </div>
-              </button>
-              <button onClick={handleDeleteClick} className="w-full flex items-center gap-3 p-4 rounded-lg bg-[#7A2E2E]/10 text-[#7A2E2E] hover:bg-[#7A2E2E]/20 transition-colors">
-                <Trash2 className="h-5 w-5 flex-shrink-0" />
-                <div>
-                  <div className="text-sm font-medium">Delete slot</div>
-                  <div className="text-xs opacity-70">Remove permanently</div>
-                </div>
-              </button>
             </>
           )}
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 };
 

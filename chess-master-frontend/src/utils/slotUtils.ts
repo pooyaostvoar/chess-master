@@ -1,3 +1,26 @@
+/** Calendar background/border color for a slot status (same as mapSlotToEvent). */
+export function slotStatusCalendarColor(status: string | undefined): string {
+  switch (status) {
+    case "free":
+      return "#27ae60";
+    case "reserved":
+      return "#f39c12";
+    case "paid":
+      return "#6AADDE";
+    case "booked":
+      return "#e74c3c";
+    default:
+      return "#777";
+  }
+}
+
+/** Slot belongs to a periodic config chunk (same grouping as batch delete/update). */
+export function slotIsPeriodicSeriesChunk(slot: unknown): boolean {
+  if (!slot || typeof slot !== "object") return false;
+  const s = slot as Record<string, unknown>;
+  return s.periodicSlotConfig != null && s.chunkIndex != null;
+}
+
 /**
  * Maps slot status to calendar event format
  */
@@ -6,13 +29,12 @@ export const mapSlotToEvent = (
   options?: { showBookingHint?: boolean; isMasterView?: boolean }
 ) => {
   let title = "Unknown";
-  let color = "#777";
+  const color = slotStatusCalendarColor(slot.status);
 
   switch (slot.status) {
     case "free":
       title =
         (slot.title || "Available") + (slot.price ? ` - $${slot.price}` : "");
-      color = "#27ae60";
       break;
 
     case "reserved":
@@ -22,7 +44,6 @@ export const mapSlotToEvent = (
       } else {
         title = "Reserved";
       }
-      color = "#f39c12";
       break;
 
     case "paid":
@@ -32,12 +53,10 @@ export const mapSlotToEvent = (
       } else {
         title = "Payment Received";
       }
-      color = "#6AADDE";
       break;
 
     case "booked":
       title = "Booked";
-      color = "#e74c3c";
       break;
   }
 
