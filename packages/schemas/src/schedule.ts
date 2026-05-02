@@ -92,6 +92,10 @@ export const createPeriodicBatchSlotsInputSchema = z
     chunkSizeMinutes: z.number().positive().default(60),
     period: z.nativeEnum(Period).default(Period.Weekly),
     repeatCount: z.number().int().positive().default(50),
+    title: z.string().max(2000).nullable().optional(),
+    description: z.string().max(10000).nullable().optional(),
+    price: z.number().nonnegative().nullable().optional(),
+    youtubeId: z.string().max(100).nullable().optional(),
   })
   .superRefine((value, ctx) => {
     if (value.interval.start >= value.interval.end) {

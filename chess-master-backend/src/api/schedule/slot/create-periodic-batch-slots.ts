@@ -35,7 +35,16 @@ router.post("/create-periodic-batch-slots", isAuthenticated, async (req, res) =>
         details: parsedBody.error.flatten(),
       });
     }
-    const { interval, chunkSizeMinutes, repeatCount, period } = parsedBody.data;
+    const {
+      interval,
+      chunkSizeMinutes,
+      repeatCount,
+      period,
+      title,
+      description,
+      price,
+      youtubeId,
+    } = parsedBody.data;
     const baseStart = interval.start;
     const baseEnd = interval.end;
 
@@ -60,6 +69,10 @@ router.post("/create-periodic-batch-slots", isAuthenticated, async (req, res) =>
         chunkIndex: number;
         startTime: Date;
         endTime: Date;
+        title: string | null;
+        description: string | null;
+        price: number | null;
+        youtubeId: string | null;
       }> = [];
 
       for (let i = 0; i < repeatCount; i += 1) {
@@ -80,6 +93,10 @@ router.post("/create-periodic-batch-slots", isAuthenticated, async (req, res) =>
             chunkIndex: chunkIndex++,
             startTime: new Date(chunkStartMs),
             endTime: new Date(chunkEndMs),
+            title: title ?? null,
+            description: description ?? null,
+            price: price ?? null,
+            youtubeId: youtubeId ?? null,
           });
 
           chunkStartMs = chunkEndMs;
