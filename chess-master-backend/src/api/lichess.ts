@@ -13,6 +13,7 @@ import {
   LichessTokenResponse,
   parseLichessState,
 } from "../services/lichess";
+import { safeRedirectPath } from "../utils/safeRedirectPath";
 
 export const lichessRouter = express.Router();
 
@@ -45,10 +46,16 @@ const buildFrontendErrorUrl = (
   return `${getFrontendBaseUrl()}${path}?error=${encodeURIComponent(errorCode)}`;
 };
 
-const buildFrontendSuccessUrl = (mode: "login" | "signup" | "link") =>
-  mode === "link"
-    ? `${getFrontendBaseUrl()}/edit-profile?status=lichess_synced`
-    : `${getFrontendBaseUrl()}/home`;
+const buildFrontendSuccessUrl = (
+  mode: "login" | "signup" | "link",
+  redirectPath?: string | null
+) => {
+  if (mode === "link") {
+    return `${getFrontendBaseUrl()}/edit-profile?status=lichess_synced`;
+  }
+  const path = redirectPath ?? "/home";
+  return `${getFrontendBaseUrl()}${path}`;
+};
 
 async function exchangeAuthorizationCode(code: string, codeVerifier: string) {
   const response = await fetch(`${LICHESS_HOST}/api/token`, {
@@ -131,8 +138,10 @@ lichessRouter.get("/lichess", async (req, res) => {
 
   const codeVerifier = createPkceVerifier();
   const codeChallenge = createPkceChallenge(codeVerifier);
+  const postLoginPath = safeRedirectPath(req.query.redirect);
   const state = createLichessState({
     mode,
+    ...(postLoginPath ? { redirect: postLoginPath } : {}),
   });
 
   (req.session as any).lichessOauth = {
@@ -276,7 +285,8 @@ lichessRouter.get(
         if (error) {
           return next(error);
         }
-        return res.redirect(buildFrontendSuccessUrl(mode));
+        const successRedirect = safeRedirectPath(parsedState?.redirect);
+        return res.redirect(buildFrontendSuccessUrl(mode, successRedirect));
       });
     } catch (error) {
       console.error("Lichess auth failed:", error);

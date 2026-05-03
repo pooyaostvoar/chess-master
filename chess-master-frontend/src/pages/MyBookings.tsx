@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import { getMyBookings } from "../services/bookings";
 import type { Booking } from "../services/bookings";
-import { updateSlotStatus } from "../services/schedule";
+import { SlotStatus, updateSlotStatus } from "../services/schedule";
 
 const MyBookings: React.FC = () => {
   const { user } = useUser();
@@ -214,7 +214,7 @@ const MyBookings: React.FC = () => {
                             <button
                               onClick={async (e) => {
                                 e.stopPropagation();
-                                await updateSlotStatus(booking.id, "booked");
+                                await updateSlotStatus(booking.id, SlotStatus.Booked);
                                 loadBookings();
                               }}
                               className="text-[11px] font-medium px-3 py-1.5 rounded-full bg-[#B8893D] text-[#1F1109] hover:bg-[#A37728] transition-colors"
@@ -224,7 +224,7 @@ const MyBookings: React.FC = () => {
                             <button
                               onClick={async (e) => {
                                 e.stopPropagation();
-                                await updateSlotStatus(booking.id, "free");
+                                await updateSlotStatus(booking.id, SlotStatus.Free);
                                 loadBookings();
                               }}
                               className="text-[11px] font-medium px-3 py-1.5 rounded-full bg-[#7A2E2E]/10 text-[#7A2E2E] hover:bg-[#7A2E2E]/20 transition-colors"

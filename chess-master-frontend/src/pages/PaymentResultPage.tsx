@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useUser } from "../contexts/UserContext";
 import { getPaymentBySession, Payment } from "../services/api/payments.api";
 
 const PaymentResultPage: React.FC = () => {
-  const { user, loading: userLoading } = useUser();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session_id");
   const [payment, setPayment] = useState<Payment | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!userLoading && !user) navigate("/login");
-  }, [userLoading, user, navigate]);
 
   useEffect(() => {
     if (!sessionId) {
@@ -34,8 +28,6 @@ const PaymentResultPage: React.FC = () => {
     };
     load();
   }, [sessionId]);
-
-  if (!user) return null;
 
   let icon: React.ReactNode;
   let title = "";

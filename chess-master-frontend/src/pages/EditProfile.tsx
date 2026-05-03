@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { getMe, updateUser } from "../services/auth";
 import { useUser } from "../contexts/UserContext";
 import { API_URL } from "../services/config";
@@ -25,6 +25,7 @@ const EditProfile: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const { setUser } = useUser();
   const [searchParams] = useSearchParams();
 
@@ -32,7 +33,11 @@ const EditProfile: React.FC = () => {
     const checkAuth = async () => {
       const response = await getMe();
       if (!response.user) {
-        navigate("/login");
+        navigate(
+          `/login?redirect=${encodeURIComponent(
+            `${location.pathname}${location.search}`
+          )}`
+        );
       } else {
         const userData = {
           ...response.user,
@@ -46,7 +51,7 @@ const EditProfile: React.FC = () => {
     };
 
     checkAuth();
-  }, [navigate]);
+  }, [navigate, location.pathname, location.search]);
 
   useEffect(() => {
     const error = searchParams.get("error");

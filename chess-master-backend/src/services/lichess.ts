@@ -37,6 +37,8 @@ export interface LichessTokenResponse {
 export interface LichessOAuthState {
   nonce: string;
   mode: "login" | "signup" | "link";
+  /** In-app path after OAuth, e.g. /calendar/2 */
+  redirect?: string;
 }
 
 const toBase64Url = (buffer: Buffer) =>

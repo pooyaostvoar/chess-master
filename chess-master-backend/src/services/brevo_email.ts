@@ -210,13 +210,22 @@ ${inboxUrl}
 }
 
 export interface ReservationEmailOptions {
+  slotId: number;
   startDateTimeISO: string;
   masterEmail: string;
   masterName: string;
   studentEmail: string;
   studentName: string;
 }
+
+function getPublicAppBaseUrl(): string {
+  return process.env.ENV === "production"
+    ? "https://chesswithmasters.com"
+    : "http://localhost:3000";
+}
+
 export async function sendReservationRequestEmail({
+  slotId,
   masterEmail,
   masterName,
   studentName,
@@ -231,7 +240,16 @@ export async function sendReservationRequestEmail({
     timeZone: "UTC",
   }).format(date);
 
+  const base = getPublicAppBaseUrl();
+  const approveUrl = `${base}/update-slot-status/${slotId}/booked`;
+  const rejectUrl = `${base}/update-slot-status/${slotId}/free`;
+
   const subject = "New lesson reservation request";
+
+  const btnStyle =
+    "display:inline-block;padding:12px 20px;text-decoration:none;border-radius:6px;font-weight:600;font-size:14px;margin:8px 8px 8px 0;";
+  const approveBtn = `${btnStyle}background-color:#2d5a27;color:#ffffff;`;
+  const rejectBtn = `${btnStyle}background-color:#7a2e2e;color:#ffffff;`;
 
   const htmlContent = `
     <html>
@@ -249,9 +267,17 @@ export async function sendReservationRequestEmail({
           <small>Time zone: UTC</small>
         </p>
 
+        <p style="margin-top:20px;">
+          <strong>Respond to this request</strong> (you’ll need to be signed in):
+        </p>
         <p>
-          Please log in to your dashboard to
-          <strong>approve or reject</strong> this reservation.
+          <a href="${approveUrl}" style="${approveBtn}">Accept — confirm booking</a>
+          <a href="${rejectUrl}" style="${rejectBtn}">Reject — free this slot</a>
+        </p>
+        <p style="font-size:13px;color:#555;">
+          If the buttons don’t work, copy these links:<br/>
+          Accept: <a href="${approveUrl}">${approveUrl}</a><br/>
+          Reject: <a href="${rejectUrl}">${rejectUrl}</a>
         </p>
 
         <p>— Chess with Masters</p>
@@ -268,7 +294,11 @@ Requested time:
 ${formattedDateUTC}
 Time zone: UTC
 
-Please log in to your dashboard to approve or reject this reservation.
+Accept (confirm booking) — sign in if prompted:
+${approveUrl}
+
+Reject (free this slot) — sign in if prompted:
+${rejectUrl}
 
 — Chess with Masters
   `.trim();

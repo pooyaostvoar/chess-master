@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import { Calendar, User, BookOpen, BarChart3, Crown } from "lucide-react";
@@ -41,26 +41,7 @@ const DashCard: React.FC<DashCardProps> = ({
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const { user, loading: userLoading } = useUser();
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!userLoading) {
-      if (!user) {
-        navigate("/login");
-      } else {
-        setLoading(false);
-      }
-    }
-  }, [user, userLoading, navigate]);
-
-  if (loading) {
-    return (
-      <div className="bg-[#FAF5EB] min-h-screen flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-[#B8893D]/20 border-t-[#B8893D] rounded-full animate-spin" />
-      </div>
-    );
-  }
+  const { user } = useUser();
 
   return (
     <div className="bg-[#FAF5EB] min-h-screen">

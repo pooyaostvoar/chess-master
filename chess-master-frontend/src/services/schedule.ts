@@ -1,3 +1,5 @@
+export { SlotStatus } from "@chess-master/schemas";
+
 // Re-export from organized API modules
 export {
   createSlot,

@@ -1,9 +1,10 @@
 import { apiClient, handleApiError } from "./client";
-import type {
-  DeleteBatchSlotResponse,
-  GetMasterSlotsResponse,
-  UpdatePeriodicBatchSlotInput,
-  UpdatePeriodicBatchSlotResponse,
+import {
+  SlotStatus,
+  type DeleteBatchSlotResponse,
+  type GetMasterSlotsResponse,
+  type UpdatePeriodicBatchSlotInput,
+  type UpdatePeriodicBatchSlotResponse,
 } from "@chess-master/schemas";
 
 export interface CreateSlotData {
@@ -16,7 +17,7 @@ export interface ScheduleSlot {
   /** ISO string from JSON or `Date` when aligned with `scheduleSlotSchema` / `GetMasterSlotsResponse` */
   startTime: string | Date;
   endTime: string | Date;
-  status: "free" | "reserved" | "booked" | "paid";
+  status: SlotStatus;
   title?: string | null;
   description?: string | null;
   youtubeId?: string | null;
@@ -68,7 +69,7 @@ function normalizePeriodicBatchSlotRow(row: Record<string, unknown>): ScheduleSl
         : String(startRaw ?? ""),
     endTime:
       endRaw instanceof Date ? endRaw.toISOString() : String(endRaw ?? ""),
-    status: statusRaw as ScheduleSlot["status"],
+    status: statusRaw as SlotStatus,
     title: (row.title as string | null | undefined) ?? null,
     description: (row.description as string | null | undefined) ?? null,
     youtubeId: (row.youtubeId as string | null | undefined) ?? null,
@@ -232,11 +233,11 @@ export const updateSlot = async (
 };
 
 /**
- * Update slot status
+ * Update slot status (PATCH `/schedule/slot/:id/status`)
  */
 export const updateSlotStatus = async (
   slotId: number,
-  status: "free" | "reserved" | "booked"
+  status: SlotStatus
 ): Promise<{ message: string; slot: ScheduleSlot }> => {
   try {
     const response = await apiClient.patch(`/schedule/slot/${slotId}/status`, {

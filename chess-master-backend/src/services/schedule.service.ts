@@ -475,6 +475,7 @@ export async function reserveSlot(
     sendNotificationEmail(input),
     sendNotificationToTelegram(input),
     sendReservationRequestEmail({
+      slotId: updatedSlot.id,
       startDateTimeISO: updatedSlot.startTime.toISOString(),
       masterEmail: updatedSlot.master.email,
       masterName: updatedSlot.master.username,
@@ -585,6 +586,7 @@ export async function updateSlotStatus(
         reservedBy: slot.reservedBy?.email ?? "",
       }),
       sendReservationRequestEmail({
+        slotId: slot.id,
         startDateTimeISO: slot.startTime.toISOString(),
         masterEmail: slot.master.email,
         masterName: slot.master.username,

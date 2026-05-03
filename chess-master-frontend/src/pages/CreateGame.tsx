@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../contexts/UserContext";
 import { createGame } from "../services/api/game.api";
 
 const CreateGame: React.FC = () => {
-  const { user, loading: isUserLoading } = useUser();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -13,11 +11,6 @@ const CreateGame: React.FC = () => {
   >("random");
 
   const handleCreateGame = async () => {
-    if (!user) {
-      setError("You must be logged in to create a game");
-      return;
-    }
-
     setLoading(true);
     setError(null);
 
@@ -30,31 +23,6 @@ const CreateGame: React.FC = () => {
       setLoading(false);
     }
   };
-
-  if (isUserLoading) {
-    return (
-      <div className="max-w-4xl mx-auto px-5 text-center flex justify-center items-center min-h-screen">
-        <div className="text-xl">Loading...</div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="max-w-4xl mx-auto px-5 text-center flex justify-center items-center min-h-screen">
-        <div className="bg-white p-8 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold mb-4">Authentication Required</h2>
-          <p className="text-gray-600 mb-6">Please log in to create a game</p>
-          <button
-            onClick={() => navigate("/login")}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Go to Login
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-4xl mx-auto px-5 flex flex-col justify-center items-center min-h-screen">

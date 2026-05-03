@@ -13,7 +13,7 @@ import { Calendar, Clock } from "lucide-react";
 import moment from "moment";
 import type { Booking } from "../../services/bookings";
 import type { User } from "../../services/auth";
-import { updateSlotStatus } from "../../services/schedule";
+import { SlotStatus, updateSlotStatus } from "../../services/schedule";
 
 interface UpcomingSessionsSectionProps {
   bookings: Booking[];
@@ -137,7 +137,7 @@ export const UpcomingSessionsSection: React.FC<
                       className="h-7 px-2 text-xs"
                       onClick={async (e) => {
                         e.stopPropagation();
-                        await updateSlotStatus(booking.id, "booked");
+                        await updateSlotStatus(booking.id, SlotStatus.Booked);
                         loadBookings && loadBookings();
                       }}
                     >
@@ -150,7 +150,7 @@ export const UpcomingSessionsSection: React.FC<
                       variant="destructive"
                       onClick={async (e) => {
                         e.stopPropagation();
-                        await updateSlotStatus(booking.id, "free");
+                        await updateSlotStatus(booking.id, SlotStatus.Free);
                         loadBookings && loadBookings();
                       }}
                     >
