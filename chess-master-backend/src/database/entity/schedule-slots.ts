@@ -63,6 +63,8 @@ export class ScheduleSlot {
     precision: 12,
     scale: 2,
     nullable: true,
+    asExpression: "price::numeric * 100",
+    generatedType: "STORED",
     transformer: {
       to: (value: number | null) => value,
       from: (value: string | null) => (value === null ? null : Number(value)),

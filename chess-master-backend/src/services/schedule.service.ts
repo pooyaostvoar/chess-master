@@ -404,7 +404,6 @@ export async function updatePeriodicBatchSlotsBySharedChunk(
       ...rest,
       ...(price !== undefined && {
         price,
-        priceCents: () => `CAST(${price} AS DECIMAL) * 100`,
       }),
       ...(updateTimes && {
         startTime: () =>
@@ -520,7 +519,6 @@ export async function updateSlot(
       ...data,
       periodicSlotConfig: null,
       chunkIndex: null,
-      priceCents: () => "CAST(:price AS DECIMAL) * 100",
     })
     .setParameter("price", data.price)
     .where("id = :id", { id: slot.id })

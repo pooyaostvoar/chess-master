@@ -27,7 +27,7 @@ describe("POST /payments/checkout-session", () => {
       startTime: new Date(),
       endTime: new Date(Date.now() + 3600000),
       status: SlotStatus.Free,
-      priceCents: 5000,
+      price: 50,
       title: "Test coaching",
     } as any);
   });
@@ -82,7 +82,6 @@ describe("POST /payments/checkout-session", () => {
       startTime: new Date(),
       endTime: new Date(Date.now() + 3600000),
       status: SlotStatus.Free,
-      priceCents: null,
     } as any);
 
     const res = await authAgent
