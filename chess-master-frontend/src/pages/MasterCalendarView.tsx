@@ -1,6 +1,7 @@
 import React, { useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
+import { useUser } from "../contexts/UserContext";
 import { useScheduleSlots } from "../hooks/useScheduleSlots";
 import { mapSlotToEvent, slotIsPeriodicSeriesChunk } from "../utils/slotUtils";
 import ScheduleCalendar, {
@@ -9,8 +10,7 @@ import ScheduleCalendar, {
 import MiniCalendar from "../components/calendar/MiniCalendar";
 import SlotModal from "../components/SlotModal";
 import { useIsMobile } from "../hooks/useIsMobile";
-import EditSlotModal from "../components/slots/EditSlotModal";
-import CreateSlotDraftModal from "../components/slots/CreateSlotDraftModal";
+import CreateSlotModal from "../components/slots/CreateSlotModal";
 import PeriodicSeriesMoveModal from "../components/slots/PeriodicSeriesMoveModal";
 import EditSlotSection from "../components/slots/EditSlotSection";
 import type { PeriodicScopeSubmitPayload } from "../components/slots/EditSlotSection";
@@ -38,12 +38,12 @@ type PendingPeriodicEdit = {
 
 const MasterCalendarView: React.FC = () => {
   const isMobile = useIsMobile();
+  const { user } = useUser();
   const { userId } = useParams<{ userId: string }>();
   const { events, setEvents, refreshSlots } = useScheduleSlots(userId, {
     isMasterView: true,
   });
   const [modalVisible, setModalVisible] = useState(false);
-  const [isEditSlotModalVisible, setIsEditSlotModalVisible] = useState(false);
   const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<any>(null);
   const calendarRef = useRef<ScheduleCalendarRef>(null);
@@ -293,32 +293,39 @@ const MasterCalendarView: React.FC = () => {
     }
   };
 
-  const handleDraftConfirm = async (payload: {
+  const handleCreateSlotConfirm = async (payload: {
     recurring: boolean;
     period: "daily" | "weekly" | "monthly";
     repeatCount: number;
+    chunkSizeMinutes?: number;
+    title: string | null;
+    description: string | null;
+    price: number | null;
+    youtubeId: string | null;
   }) => {
     if (!draftRange) return;
 
     setIsCreatingSlots(true);
     try {
-      const result = await createPeriodicBatchSlots({
+      await createPeriodicBatchSlots({
         interval: {
           start: draftRange.startStr,
           end: draftRange.endStr,
         },
         period: payload.recurring ? payload.period : "daily",
         repeatCount: payload.recurring ? payload.repeatCount : 1,
+        ...(payload.recurring && payload.chunkSizeMinutes != null
+          ? { chunkSizeMinutes: payload.chunkSizeMinutes }
+          : {}),
+        title: payload.title,
+        description: payload.description,
+        price: payload.price,
+        youtubeId: payload.youtubeId,
       });
 
       await refreshSlots();
 
       clearDraft();
-
-      if (result.createdSlots === 1 && result.slots[0]?.id) {
-        setSelectedSlotId(result.slots[0].id);
-        setIsEditSlotModalVisible(true);
-      }
     } catch (err: any) {
       console.error("Failed to create slots", err);
       alert(err.message || "Failed to create slots. Please try again.");
@@ -556,13 +563,16 @@ const MasterCalendarView: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      <CreateSlotDraftModal
+      <CreateSlotModal
         open={Boolean(draftRange)}
         onOpenChange={handleDraftModalOpenChange}
+        isSubmitting={isCreatingSlots}
+        onConfirm={handleCreateSlotConfirm}
+        hourlyRate={
+          user?.hourlyRate != null ? Number(user.hourlyRate) : null
+        }
         intervalStartIso={draftRange?.startStr ?? ""}
         intervalEndIso={draftRange?.endStr ?? ""}
-        isSubmitting={isCreatingSlots}
-        onConfirm={handleDraftConfirm}
       />
 
       <SlotModal
@@ -581,15 +591,6 @@ const MasterCalendarView: React.FC = () => {
         }}
         onDeleted={handleDeleted}
         onStatusChange={handleStatusChange}
-      />
-      <EditSlotModal
-        visible={isEditSlotModalVisible}
-        slotId={selectedSlotId}
-        onClose={() => {
-          setSelectedSlotId(null);
-          setIsEditSlotModalVisible(false);
-          refreshSlots();
-        }}
       />
     </div>
   );

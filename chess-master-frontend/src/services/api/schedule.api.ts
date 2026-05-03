@@ -18,6 +18,7 @@ export interface ScheduleSlot {
   endTime: string | Date;
   status: "free" | "reserved" | "booked" | "paid";
   title?: string | null;
+  description?: string | null;
   youtubeId?: string | null;
   price?: number | null;
   master?: any;
@@ -34,6 +35,10 @@ export interface CreatePeriodicBatchSlotsInput {
   chunkSizeMinutes?: number;
   period: "daily" | "weekly" | "monthly";
   repeatCount?: number;
+  title?: string | null;
+  description?: string | null;
+  price?: number | null;
+  youtubeId?: string | null;
 }
 
 export interface PeriodicSlotConfigSummary {
@@ -65,6 +70,8 @@ function normalizePeriodicBatchSlotRow(row: Record<string, unknown>): ScheduleSl
       endRaw instanceof Date ? endRaw.toISOString() : String(endRaw ?? ""),
     status: statusRaw as ScheduleSlot["status"],
     title: (row.title as string | null | undefined) ?? null,
+    description: (row.description as string | null | undefined) ?? null,
+    youtubeId: (row.youtubeId as string | null | undefined) ?? null,
     price:
       row.price != null && row.price !== ""
         ? Number(row.price)

@@ -9,6 +9,8 @@ export interface User {
   name?: string | null;
   lastname?: string | null;
   isMaster: boolean;
+  /** USD per hour; used when suggesting slot prices on the master calendar. */
+  hourlyRate?: number | null;
   title?: string | null;
   rating?: number | null;
   bio?: string | null;
