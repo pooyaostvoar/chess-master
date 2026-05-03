@@ -18,6 +18,7 @@ export interface UpdateUserData {
   languages?: string[] | null;
   teachingFocuses?: string[] | null;
   phoneNumber?: string | null;
+  location?: string | null;
   twitchUrl?: string | null;
   youtubeUrl?: string | null;
   instagramUrl?: string | null;
@@ -53,6 +54,7 @@ export interface SafeUser {
   hourlyRate: number | null;
   languages?: string[] | null;
   teachingFocuses?: string[] | null;
+  location?: string | null;
   twitchUrl?: string | null;
   youtubeUrl?: string | null;
   instagramUrl?: string | null;
@@ -82,6 +84,7 @@ export function formatUser(user: User): SafeUser {
     hourlyRate: user.hourlyRate,
     languages: user.languages,
     teachingFocuses: user.teachingFocuses,
+    location: user.location,
     twitchUrl: user.twitchUrl,
     youtubeUrl: user.youtubeUrl,
     instagramUrl: user.instagramUrl,
@@ -162,6 +165,9 @@ export async function updateUser(
   }
   if (data.phoneNumber !== undefined) {
     user.phoneNumber = data.phoneNumber;
+  }
+  if (data.location !== undefined) {
+    user.location = data.location;
   }
   if (data.twitchUrl !== undefined) {
     user.twitchUrl = data.twitchUrl;

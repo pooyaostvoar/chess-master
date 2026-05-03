@@ -27,6 +27,7 @@ export interface UpdateUserData {
   languages?: string[] | null;
   teachingFocuses?: string[] | null;
   phoneNumber?: string | null;
+  location?: string | null;
   twitchUrl?: string | null;
   youtubeUrl?: string | null;
   instagramUrl?: string | null;
@@ -53,6 +54,7 @@ export interface User {
   hourlyRate?: number | null;
   languages?: string[] | null;
   teachingFocuses?: string[] | null;
+  location?: string | null;
   twitchUrl?: string | null;
   youtubeUrl?: string | null;
   instagramUrl?: string | null;

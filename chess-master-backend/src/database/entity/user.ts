@@ -41,6 +41,9 @@ export class User {
   @Column({ type: "text", nullable: true })
   phoneNumber: string | null;
 
+  @Column({ type: "text", nullable: true })
+  location: string | null;
+
   @Column("boolean", { default: false })
   isMaster: boolean;
 

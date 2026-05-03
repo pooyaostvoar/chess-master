@@ -11,6 +11,68 @@ interface MasterProfileHeaderProps {
   user: BaseUser;
 }
 
+const TITLE_TO_PIECE: Record<string, "king" | "queen" | "knight" | "pawn"> = {
+  GM: "king",
+  WGM: "king",
+  IM: "queen",
+  WIM: "queen",
+  FM: "knight",
+  WFM: "knight",
+  CM: "pawn",
+  NM: "pawn",
+};
+
+const PiecePaths: Record<string, React.ReactNode> = {
+  king: (
+    <g fill="#F4ECDD">
+      <rect x="21" y="3" width="3" height="9" />
+      <rect x="17" y="6" width="11" height="3" />
+      <path d="M14 14 c 0 -4 4 -7 8.5 -7 s 8.5 3 8.5 7 v 8 h-17 z" />
+      <rect x="13" y="22" width="19" height="3" />
+      <path d="M11 25 h23 l-2 9 h-19 z" />
+    </g>
+  ),
+  queen: (
+    <g fill="#F4ECDD">
+      <circle cx="9" cy="9" r="2" />
+      <circle cx="14" cy="6" r="2" />
+      <circle cx="22.5" cy="4" r="2" />
+      <circle cx="31" cy="6" r="2" />
+      <circle cx="36" cy="9" r="2" />
+      <path d="M9 11 L36 11 L34 18 L11 18 Z" />
+      <rect x="13" y="20" width="19" height="3" />
+      <path d="M11 23 h23 l-2 11 h-19 z" />
+    </g>
+  ),
+  knight: (
+    <g fill="#F4ECDD" fillRule="evenodd">
+      <path d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18" />
+      <path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,9.506 13.5,8.5 13.5,7.5 C 14.5,5.5 16.5,4.5 16.5,4.5 L 18,7 L 18,3.5 L 19.5,2.5 L 21,5.5 L 21,2.5 L 22.5,4 L 22.5,5.5 C 26.5,4.5 30.5,7 32.5,12 L 32.5,16 L 31,17 L 29.5,18 C 29.5,18 27.5,18.5 26.5,18.5 L 24,18 z" />
+    </g>
+  ),
+  pawn: (
+    <g fill="#F4ECDD">
+      <circle cx="22.5" cy="9" r="5" />
+      <path d="M18 14 h9 l-1 5 h-7 z" />
+      <path d="M16 19 h13 l-2 9 h-9 z" />
+      <rect x="13" y="28" width="19" height="3" />
+      <path d="M11 31 h23 l-2 9 h-19 z" />
+    </g>
+  ),
+};
+
+const DefaultAvatar: React.FC<{ piece: string }> = ({ piece }) => (
+  <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-[#1F1109] ring-4 ring-[#F4ECDD]/80 shadow-xl sm:h-36 sm:w-36">
+    <svg
+      viewBox="0 0 45 45"
+      className="h-14 w-14 sm:h-20 sm:w-20"
+      aria-hidden="true"
+    >
+      {PiecePaths[piece] || PiecePaths.pawn}
+    </svg>
+  </div>
+);
+
 export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
   user,
 }) => {
@@ -18,19 +80,28 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
   const profileImage =
     user.profilePictureUrl || user.profilePictureThumbnailUrl;
 
-  const displayName = `${user.title ? `${user.title} ` : ""}${user.username}`;
+  const fullName = [user.name, user.lastname].filter(Boolean).join(" ").trim();
+  const displayName = `${user.title ? `${user.title} ` : ""}${
+    fullName || user.username
+  }`;
+  const subtitle = fullName ? `@${user.username}` : null;
+
   const priceLabel = user.hourlyRate
     ? `$${Number(user.hourlyRate).toFixed(0)} / hour`
     : "Price on request";
 
+  const piece = TITLE_TO_PIECE[user.title || ""] || "pawn";
+
   return (
-    <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-amber-700 text-white">
+    <div className="bg-gradient-to-br from-[#1F1109] via-[#3D2817] to-[#5C3A1E] text-[#F4ECDD]">
       <div className="flex items-start gap-6 p-4 sm:p-8 justify-between">
-        {/* LEFT SIDE — PROFILE */}
-        <div className="min-w-0">
-          <div className="mb-3">
-            <LanguageRow user={user} />
-          </div>
+        {/* LEFT — META */}
+        <div className="min-w-0 flex-1">
+          {(user.languages?.length ?? 0) > 0 && (
+            <div className="mb-3">
+              <LanguageRow user={user} />
+            </div>
+          )}
 
           <div className="mb-4">
             <SocialMediaRow user={user} />
@@ -38,27 +109,65 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
 
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <VerifiedBadge />
-            <span className="rounded-full bg-white/15 px-2.5 py-1 text-xs font-medium backdrop-blur">
+            <span className="rounded-full bg-[#F4ECDD]/15 px-2.5 py-1 text-xs font-medium text-[#F4ECDD] backdrop-blur ring-1 ring-inset ring-[#F4ECDD]/20">
               {priceLabel}
             </span>
           </div>
 
-          <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
+          <h1
+            className="text-xl font-medium tracking-tight sm:text-3xl break-words leading-[1.15]"
+            style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
+          >
             {displayName}
           </h1>
+          {subtitle && (
+            <p className="mt-1 text-xs text-[#F4ECDD]/65 break-all sm:text-sm">
+              {subtitle}
+            </p>
+          )}
+
+          {user.location && (
+            <div className="mt-2 flex items-center gap-1.5 text-sm text-[#F4ECDD]/85">
+              <svg
+                viewBox="0 0 20 20"
+                className="h-4 w-4 shrink-0"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M10 18s6-5.686 6-10A6 6 0 1 0 4 8c0 4.314 6 10 6 10Z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinejoin="round"
+                />
+                <circle
+                  cx="10"
+                  cy="8"
+                  r="2"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+              </svg>
+              <span>{user.location}</span>
+            </div>
+          )}
         </div>
 
-        {/* RIGHT SIDE — IMAGE + BUTTONS */}
+        {/* RIGHT — AVATAR + ACTIONS */}
         <div className="flex flex-col items-center gap-3">
-          <img
-            src={MEDIA_URL + profileImage}
-            alt={displayName}
-            className="h-24 w-24 rounded-3xl object-cover shadow-xl ring-4 ring-white/80 sm:h-36 sm:w-36"
-          />
+          {profileImage ? (
+            <img
+              src={MEDIA_URL + profileImage}
+              alt={displayName}
+              className="h-24 w-24 rounded-3xl object-cover shadow-xl ring-4 ring-[#F4ECDD]/80 sm:h-36 sm:w-36"
+            />
+          ) : (
+            <DefaultAvatar piece={piece} />
+          )}
 
           <div className="flex flex-col items-center gap-2 w-full sm:w-auto">
             <button
-              className="flex items-center justify-center gap-2 rounded-2xl bg-white px-4 md:px-6 py-2 text-xs font-semibold text-slate-900 transition hover:bg-slate-100"
+              className="flex items-center justify-center gap-2 rounded-full bg-[#B8893D] px-4 md:px-6 py-2 text-xs font-medium text-[#1F1109] transition hover:bg-[#A37728]"
               onClick={() => navigate(`/chat/${user.id}`)}
             >
               <svg viewBox="0 0 20 20" className="h-4 w-4">
@@ -71,7 +180,7 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
             </button>
 
             <button
-              className="flex items-center justify-center gap-2 rounded-2xl border border-white/30 bg-white/10 px-4 md:px-8 py-2 text-xs font-semibold backdrop-blur transition hover:bg-white/20 lg:hidden"
+              className="flex items-center justify-center gap-2 rounded-full border border-[#F4ECDD]/30 bg-[#F4ECDD]/10 px-4 md:px-8 py-2 text-xs font-medium text-[#F4ECDD] backdrop-blur transition hover:bg-[#F4ECDD]/20 lg:hidden"
               onClick={() =>
                 document.getElementById("free-time")?.scrollIntoView({
                   behavior: "smooth",

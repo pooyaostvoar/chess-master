@@ -169,6 +169,7 @@ const EditProfile: React.FC = () => {
         languages: formData.languages,
         teachingFocuses: formData.teachingFocuses,
         phoneNumber: formData.phoneNumber,
+        location: formData.location,
         twitchUrl: formData.twitchUrl,
         youtubeUrl: formData.youtubeUrl,
         instagramUrl: formData.instagramUrl,
@@ -237,6 +238,7 @@ const EditProfile: React.FC = () => {
               name={formData.name}
               lastname={formData.lastname}
               phoneNumber={formData.phoneNumber}
+              location={formData.location}
               onChange={handleChange}
             />
 

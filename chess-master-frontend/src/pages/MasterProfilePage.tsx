@@ -65,106 +65,121 @@ export default function MasterProfilePage() {
   const masterTags = user.teachingFocuses ?? [];
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900">
-      <div className="mx-auto md:p-6">
-        <div className="space-y-12">
-          <section>
-            <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-              <section
-                className="overflow-hidden md:rounded-3xl bg-white shadow-sm ring-1 ring-slate-200"
-                style={{
-                  borderBottomLeftRadius: "1.5rem",
-                  borderBottomRightRadius: "1.5rem",
-                }}
-              >
-                <MasterProfileHeader user={user} />
+    <div className="min-h-screen bg-[#FAF5EB] text-[#1F1109]">
+      <div className="max-w-5xl mx-auto px-3 sm:px-8 py-6 sm:py-10">
+        <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+          {/* LEFT — PROFILE CARD */}
+          <section className="overflow-hidden rounded-xl bg-white border border-[#1F1109]/[0.12]">
+            <MasterProfileHeader user={user} />
 
-                <div className="grid gap-6 p-3 md:p-8">
-                  <div className="space-y-6">
-                    <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
-                      {stats.map((item) => (
-                        <div
-                          key={item.label}
-                          className="rounded-2xl border border-slate-200 bg-slate-50 md:p-4 p-2"
-                        >
-                          <div className="md:text-2xl font-semibold text-xl">
-                            {item.value}
-                          </div>
-                          <div className="mt-1 text-sm text-slate-600">
-                            {item.label}
-                          </div>
-                        </div>
-                      ))}
+            <div className="grid gap-6 p-4 md:p-6">
+              <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
+                {stats.map((item) => (
+                  <div
+                    key={item.label}
+                    className="rounded-lg border border-[#1F1109]/[0.08] bg-[#FAF5EB]/60 px-3 py-3"
+                  >
+                    <div
+                      className="text-xl md:text-2xl font-medium text-[#1F1109] leading-none"
+                      style={{ fontFamily: "Georgia, serif" }}
+                    >
+                      {item.value}
                     </div>
-
-                    <div>
-                      <h3 className="text-xl font-semibold">About</h3>
-                      {bioText ? (
-                        <div className="mt-3 max-w-3xl">
-                          <p
-                            ref={bioRef}
-                            className={`text-sm leading-6 text-slate-600 sm:text-base whitespace-pre-wrap ${
-                              !bioExpanded ? "line-clamp-5" : ""
-                            }`}
-                          >
-                            {bioText}
-                          </p>
-                          {!bioExpanded && bioOverflows && (
-                            <button
-                              type="button"
-                              onClick={() => setBioExpanded(true)}
-                              className="mt-1.5 text-sm font-medium text-amber-700 hover:text-amber-800 hover:underline"
-                            >
-                              See more
-                            </button>
-                          )}
-                          {bioExpanded && (
-                            <button
-                              type="button"
-                              onClick={() => setBioExpanded(false)}
-                              className="mt-1.5 text-sm font-medium text-amber-700 hover:text-amber-800 hover:underline"
-                            >
-                              See less
-                            </button>
-                          )}
-                        </div>
-                      ) : (
-                        <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base">
-                          No bio yet.
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <h3 className="text-xl font-semibold">Coaching focus</h3>
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {masterTags.length > 0 ? (
-                          masterTags.map((item) => (
-                            <span
-                              key={item}
-                              className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700"
-                            >
-                              {item}
-                            </span>
-                          ))
-                        ) : (
-                          <span className="text-sm text-slate-500">
-                            No coaching focus added yet.
-                          </span>
-                        )}
-                      </div>
+                    <div className="mt-1.5 text-[11px] tracking-[0.04em] uppercase text-[#6B5640]">
+                      {item.label}
                     </div>
                   </div>
-                </div>
-              </section>
+                ))}
+              </div>
 
-              <section
-                id="free-time"
-                className="rounded-3xl bg-white shadow-sm ring-1 ring-slate-200 md:p-6 p-3"
-              >
-                <FreeTime userId={user.id} />
-              </section>
+              <div>
+                <div
+                  className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-1.5"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  About
+                </div>
+                <h3
+                  className="text-base font-medium text-[#1F1109]"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  Background
+                </h3>
+                {bioText ? (
+                  <div className="mt-2 max-w-3xl">
+                    <p
+                      ref={bioRef}
+                      className={`text-[13px] leading-6 text-[#5C4631] whitespace-pre-wrap ${
+                        !bioExpanded ? "line-clamp-5" : ""
+                      }`}
+                    >
+                      {bioText}
+                    </p>
+                    {!bioExpanded && bioOverflows && (
+                      <button
+                        type="button"
+                        onClick={() => setBioExpanded(true)}
+                        className="mt-1.5 text-xs font-medium text-[#B8893D] hover:underline"
+                      >
+                        See more
+                      </button>
+                    )}
+                    {bioExpanded && (
+                      <button
+                        type="button"
+                        onClick={() => setBioExpanded(false)}
+                        className="mt-1.5 text-xs font-medium text-[#B8893D] hover:underline"
+                      >
+                        See less
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <p className="mt-2 max-w-3xl text-[13px] leading-6 text-[#6B5640]">
+                    No bio yet.
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <div
+                  className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-1.5"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  Specialty
+                </div>
+                <h3
+                  className="text-base font-medium text-[#1F1109]"
+                  style={{ fontFamily: "Georgia, serif" }}
+                >
+                  Coaching focus
+                </h3>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {masterTags.length > 0 ? (
+                    masterTags.map((item) => (
+                      <span
+                        key={item}
+                        className="rounded-full border border-[#1F1109]/[0.12] bg-[#F4ECDD]/60 px-3 py-1 text-xs text-[#3D2817]"
+                      >
+                        {item}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-[13px] text-[#6B5640]">
+                      No coaching focus added yet.
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
+          </section>
+
+          {/* RIGHT — SCHEDULE */}
+          <section
+            id="free-time"
+            className="rounded-xl bg-white border border-[#1F1109]/[0.12] p-4 md:p-6"
+          >
+            <FreeTime userId={user.id} username={user.username} />
           </section>
         </div>
       </div>
