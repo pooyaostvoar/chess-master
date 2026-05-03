@@ -1,16 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { login } from "../services/auth";
 import { useUser } from "../contexts/UserContext";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { API_URL } from "../services/config";
 import { Eye, EyeOff } from "lucide-react";
+import { safeRedirectPath } from "../utils/safeRedirectPath";
 
 const Login: React.FC = () => {
   const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const redirect = searchParams.get("redirect");
-  const error = searchParams.get("error");
+  const { redirect, error } = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return {
+      redirect: safeRedirectPath(params.get("redirect")),
+      error: params.get("error"),
+    };
+  }, [location.search]);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -44,11 +49,7 @@ const Login: React.FC = () => {
       const data = await login(username, password);
       if (data.user) {
         setUser(data.user);
-        if (redirect) {
-          navigate(redirect);
-          return;
-        }
-        navigate("/home");
+        navigate(redirect ?? "/home");
       } else {
         setMessage("Invalid username or password");
       }
@@ -60,12 +61,16 @@ const Login: React.FC = () => {
     }
   };
 
+  const oauthRedirectQuery = redirect
+    ? `&redirect=${encodeURIComponent(redirect)}`
+    : "";
+
   const handleGoogleLogin = () => {
-    window.location.href = `${API_URL}/auth/google`;
+    window.location.href = `${API_URL}/auth/google${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""}`;
   };
 
   const handleLichessLogin = () => {
-    window.location.href = `${API_URL}/auth/lichess?mode=login`;
+    window.location.href = `${API_URL}/auth/lichess?mode=login${oauthRedirectQuery}`;
   };
 
   return (

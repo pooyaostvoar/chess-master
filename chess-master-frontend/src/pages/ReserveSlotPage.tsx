@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { bookSlot, getSlotById, updateSlotStatus } from "../services/schedule";
+import { bookSlot, getSlotById } from "../services/schedule";
 import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 

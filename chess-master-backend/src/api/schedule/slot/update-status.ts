@@ -1,13 +1,15 @@
 import { Router } from "express";
 import { isAuthenticated } from "../../../middleware/passport";
 import { SlotStatus } from "../../../database/entity/types";
-import { updateSlotStatus, formatSlot } from "../../../services/schedule.service";
-import { geoblockPaymentMiddleware } from "../../../utils/geoblock";
+import {
+  updateSlotStatus,
+  formatSlot,
+} from "../../../services/schedule.service";
 
 export const router = Router();
 
 // PATCH /schedule/slot/:id/status - Update slot status
-router.patch("/:id/status", isAuthenticated, geoblockPaymentMiddleware, async (req, res) => {
+router.patch("/:id/status", isAuthenticated, async (req, res) => {
   try {
     const slotId = Number(req.params.id);
     const masterId = (req.user as any).id;
@@ -28,4 +30,3 @@ router.patch("/:id/status", isAuthenticated, geoblockPaymentMiddleware, async (r
     res.status(500).json({ error: "Internal server error" });
   }
 });
-

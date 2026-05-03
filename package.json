@@ -2,6 +2,11 @@
   "name": "chess-master",
   "private": true,
   "packageManager": "pnpm@9.0.0",
+  "pnpm": {
+    "overrides": {
+      "zod": "3.24.2"
+    }
+  },
   "devDependencies": {
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.3.3"

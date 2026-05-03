@@ -11,7 +11,7 @@ import { useUser } from "../contexts/UserContext";
 const JoinGame: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
-  const { user, loading: isUserLoading } = useUser();
+  const { user } = useUser();
   const [game, setGame] = useState<GameType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,10 +47,8 @@ const JoinGame: React.FC = () => {
       }
     };
 
-    if (!isUserLoading) {
-      fetchGame();
-    }
-  }, [gameId, isUserLoading, user]);
+    fetchGame();
+  }, [gameId, user]);
 
   const handleJoinGame = async () => {
     if (!gameId || !user) return;
@@ -69,27 +67,10 @@ const JoinGame: React.FC = () => {
     }
   };
 
-  if (isUserLoading || loading) {
+  if (loading) {
     return (
       <div className="max-w-4xl mx-auto px-5 text-center flex justify-center items-center min-h-screen">
         <div className="text-xl">Loading...</div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="max-w-4xl mx-auto px-5 flex justify-center items-center min-h-screen">
-        <div className="bg-white p-8 rounded-lg shadow-xl text-center max-w-lg w-full">
-          <h2 className="text-2xl font-bold mb-4">Authentication Required</h2>
-          <p className="text-gray-600 mb-6">Please log in to join this game</p>
-          <button
-            onClick={() => navigate("/login")}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Go to Login
-          </button>
-        </div>
       </div>
     );
   }

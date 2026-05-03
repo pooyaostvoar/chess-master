@@ -1,4 +1,4 @@
-import React, { use } from "react";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
@@ -27,6 +27,8 @@ import TermsOfService from "./pages/TermsOfService";
 import PaymentResultPage from "./pages/PaymentResultPage";
 
 import MasterProfilePage from "./pages/MasterProfilePage";
+import UpdateSlotStatusPage from "./pages/UpdateSlotStatusPage";
+import { RequireAuth } from "./components/RequireAuth";
 
 const App: React.FC = () => {
   const { user } = useUser();
@@ -43,27 +45,98 @@ const App: React.FC = () => {
               />
               <Route path="/" element={<Home />} />
               <Route path="/home" element={<Home />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/edit-profile" element={<EditProfile />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <RequireAuth>
+                    <Dashboard />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/edit-profile"
+                element={
+                  <RequireAuth>
+                    <EditProfile />
+                  </RequireAuth>
+                }
+              />
               <Route path="/masters" element={<Masters />} />
               <Route
                 path="/calendar/:userId"
                 element={<MasterScheduleCalendar />}
               />
-              <Route path="/bookings" element={<MyBookings />} />
+              <Route
+                path="/bookings"
+                element={
+                  <RequireAuth>
+                    <MyBookings />
+                  </RequireAuth>
+                }
+              />
               <Route path="/events" element={<FinishedEvents />} />
-              <Route path="/events/:id/edit" element={<EditSlot />} />
+              <Route
+                path="/events/:id/edit"
+                element={
+                  <RequireAuth>
+                    <EditSlot />
+                  </RequireAuth>
+                }
+              />
               <Route path="/upcoming-events" element={<UpcomingEventsPage />} />
               <Route path="/users/:id" element={<PublicUserProfile />} />
-              <Route path="/chat" element={<ChatPage />} />
-              <Route path="/chat/:otherUserId" element={<ChatPage />} />
+              <Route
+                path="/chat"
+                element={
+                  <RequireAuth>
+                    <ChatPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/chat/:otherUserId"
+                element={
+                  <RequireAuth>
+                    <ChatPage />
+                  </RequireAuth>
+                }
+              />
               <Route path="/events/:id" element={<ReserveSlotPage />} />
               <Route path="/game/:id" element={<Game />} />
-              <Route path="/create-game" element={<CreateGame />} />
-              <Route path="/join-game/:gameId" element={<JoinGame />} />
+              <Route
+                path="/create-game"
+                element={
+                  <RequireAuth>
+                    <CreateGame />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/join-game/:gameId"
+                element={
+                  <RequireAuth>
+                    <JoinGame />
+                  </RequireAuth>
+                }
+              />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="/success" element={<PaymentResultPage />} />
+              <Route
+                path="/success"
+                element={
+                  <RequireAuth>
+                    <PaymentResultPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/update-slot-status/:slotId/:newStatus"
+                element={
+                  <RequireAuth>
+                    <UpdateSlotStatusPage />
+                  </RequireAuth>
+                }
+              />
               <Route path="/:username" element={<MasterProfilePage />} />
             </Route>
             <Route path="/signup" element={<Signup />} />

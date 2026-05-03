@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { deleteSlots, updateSlotStatus } from "../services/schedule";
+import { SlotStatus, deleteSlots, updateSlotStatus } from "../services/schedule";
 import {
   Dialog,
   DialogContent,
@@ -254,7 +254,7 @@ const SlotModal: React.FC<SlotModalProps> = ({
     }
   };
 
-  const updateStatus = async (status: "free" | "reserved" | "booked") => {
+  const updateStatus = async (status: SlotStatus) => {
     try {
       const res = await updateSlotStatus(slotId, status);
       onStatusChange?.(res.slot);
@@ -265,7 +265,7 @@ const SlotModal: React.FC<SlotModalProps> = ({
     }
   };
 
-  const handleApprove = () => updateStatus("booked");
+  const handleApprove = () => updateStatus(SlotStatus.Booked);
 
   const handleReject = () => {
     if (
@@ -274,7 +274,7 @@ const SlotModal: React.FC<SlotModalProps> = ({
       )
     )
       return;
-    updateStatus("free");
+    updateStatus(SlotStatus.Free);
   };
 
   const actionBtnClass =
@@ -366,21 +366,21 @@ const SlotModal: React.FC<SlotModalProps> = ({
             </>
           ) : (
             <>
-              <button onClick={() => updateStatus("free")} className={actionBtnClass}>
+              <button onClick={() => updateStatus(SlotStatus.Free)} className={actionBtnClass}>
                 <Circle className="h-5 w-5 text-[#B8893D] fill-[#B8893D] flex-shrink-0" />
                 <div>
                   <div className="text-sm font-medium">Set as available</div>
                   <div className="text-xs text-[#6B5640]">Open for booking</div>
                 </div>
               </button>
-              <button onClick={() => updateStatus("reserved")} className={actionBtnClass}>
+              <button onClick={() => updateStatus(SlotStatus.Reserved)} className={actionBtnClass}>
                 <Circle className="h-5 w-5 text-[#8B6F4E] fill-[#8B6F4E] flex-shrink-0" />
                 <div>
                   <div className="text-sm font-medium">Mark as reserved</div>
                   <div className="text-xs text-[#6B5640]">Pending confirmation</div>
                 </div>
               </button>
-              <button onClick={() => updateStatus("booked")} className={actionBtnClass}>
+              <button onClick={() => updateStatus(SlotStatus.Booked)} className={actionBtnClass}>
                 <Circle className="h-5 w-5 text-[#3D2817] fill-[#3D2817] flex-shrink-0" />
                 <div>
                   <div className="text-sm font-medium">Mark as booked</div>

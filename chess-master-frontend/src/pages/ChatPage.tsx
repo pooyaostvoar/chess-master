@@ -1,21 +1,19 @@
 import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import Chat from "../components/Chat";
 import ChatWrapper from "../components/ChatWrapper";
 import { useUser } from "../contexts/UserContext";
 
 const ChatPage: React.FC = () => {
-  const { user, loading: userLoading } = useUser();
-  const navigate = useNavigate();
+  const { user } = useUser();
   const { otherUserId } = useParams<{ otherUserId: string }>();
-
-  if (userLoading === false && !user) {
-    navigate("/login");
+  const userId = user?.id;
+  if (userId == null) {
     return null;
   }
 
-  return user?.id ? (
+  return (
     <div className="bg-[#FAF5EB] min-h-screen">
       {/* Header */}
       <div className="bg-[#F4ECDD] border-b border-[#1F1109]/[0.08]">
@@ -38,7 +36,7 @@ const ChatPage: React.FC = () => {
       <div className="px-5 sm:px-8 py-6">
         <ChatWrapper>
           {otherUserId ? (
-            <Chat userId={user.id} otherUserId={Number(otherUserId)} />
+            <Chat userId={userId} otherUserId={Number(otherUserId)} />
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-[#6B5640]">
               <svg viewBox="0 0 45 45" className="w-10 h-10 mb-4 opacity-30">
@@ -61,7 +59,7 @@ const ChatPage: React.FC = () => {
         </ChatWrapper>
       </div>
     </div>
-  ) : null;
+  );
 };
 
 export default ChatPage;
