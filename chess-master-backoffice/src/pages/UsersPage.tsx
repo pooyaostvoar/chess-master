@@ -12,13 +12,20 @@ type Props = {
 export function UsersPage({ onSelectUser }: Props) {
   const [search, setSearch] = useState("");
   const [role, setRole] = useState<"master" | "user" | undefined>();
+  const [status, setStatus] = useState<"active" | "disabled" | "all">("active");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
   const usersQuery = useQuery({
-    queryKey: ["admin-users", { page, pageSize, search, role }],
+    queryKey: ["admin-users", { page, pageSize, search, role, status }],
     queryFn: () =>
-      AdminUsersApi.list({ page, pageSize, q: search || undefined, role }),
+      AdminUsersApi.list({
+        page,
+        pageSize,
+        q: search || undefined,
+        role,
+        status,
+      }),
   });
 
   const columns = useMemo(
@@ -45,6 +52,17 @@ export function UsersPage({ onSelectUser }: Props) {
         key: "role",
         render: (_: unknown, record: AdminUser) =>
           record.isMaster ? <Tag color="blue">Master</Tag> : <Tag>Normal</Tag>,
+      },
+      {
+        title: "Status",
+        dataIndex: "status",
+        key: "status",
+        render: (val: string) =>
+          val === "disabled" ? (
+            <Tag color="red">Disabled</Tag>
+          ) : (
+            <Tag color="green">Active</Tag>
+          ),
       },
       {
         title: "Rating",
@@ -95,6 +113,20 @@ export function UsersPage({ onSelectUser }: Props) {
             options={[
               { value: "master", label: "Masters" },
               { value: "user", label: "Normal users" },
+            ]}
+          />
+          <Select
+            placeholder="Status"
+            style={{ width: 140 }}
+            value={status}
+            onChange={(val) => {
+              setStatus(val);
+              setPage(1);
+            }}
+            options={[
+              { value: "active", label: "Active" },
+              { value: "disabled", label: "Disabled" },
+              { value: "all", label: "All" },
             ]}
           />
         </Space>

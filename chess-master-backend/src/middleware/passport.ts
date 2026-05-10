@@ -1,6 +1,7 @@
 import { AppDataSource } from "../database/datasource";
 import { User } from "../database/entity/user";
 import { AdminUser } from "../database/entity/admin-user";
+import { UserStatus } from "../database/entity/types";
 import { Request, Response, NextFunction } from "express";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { getGoogleCleintID, getGoogleClientSecret } from "../utils/secret";
@@ -24,6 +25,11 @@ passport.use(
       if (!user) {
         return cb(null, false, {
           message: "Incorrect username or password.",
+        });
+      }
+      if (user.status === UserStatus.Disabled) {
+        return cb(null, false, {
+          message: "Account is disabled.",
         });
       }
     } catch (err) {
@@ -142,6 +148,10 @@ export const isAuthenticated = (
   next: NextFunction
 ) => {
   if (req.isAuthenticated && req.isAuthenticated()) {
+    const user: any = req.user;
+    if (user instanceof User && user.status === UserStatus.Disabled) {
+      return res.status(403).json({ error: "Account disabled" });
+    }
     return next();
   }
 
@@ -215,6 +225,9 @@ passport.use(
           });
         } else {
           // Link Google account to existing user
+          if (user.status === UserStatus.Disabled) {
+            return cb(null, false);
+          }
           user.googleId = profile.id;
           user.googleAccessToken = accessToken;
           if (refreshToken) {
