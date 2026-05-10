@@ -3,7 +3,7 @@ import React from "react";
 import { LanguageRow } from "./LanguageRow";
 import { SocialMediaRow } from "./SocilaMediaRow";
 import { BaseUser } from "@chess-master/schemas";
-import { MEDIA_URL } from "../../../services/config";
+import { getMediaUrl } from "../../../services/config";
 import { useNavigate } from "react-router-dom";
 
 interface MasterProfileHeaderProps {
@@ -100,7 +100,7 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
           <div className="relative shrink-0">
             {profileImage ? (
               <img
-                src={MEDIA_URL + profileImage}
+                src={getMediaUrl(profileImage)}
                 alt={displayName}
                 className="h-20 w-20 sm:h-28 sm:w-28 md:h-36 md:w-36 rounded-3xl object-cover shadow-xl ring-4 ring-[#F4ECDD]/80"
               />

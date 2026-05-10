@@ -129,6 +129,7 @@ adminUsersRouter.patch("/:id", async (req, res, next) => {
       title,
       rating,
       bio,
+      profileSections,
       chesscomUrl,
       lichessUrl,
       status,
@@ -140,6 +141,16 @@ adminUsersRouter.patch("/:id", async (req, res, next) => {
     if (title !== undefined) user.title = title;
     if (rating !== undefined) user.rating = rating;
     if (bio !== undefined) user.bio = bio;
+    if (profileSections !== undefined) {
+      user.profileSections = Array.isArray(profileSections)
+        ? profileSections
+            .map((section) => ({
+              title: String(section?.title ?? "").trim(),
+              content: String(section?.content ?? "").trim(),
+            }))
+            .filter((section) => section.title && section.content)
+        : null;
+    }
     if (chesscomUrl !== undefined) user.chesscomUrl = chesscomUrl;
     if (lichessUrl !== undefined) user.lichessUrl = lichessUrl;
     if (status !== undefined) user.status = status;
@@ -161,6 +172,7 @@ function trimUser(user: User) {
     title: user.title,
     rating: user.rating,
     bio: user.bio,
+    profileSections: user.profileSections,
     chesscomUrl: user.chesscomUrl,
     lichessUrl: user.lichessUrl,
     lichessRatings: user.lichessRatings,

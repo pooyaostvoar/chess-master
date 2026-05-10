@@ -24,7 +24,7 @@ import { useMasterOnboarding } from "../hooks/useMasterOnboarding";
 import { OnboardingHint } from "./onboarding/OnboardingHint";
 import AvatarHint from "./onboarding/AvatarHint";
 import { getUnreadSenders } from "../services/api/messages.api";
-import { MEDIA_URL } from "../services/config";
+import { getMediaUrl } from "../services/config";
 
 const Layout: React.FC = () => {
   const [unreadCount, setUnreadCount] = React.useState(0);
@@ -165,7 +165,7 @@ const Layout: React.FC = () => {
                       >
                         {user.profilePictureThumbnailUrl ? (
                           <img
-                            src={MEDIA_URL + user.profilePictureThumbnailUrl}
+                            src={getMediaUrl(user.profilePictureThumbnailUrl)}
                             alt={user.username}
                             className="w-full h-full object-cover rounded-full"
                           />

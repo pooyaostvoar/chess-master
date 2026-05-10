@@ -4,6 +4,7 @@ import { parse } from "csv-parse/sync";
 import { AppDataSource } from "../database/datasource";
 import { User } from "../database/entity/user";
 import { UserStatus } from "../database/entity/types";
+import type { ProfileSections } from "../database/entity/user";
 
 type CsvRow = Record<string, string>;
 
@@ -91,6 +92,10 @@ function applyRowToUser(user: User, row: CsvRow): void {
   user.rating = parseNumber(row.rating);
   user.hourlyRate = parseNumber(row.hourlyRate);
   user.bio = nullable(row.bio);
+  user.profileSections = parseJson<ProfileSections | null>(
+    row.profileSectionsJson,
+    null
+  );
   user.twitchUrl = nullable(row.twitchUrl);
   user.youtubeUrl = nullable(row.youtubeUrl);
   user.instagramUrl = nullable(row.instagramUrl);

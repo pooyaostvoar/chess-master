@@ -23,6 +23,13 @@ export interface LichessPerfData {
 
 export type LichessRatingsMap = Record<string, LichessPerfData>;
 
+export interface ProfileSection {
+  title: string;
+  content: string;
+}
+
+export type ProfileSections = ProfileSection[];
+
 @Entity("users")
 @Index("IDX_users_status", ["status"])
 @Index("IDX_users_status_isMaster", ["status", "isMaster"])
@@ -62,6 +69,9 @@ export class User {
 
   @Column("text", { nullable: true })
   bio: string | null;
+
+  @Column("jsonb", { nullable: true })
+  profileSections: ProfileSections | null;
 
   @Column("text", { nullable: true })
   profilePictureThumbnailUrl: string | null;

@@ -3,3 +3,10 @@ export const SOCKET_URL =
   process.env.REACT_APP_SOCKET_URL || "http://localhost:3004";
 export const MEDIA_URL =
   process.env.REACT_APP_MEDIA_URL || "http://localhost:9000/images";
+
+export const getMediaUrl = (pathOrUrl: string | null | undefined) =>
+  !pathOrUrl
+    ? ""
+    : pathOrUrl.startsWith("http://") || pathOrUrl.startsWith("https://")
+    ? pathOrUrl
+    : MEDIA_URL + pathOrUrl;

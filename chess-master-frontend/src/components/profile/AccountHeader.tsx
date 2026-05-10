@@ -4,7 +4,7 @@ import { CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { ShieldCheck } from "lucide-react";
 import type { User } from "../../services/auth";
-import { MEDIA_URL } from "../../services/config";
+import { getMediaUrl } from "../../services/config";
 
 interface AccountHeaderProps {
   user: User;
@@ -31,7 +31,7 @@ export const AccountHeader: React.FC<AccountHeaderProps> = ({
       {/* Avatar */}
       {user.profilePictureThumbnailUrl ? (
         <img
-          src={MEDIA_URL + user.profilePictureThumbnailUrl}
+          src={getMediaUrl(user.profilePictureThumbnailUrl)}
           alt={user.username}
           className="w-14 h-14 rounded-full object-cover border-2 border-primary"
         />

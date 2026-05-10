@@ -2,7 +2,7 @@ import React from "react";
 import { Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../contexts/UserContext";
-import { MEDIA_URL } from "../../services/config";
+import { getMediaUrl } from "../../services/config";
 
 interface Props {
   event: any;
@@ -30,7 +30,7 @@ export const UpcomingEventCard: React.FC<Props> = ({ event, onClick }) => {
         <div className="flex items-center gap-2 mb-3">
           {event.master?.profilePictureThumbnailUrl ? (
             <img
-              src={MEDIA_URL + event.master.profilePictureThumbnailUrl}
+              src={getMediaUrl(event.master.profilePictureThumbnailUrl)}
               alt={event.master?.username}
               className="w-12 h-12 rounded-full object-cover flex-shrink-0"
             />

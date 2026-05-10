@@ -11,6 +11,13 @@ export const lichessPerfSchema = z.object({
 
 export const lichessRatingsSchema = z.record(z.string(), lichessPerfSchema);
 
+export const profileSectionsSchema = z.array(
+  z.object({
+    title: z.string(),
+    content: z.string(),
+  })
+);
+
 export const userSchemaBase = z.object({
   id: z.number().int().positive(),
 
@@ -31,6 +38,8 @@ export const userSchemaBase = z.object({
   rating: z.number().int().nullish(),
 
   bio: z.string().nullish(),
+
+  profileSections: profileSectionsSchema.nullish(),
 
   profilePictureThumbnailUrl: z.string().nullish(),
 

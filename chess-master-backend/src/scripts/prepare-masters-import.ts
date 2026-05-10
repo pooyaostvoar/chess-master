@@ -25,6 +25,7 @@ const preparedFields = [
   "hourlyRate",
   "hourlyRateRaw",
   "bio",
+  "profileSectionsJson",
   "twitchUrl",
   "youtubeUrl",
   "instagramUrl",
@@ -153,7 +154,9 @@ function detectSocialLinks(row: CsvRow): Partial<CsvRow> {
   return socialLinks;
 }
 
-function buildBio(row: CsvRow): string {
+function buildProfileSections(
+  row: CsvRow
+): Array<{ title: string; content: string }> | null {
   const sections = [
     ["About me", row["About me"]],
     ["Best skills", row["Best skills"]],
@@ -161,13 +164,11 @@ function buildBio(row: CsvRow): string {
     ["Teaching methodology", row["Teaching methodology"]],
   ] as const;
 
-  return sections
-    .map(([heading, body]) => {
-      const text = clean(body);
-      return text ? `${heading}\n${text}` : "";
-    })
-    .filter(Boolean)
-    .join("\n\n");
+  const result = sections
+    .map(([title, value]) => ({ title, content: clean(value) }))
+    .filter((section) => section.content);
+
+  return result.length > 0 ? result : null;
 }
 
 function buildLichessRatings(row: CsvRow): Record<string, unknown> | null {
@@ -225,7 +226,8 @@ function normalizeRow(row: CsvRow): CsvRow {
     rating: displayRating === null ? "" : String(displayRating),
     hourlyRate: hourlyRate === null ? "" : String(hourlyRate),
     hourlyRateRaw: clean(row["Hourly rate"]),
-    bio: buildBio(row),
+    bio: clean(row["About me"]),
+    profileSectionsJson: JSON.stringify(buildProfileSections(row) ?? {}),
     twitchUrl: socialLinks.twitchUrl ?? "",
     youtubeUrl: socialLinks.youtubeUrl ?? "",
     instagramUrl: socialLinks.instagramUrl ?? "",

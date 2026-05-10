@@ -18,6 +18,7 @@ export type AdminUser = {
   title: string | null;
   rating: number | null;
   bio: string | null;
+  profileSections: Array<{ title: string; content: string }> | null;
   chesscomUrl: string | null;
   lichessUrl: string | null;
   profilePictureThumbnailUrl: string | null;
