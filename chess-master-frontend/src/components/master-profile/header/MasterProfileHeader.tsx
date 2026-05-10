@@ -105,7 +105,6 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
             ) : (
               <DefaultAvatar piece={piece} />
             )}
-            {/* Instagram-style verified badge */}
             <span
               className="absolute -bottom-1 -right-1 flex h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 items-center justify-center rounded-full bg-[#B8893D] ring-2 ring-[#1F1109] shadow"
               title="Verified Coach"
@@ -117,24 +116,8 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
                   d="M16.704 5.29a1 1 0 00-1.408-1.42L8.5 10.6 5.704 7.79A1 1 0 004.296 9.2l3.5 3.49a1 1 0 001.408 0l7.5-7.4z"
                   clipRule="evenodd"
                 />
-              ) : (
-                <DefaultAvatar piece={piece} />
-              )}
-              {/* Instagram-style verified badge */}
-              <span
-                className="absolute -bottom-1 -right-1 flex h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 items-center justify-center rounded-full bg-[#B8893D] ring-2 ring-[#1F1109] shadow"
-                title="Verified Coach"
-                aria-label="Verified Coach"
-              >
-                <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 text-[#1F1109]">
-                  <path
-                    fillRule="evenodd"
-                    d="M16.704 5.29a1 1 0 00-1.408-1.42L8.5 10.6 5.704 7.79A1 1 0 004.296 9.2l3.5 3.49a1 1 0 001.408 0l7.5-7.4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </span>
-            </div>
+              </svg>
+            </span>
             {priceValue && (
               <div className="md:hidden text-center leading-none">
                 <div
