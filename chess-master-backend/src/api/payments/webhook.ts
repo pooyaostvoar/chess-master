@@ -138,19 +138,15 @@ router.post(
 
         try {
           await AppDataSource.transaction(async (trx) => {
+            // Free the slot while payment is still "reserved" so updateSlotStatus
+            // can resolve stripePaymentIntentId for cancellation.
+
             const repo = trx.getRepository(Payment);
-
             payment.status = PaymentStatus.Refunded;
-
             await repo.save(payment);
-
-            // business decision: usually free slot again
-            await updateSlotStatus(
-              payment.slot.id,
-              payment.slot.master.id,
-              SlotStatus.Free,
-              trx
-            );
+            const slot = payment.slot;
+            slot.status = SlotStatus.Free;
+            await trx.getRepository(ScheduleSlot).save(slot);
           });
 
           return res.json({ received: true });
