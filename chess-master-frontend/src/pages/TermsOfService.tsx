@@ -26,17 +26,17 @@ const TermsOfService: React.FC = () => {
       <div className="max-w-3xl mx-auto px-5 sm:px-8 py-8">
         <div className="bg-white border border-[#1F1109]/[0.12] rounded-xl p-6 sm:p-8 space-y-7 text-[13px] text-[#3D2817] leading-relaxed">
           <section className="space-y-2">
-            <p>Welcome to <strong>Chess Master</strong> ("we", "our", or "us"). By accessing or using our website and services, you agree to be bound by these Terms of Service. If you do not agree, please do not use the platform.</p>
+            <p>Welcome to <strong>Chess With Masters</strong> ("we", "our", or "us"). By accessing or using our website and services, you agree to be bound by these Terms of Service. If you do not agree, please do not use the platform.</p>
           </section>
 
           <section className="space-y-2">
             <h2 className="text-sm font-medium text-[#1F1109]">1. Eligibility</h2>
-            <p>You must be at least 13 years old to use our services. By using Chess Master, you confirm that you meet this requirement.</p>
+            <p>You must be at least 13 years old to use our services. By using Chess With Masters, you confirm that you meet this requirement.</p>
           </section>
 
           <section className="space-y-2">
             <h2 className="text-sm font-medium text-[#1F1109]">2. Services Provided</h2>
-            <p>Chess Master provides a platform that connects students with chess instructors ("Masters") for online lessons, scheduling, communication, and related services.</p>
+            <p>Chess With Masters provides a platform that connects students with chess instructors ("Masters") for online lessons, scheduling, communication, and related services.</p>
             <p>We do not guarantee lesson outcomes, skill improvement, or availability of any specific instructor.</p>
           </section>
 
@@ -48,7 +48,7 @@ const TermsOfService: React.FC = () => {
 
           <section className="space-y-2">
             <h2 className="text-sm font-medium text-[#1F1109]">4. Payments & Bookings</h2>
-            <p>Payments, pricing, and lesson availability are determined by the individual Masters. Chess Master may charge a service fee where applicable.</p>
+            <p>Payments, pricing, and lesson availability are determined by the individual Masters. Chess With Masters may charge a service fee where applicable.</p>
             <p>Refunds, cancellations, and rescheduling are subject to the policies defined on the platform or by the instructor.</p>
           </section>
 
@@ -65,7 +65,7 @@ const TermsOfService: React.FC = () => {
 
           <section className="space-y-2">
             <h2 className="text-sm font-medium text-[#1F1109]">6. Third-Party Services</h2>
-            <p>Chess Master may integrate third-party services such as Google OAuth and Google Calendar. We are not responsible for the content or practices of these third-party services.</p>
+            <p>Chess With Masters may integrate third-party services such as Google OAuth and Google Calendar. We are not responsible for the content or practices of these third-party services.</p>
           </section>
 
           <section className="space-y-2">
@@ -75,7 +75,7 @@ const TermsOfService: React.FC = () => {
 
           <section className="space-y-2">
             <h2 className="text-sm font-medium text-[#1F1109]">8. Limitation of Liability</h2>
-            <p>Chess Master is provided "as is" without warranties of any kind. We are not liable for any indirect, incidental, or consequential damages arising from your use of the platform.</p>
+            <p>Chess With Masters is provided "as is" without warranties of any kind. We are not liable for any indirect, incidental, or consequential damages arising from your use of the platform.</p>
           </section>
 
           <section className="space-y-2">

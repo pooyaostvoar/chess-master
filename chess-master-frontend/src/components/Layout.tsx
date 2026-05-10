@@ -103,7 +103,7 @@ const Layout: React.FC = () => {
             >
               <span className="inline-block w-2.5 h-2.5 bg-[#B8893D] rotate-45" />
               <span className={user ? "" : "hidden sm:inline"}>
-                Chess Master
+                Chess With Masters
               </span>
             </Link>
 
@@ -316,7 +316,7 @@ const Layout: React.FC = () => {
               <div>
                 <div className="flex items-center gap-2.5 mb-3.5" style={{ fontFamily: "Georgia, serif" }}>
                   <span className="inline-block w-2.5 h-2.5 bg-[#B8893D] rotate-45" />
-                  <span className="font-medium">Chess Master</span>
+                  <span className="font-medium">Chess With Masters</span>
                 </div>
                 <p className="text-xs text-[#F4ECDD]/55 leading-relaxed mb-4">
                   Verified chess coaching from the players who've actually been there.
@@ -370,7 +370,7 @@ const Layout: React.FC = () => {
             {/* Bottom bar */}
             <div className="border-t border-[#F4ECDD]/[0.12] pt-5 flex justify-between items-center gap-4 flex-wrap">
               <span className="text-[11px] text-[#F4ECDD]/45">
-                © {new Date().getFullYear()} Chess Master OÜ · Tallinn, Estonia
+                © {new Date().getFullYear()} Chess With Masters OÜ · Tallinn, Estonia
               </span>
               <div className="flex items-center gap-4 text-[11px]">
                 <a href="/privacy-policy" className="text-[#F4ECDD]/60 hover:text-[#F4ECDD]/80 transition-colors">Privacy</a>

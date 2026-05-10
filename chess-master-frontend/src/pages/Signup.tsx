@@ -110,7 +110,7 @@ const Signup: React.FC = () => {
               style={{ fontFamily: "Georgia, serif", fontWeight: 500, fontSize: 16 }}
             >
               <span className="inline-block w-[9px] h-[9px] bg-[#B8893D] rotate-45" />
-              Chess Master
+              Chess With Masters
             </Link>
 
             <div
@@ -148,7 +148,7 @@ const Signup: React.FC = () => {
               style={{ fontFamily: "Georgia, serif", fontWeight: 500, fontSize: 16 }}
             >
               <span className="inline-block w-[9px] h-[9px] bg-[#B8893D] rotate-45" />
-              Chess Master
+              Chess With Masters
             </Link>
           )}
 

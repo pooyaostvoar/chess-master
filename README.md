@@ -1,6 +1,6 @@
-# Chess Master Deployment Guide
+# Chess With Masters Deployment Guide
 
-This guide explains how to deploy **Chess Master** (frontend and backend) on a VPS using Docker, Docker Compose, and Nginx with HTTPS support via Let’s Encrypt.
+This guide explains how to deploy **Chess With Masters** (frontend and backend) on a VPS using Docker, Docker Compose, and Nginx with HTTPS support via Let’s Encrypt.
 
 ---
 

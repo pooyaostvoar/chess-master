@@ -36,7 +36,7 @@ export function AdminLayout({
   return (
     <Layout className="ant-shell">
       <Sider width={240} className="ant-sider">
-        <div className="brand">Chess Master Backoffice</div>
+        <div className="brand">Chess With Masters Backoffice</div>
         <Menu
           theme="dark"
           mode="inline"
