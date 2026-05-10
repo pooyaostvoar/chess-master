@@ -17,6 +17,7 @@ import {
   Calendar,
   BookOpen,
   LayoutDashboard,
+  MessageCircle,
 } from "lucide-react";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { useMasterOnboarding } from "../hooks/useMasterOnboarding";
@@ -207,7 +208,8 @@ const Layout: React.FC = () => {
                       className="flex items-center justify-between text-[#3D2817] focus:bg-[#B8893D]/10 focus:text-[#1F1109]"
                     >
                       <span className="flex items-center">
-                        <span className="mr-2 text-[#8B6F4E]">💬</span> Messages
+                        <MessageCircle className="mr-2 h-4 w-4 text-[#8B6F4E]" />
+                        Messages
                       </span>
                       {unreadCount > 0 && (
                         <span className="bg-[#7A2E2E] text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] px-1.5 flex items-center justify-center">
