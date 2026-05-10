@@ -15,6 +15,7 @@ export enum PaymentStatus {
   Succeeded = "succeeded",
   Failed = "failed",
   Refunded = "refunded",
+  Reserved = "reserved",
 }
 
 @Entity("payments")
