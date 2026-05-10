@@ -72,8 +72,8 @@ const PieceSvg: React.FC<{ piece: string }> = ({ piece }) => {
   return (
     <svg
       viewBox="0 0 45 45"
-      width="50"
-      height="50"
+      width="70"
+      height="70"
       className="transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-[1.08]"
     >
       {paths[piece] || paths.pawn}
@@ -100,50 +100,53 @@ export const MasterCard: React.FC<MasterCardProps> = ({
     >
       {/* Card header */}
       <div
-        className="h-[120px] relative flex items-center justify-center overflow-hidden"
-        style={{ backgroundColor: headerBg }}
+        className="h-[200px] relative flex items-center justify-center overflow-hidden"
+        style={hasPhoto ? undefined : { backgroundColor: headerBg }}
       >
-        <svg
-          className="absolute inset-0 w-full h-full"
-          preserveAspectRatio="none"
-        >
-          <defs>
-            <pattern id={patternId} x="0" y="0" width="36" height="36" patternUnits="userSpaceOnUse">
-              <rect
-                x="0"
-                y="0"
-                width="18"
-                height="18"
-                fill={isGold ? "#1F1109" : "#FAF5EB"}
-                fillOpacity={isGold ? "0.06" : "0.05"}
-              />
-              <rect
-                x="18"
-                y="18"
-                width="18"
-                height="18"
-                fill={isGold ? "#1F1109" : "#FAF5EB"}
-                fillOpacity={isGold ? "0.06" : "0.05"}
-              />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill={`url(#${patternId})`} />
-        </svg>
-
         {hasPhoto ? (
           <img
-            className="relative w-24 h-24 rounded-full object-cover border-[3px] border-[#F4ECDD]/40"
+            className="absolute inset-0 w-full h-full object-cover"
             src={MEDIA_URL + master.profilePictureThumbnailUrl}
             alt={master.username}
           />
         ) : (
-          <PieceSvg piece={piece} />
+          <>
+            <svg
+              className="absolute inset-0 w-full h-full"
+              preserveAspectRatio="none"
+            >
+              <defs>
+                <pattern id={patternId} x="0" y="0" width="36" height="36" patternUnits="userSpaceOnUse">
+                  <rect
+                    x="0"
+                    y="0"
+                    width="18"
+                    height="18"
+                    fill={isGold ? "#1F1109" : "#FAF5EB"}
+                    fillOpacity={isGold ? "0.06" : "0.05"}
+                  />
+                  <rect
+                    x="18"
+                    y="18"
+                    width="18"
+                    height="18"
+                    fill={isGold ? "#1F1109" : "#FAF5EB"}
+                    fillOpacity={isGold ? "0.06" : "0.05"}
+                  />
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill={`url(#${patternId})`} />
+            </svg>
+            <PieceSvg piece={piece} />
+          </>
         )}
 
         {master.title && (
           <span
             className={`absolute top-2 left-2 text-[9px] font-medium px-[7px] py-[3px] rounded tracking-[0.06em] ${
-              isGold
+              hasPhoto
+                ? "bg-[#1F1109]/85 text-[#F4ECDD]"
+                : isGold
                 ? "bg-[#1F1109]/85 text-[#F4ECDD]"
                 : "bg-[#F4ECDD]/95 text-[#3D2817]"
             }`}

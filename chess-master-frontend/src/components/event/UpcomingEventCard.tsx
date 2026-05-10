@@ -32,10 +32,10 @@ export const UpcomingEventCard: React.FC<Props> = ({ event, onClick }) => {
             <img
               src={MEDIA_URL + event.master.profilePictureThumbnailUrl}
               alt={event.master?.username}
-              className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+              className="w-12 h-12 rounded-full object-cover flex-shrink-0"
             />
           ) : (
-            <div className="w-8 h-8 rounded-full bg-[#3D2817] flex items-center justify-center text-[#F4ECDD] text-sm font-medium flex-shrink-0">
+            <div className="w-12 h-12 rounded-full bg-[#3D2817] flex items-center justify-center text-[#F4ECDD] text-base font-medium flex-shrink-0">
               {event.master?.username?.charAt(0).toUpperCase() || "M"}
             </div>
           )}
