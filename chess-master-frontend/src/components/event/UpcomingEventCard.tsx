@@ -2,6 +2,7 @@ import React from "react";
 import { Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../contexts/UserContext";
+import { MEDIA_URL } from "../../services/config";
 
 interface Props {
   event: any;
@@ -27,9 +28,17 @@ export const UpcomingEventCard: React.FC<Props> = ({ event, onClick }) => {
 
         {/* Master info */}
         <div className="flex items-center gap-2 mb-3">
-          <div className="w-8 h-8 rounded-full bg-[#3D2817] flex items-center justify-center text-[#F4ECDD] text-sm font-medium flex-shrink-0">
-            {event.master?.username?.charAt(0).toUpperCase() || "M"}
-          </div>
+          {event.master?.profilePictureThumbnailUrl ? (
+            <img
+              src={MEDIA_URL + event.master.profilePictureThumbnailUrl}
+              alt={event.master?.username}
+              className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+            />
+          ) : (
+            <div className="w-8 h-8 rounded-full bg-[#3D2817] flex items-center justify-center text-[#F4ECDD] text-sm font-medium flex-shrink-0">
+              {event.master?.username?.charAt(0).toUpperCase() || "M"}
+            </div>
+          )}
           <div>
             <span className="text-xs font-medium text-[#1F1109]">{event.master?.username}</span>
             {event.master?.title && (
