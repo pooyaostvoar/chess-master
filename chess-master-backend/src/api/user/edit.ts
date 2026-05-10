@@ -24,6 +24,7 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
       title,
       rating,
       bio,
+      profileSections,
       isMaster,
       chesscomUrl,
       lichessUrl,
@@ -48,6 +49,14 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
       title,
       rating,
       bio,
+      profileSections: Array.isArray(profileSections)
+        ? profileSections
+            .map((section) => ({
+              title: String(section?.title ?? "").trim(),
+              content: String(section?.content ?? "").trim(),
+            }))
+            .filter((section) => section.title && section.content)
+        : profileSections,
       isMaster,
       chesscomUrl,
       lichessUrl,

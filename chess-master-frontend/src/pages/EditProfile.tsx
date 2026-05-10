@@ -13,6 +13,7 @@ import { LanguagesSection } from "../components/profile/LanguagesSection";
 import { TeachingFocusesSection } from "../components/profile/TeachingFocusesSection";
 import { LichessRatingsSection } from "../components/profile/LichessRatingsSection";
 import { SocialMediaSection } from "../components/profile/SocialMediaSection";
+import { ProfileSectionsSection } from "../components/profile/ProfileSectionsSection";
 import { uploadProfilePicture } from "../services/api/user.api";
 
 const EditProfile: React.FC = () => {
@@ -42,6 +43,7 @@ const EditProfile: React.FC = () => {
         const userData = {
           ...response.user,
           teachingFocuses: response.user.teachingFocuses ?? [],
+          profileSections: response.user.profileSections ?? [],
         };
         setFormData(userData);
         if (response.user.profilePictureUrl) {
@@ -162,6 +164,14 @@ const EditProfile: React.FC = () => {
         title: formData.title,
         rating: formData.rating,
         bio: formData.bio,
+        profileSections: formData.isMaster
+          ? (formData.profileSections ?? [])
+              .map((section: any) => ({
+                title: String(section.title ?? "").trim(),
+                content: String(section.content ?? "").trim(),
+              }))
+              .filter((section: any) => section.title && section.content)
+          : formData.profileSections,
         isMaster: formData.isMaster,
         chesscomUrl: formData.chesscomUrl,
         lichessUrl: formData.lichessUrl,
@@ -259,6 +269,15 @@ const EditProfile: React.FC = () => {
               teachingFocuses={formData.teachingFocuses ?? []}
               onChange={handleChange}
             />
+
+            {formData.isMaster && (
+              <ProfileSectionsSection
+                sections={formData.profileSections ?? []}
+                onChange={(profileSections) =>
+                  setFormData({ ...formData, profileSections })
+                }
+              />
+            )}
 
             <ChessPlatformSection
               chesscomUrl={formData.chesscomUrl}

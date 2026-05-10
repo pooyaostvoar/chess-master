@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import type { User } from "../../services/auth";
-import { MEDIA_URL } from "../../services/config";
+import { getMediaUrl } from "../../services/config";
 
 interface MasterCardProps {
   master: User;
@@ -106,7 +106,7 @@ export const MasterCard: React.FC<MasterCardProps> = ({
         {hasPhoto ? (
           <img
             className="absolute inset-0 w-full h-full object-cover"
-            src={MEDIA_URL + master.profilePictureThumbnailUrl}
+            src={getMediaUrl(master.profilePictureThumbnailUrl)}
             alt={master.username}
           />
         ) : (

@@ -1,5 +1,6 @@
 import { AppDataSource } from "../database/datasource";
-import { LichessRatingsMap, User } from "../database/entity/user";
+import { User } from "../database/entity/user";
+import type { LichessRatingsMap, ProfileSections } from "../database/entity/user";
 import { UserStatus } from "../database/entity/types";
 
 export interface UpdateUserData {
@@ -10,6 +11,7 @@ export interface UpdateUserData {
   title?: string | null;
   rating?: number | null;
   bio?: string | null;
+  profileSections?: ProfileSections | null;
   isMaster?: boolean;
   status?: UserStatus;
   profilePictureThumbnailUrl?: string | null;
@@ -48,6 +50,7 @@ export interface SafeUser {
   title: string | null;
   rating: number | null;
   bio: string | null;
+  profileSections: ProfileSections | null;
   isMaster: boolean;
   status: UserStatus;
   profilePictureThumbnailUrl: string | null;
@@ -79,6 +82,7 @@ export function formatUser(user: User): SafeUser {
     title: user.title,
     rating: user.rating,
     bio: user.bio,
+    profileSections: user.profileSections,
     isMaster: user.isMaster,
     status: user.status,
     profilePictureThumbnailUrl: user.profilePictureThumbnailUrl,
@@ -150,6 +154,7 @@ export async function updateUser(
   if (data.title !== undefined) user.title = data.title;
   if (data.rating !== undefined) user.rating = data.rating;
   if (data.bio !== undefined) user.bio = data.bio;
+  if (data.profileSections !== undefined) user.profileSections = data.profileSections;
   if (data.isMaster !== undefined) user.isMaster = data.isMaster;
   if (data.status !== undefined) user.status = data.status;
   if (data.profilePictureThumbnailUrl !== undefined)

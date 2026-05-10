@@ -48,6 +48,12 @@ export function UserDetailPage({ userId, onBack }: Props) {
         ? null
         : Number(data.rating),
     bio: data.bio ?? "",
+    profileSections: (data.profileSections ?? [])
+      .map((section) => ({
+        title: section.title ?? "",
+        content: section.content ?? "",
+      }))
+      .filter((section) => section.title || section.content),
     chesscomUrl: data.chesscomUrl ?? "",
     lichessUrl: data.lichessUrl ?? "",
     isMaster: Boolean(data.isMaster),
@@ -106,6 +112,7 @@ export function UserDetailPage({ userId, onBack }: Props) {
       form.setFieldsValue({
         ...user,
         rating: user.rating ?? undefined,
+        profileSections: user.profileSections ?? [],
       } as any);
     }
   }, [user, form]);
@@ -216,6 +223,54 @@ export function UserDetailPage({ userId, onBack }: Props) {
                 <Form.Item label="Bio" name="bio">
                   <Input.TextArea rows={3} />
                 </Form.Item>
+                <Divider />
+                <Typography.Title level={5} style={{ marginBottom: 8 }}>
+                  Profile tabs
+                </Typography.Title>
+                <Form.List name="profileSections">
+                  {(fields, { add, remove }) => (
+                    <Space
+                      direction="vertical"
+                      size={12}
+                      style={{ width: "100%", marginBottom: 16 }}
+                    >
+                      {fields.map((field, index) => (
+                        <Card
+                          key={field.key}
+                          size="small"
+                          title={`Tab ${index + 1}`}
+                          extra={
+                            <Button danger size="small" onClick={() => remove(field.name)}>
+                              Remove
+                            </Button>
+                          }
+                        >
+                          <Form.Item
+                            label="Tab title"
+                            name={[field.name, "title"]}
+                            rules={[{ required: true, message: "Tab title is required" }]}
+                          >
+                            <Input placeholder="About me" />
+                          </Form.Item>
+                          <Form.Item
+                            label="Content"
+                            name={[field.name, "content"]}
+                            rules={[{ required: true, message: "Tab content is required" }]}
+                          >
+                            <Input.TextArea rows={5} />
+                          </Form.Item>
+                        </Card>
+                      ))}
+                      <Button
+                        type="dashed"
+                        onClick={() => add({ title: "", content: "" })}
+                      >
+                        Add profile tab
+                      </Button>
+                    </Space>
+                  )}
+                </Form.List>
+                <Divider />
                 <Form.Item label="Chess.com URL" name="chesscomUrl">
                   <Input />
                 </Form.Item>

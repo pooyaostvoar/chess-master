@@ -95,6 +95,7 @@ export function mapUserToSchemaBase(user: User): BaseUser {
     title: user.title,
     rating: user.rating,
     bio: user.bio,
+    profileSections: user.profileSections,
     profilePictureThumbnailUrl: user.profilePictureThumbnailUrl,
     profilePictureUrl: user.profilePictureUrl,
     chesscomUrl: user.chesscomUrl,

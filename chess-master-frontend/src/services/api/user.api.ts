@@ -10,6 +10,7 @@ export interface LichessPerf {
 }
 
 export type LichessRatings = Record<string, LichessPerf>;
+export type ProfileSections = Array<{ title: string; content: string }>;
 
 export interface UpdateUserData {
   email?: string;
@@ -19,6 +20,7 @@ export interface UpdateUserData {
   title?: string | null;
   rating?: number | null;
   bio?: string | null;
+  profileSections?: ProfileSections | null;
   isMaster?: boolean;
   chesscomUrl?: string | null;
   lichessUrl?: string | null;
@@ -45,6 +47,7 @@ export interface User {
   title?: string | null;
   rating?: number | null;
   bio?: string | null;
+  profileSections?: ProfileSections | null;
   isMaster: boolean;
   status?: "active" | "disabled";
   profilePictureUrl?: string | null;
