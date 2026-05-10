@@ -95,30 +95,48 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
         {/* AVATAR + META wrapper — row on mobile, "contents" on desktop so avatar/meta become direct flex children of the outer row */}
         <div className="flex flex-row items-start gap-4 md:contents">
           {/* AVATAR */}
-          <div className="relative shrink-0">
-            {profileImage ? (
-              <img
-                src={MEDIA_URL + profileImage}
-                alt={displayName}
-                className="h-20 w-20 sm:h-28 sm:w-28 md:h-36 md:w-36 rounded-3xl object-cover shadow-xl ring-4 ring-[#F4ECDD]/80"
-              />
-            ) : (
-              <DefaultAvatar piece={piece} />
-            )}
-            {/* Instagram-style verified badge */}
-            <span
-              className="absolute -bottom-1 -right-1 flex h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 items-center justify-center rounded-full bg-[#B8893D] ring-2 ring-[#1F1109] shadow"
-              title="Verified Coach"
-              aria-label="Verified Coach"
-            >
-              <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 text-[#1F1109]">
-                <path
-                  fillRule="evenodd"
-                  d="M16.704 5.29a1 1 0 00-1.408-1.42L8.5 10.6 5.704 7.79A1 1 0 004.296 9.2l3.5 3.49a1 1 0 001.408 0l7.5-7.4z"
-                  clipRule="evenodd"
+          <div className="flex flex-col items-center gap-3 shrink-0">
+            <div className="relative">
+              {profileImage ? (
+                <img
+                  src={MEDIA_URL + profileImage}
+                  alt={displayName}
+                  className="h-20 w-20 sm:h-28 sm:w-28 md:h-36 md:w-36 rounded-3xl object-cover shadow-xl ring-4 ring-[#F4ECDD]/80"
                 />
-              </svg>
-            </span>
+              ) : (
+                <DefaultAvatar piece={piece} />
+              )}
+              {/* Instagram-style verified badge */}
+              <span
+                className="absolute -bottom-1 -right-1 flex h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 items-center justify-center rounded-full bg-[#B8893D] ring-2 ring-[#1F1109] shadow"
+                title="Verified Coach"
+                aria-label="Verified Coach"
+              >
+                <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 text-[#1F1109]">
+                  <path
+                    fillRule="evenodd"
+                    d="M16.704 5.29a1 1 0 00-1.408-1.42L8.5 10.6 5.704 7.79A1 1 0 004.296 9.2l3.5 3.49a1 1 0 001.408 0l7.5-7.4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </span>
+            </div>
+            {priceValue && (
+              <div className="md:hidden text-center leading-none">
+                <div
+                  className="text-2xl font-medium text-[#F4ECDD]"
+                  style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
+                >
+                  {priceValue}
+                  <span className="text-sm font-normal text-[#F4ECDD]/65">
+                    /hr
+                  </span>
+                </div>
+                <div className="mt-1 text-[10px] tracking-[0.08em] uppercase text-[#F4ECDD]/55">
+                  Per hour
+                </div>
+              </div>
+            )}
           </div>
 
           {/* META */}
@@ -182,22 +200,17 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
 
         {/* PRICE + ACTIONS */}
         <div className="flex flex-col gap-2 md:items-end md:shrink-0">
-          <div className="md:text-right">
+          <div className="hidden md:block md:text-right">
             {priceValue ? (
-              <>
-                <div
-                  className="text-3xl sm:text-4xl font-medium leading-none text-[#F4ECDD]"
-                  style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
-                >
-                  {priceValue}
-                  <span className="text-base sm:text-lg font-normal text-[#F4ECDD]/65">
-                    /hour
-                  </span>
-                </div>
-                <div className="mt-1 text-[11px] tracking-[0.08em] uppercase text-[#F4ECDD]/55">
-                  Per session
-                </div>
-              </>
+              <div
+                className="text-3xl sm:text-4xl font-medium leading-none text-[#F4ECDD]"
+                style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
+              >
+                {priceValue}
+                <span className="text-base sm:text-lg font-normal text-[#F4ECDD]/65">
+                  /hour
+                </span>
+              </div>
             ) : (
               <div className="text-sm text-[#F4ECDD]/75">Price on request</div>
             )}
