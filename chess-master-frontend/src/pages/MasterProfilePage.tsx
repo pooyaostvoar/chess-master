@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { getPublicUserByUsername } from "../services/api/user.api";
 import FreeTime from "../components/master-profile/free-time/FreeTime";
 import { AboutTabs } from "../components/master-profile/AboutTabs";
+import { Trophy, Zap, Timer, GraduationCap, LucideIcon } from "lucide-react";
 
 type Status = "loading" | "ready" | "not-found";
 
@@ -46,11 +47,15 @@ export default function MasterProfilePage() {
 
   const studentsLabel = user.studentsCount ?? 0;
 
-  const stats = [
-    { label: "Fide rating", value: user.rating },
-    { label: "Rapid", value: user.lichessRatings?.rapid?.rating },
-    { label: "Blitz", value: user.lichessRatings?.blitz?.rating },
-    { label: "Students", value: studentsLabel ? `${studentsLabel}+` : null },
+  const stats: { label: string; value: string | number | null | undefined; icon: LucideIcon }[] = [
+    { label: "FIDE", value: user.rating, icon: Trophy },
+    { label: "Rapid", value: user.lichessRatings?.rapid?.rating, icon: Timer },
+    { label: "Blitz", value: user.lichessRatings?.blitz?.rating, icon: Zap },
+    {
+      label: "Students",
+      value: studentsLabel ? `${studentsLabel}+` : null,
+      icon: GraduationCap,
+    },
   ].filter((s) => s.value != null && s.value !== "");
 
   return (
@@ -65,30 +70,40 @@ export default function MasterProfilePage() {
           <section className="min-w-0 rounded-xl bg-white border border-[#1F1109]/[0.12] p-5 md:p-6 space-y-6">
             {stats.length > 0 && (
               <div
-                className={`grid gap-3 ${
+                className={`grid gap-2 md:gap-3 ${
                   stats.length === 1
                     ? "grid-cols-1"
                     : stats.length === 2
                     ? "grid-cols-2"
-                    : "grid-cols-2 md:grid-cols-3"
+                    : stats.length === 3
+                    ? "grid-cols-3"
+                    : "grid-cols-2 md:grid-cols-4"
                 }`}
               >
-                {stats.map((item) => (
-                  <div
-                    key={item.label}
-                    className="rounded-lg border border-[#1F1109]/[0.08] bg-[#FAF5EB]/60 px-3 py-3"
-                  >
+                {stats.map((item) => {
+                  const Icon = item.icon;
+                  return (
                     <div
-                      className="text-xl md:text-2xl font-medium text-[#1F1109] leading-none"
-                      style={{ fontFamily: "Georgia, serif" }}
+                      key={item.label}
+                      className="flex items-center gap-2.5 rounded-lg border border-[#1F1109]/[0.08] bg-[#FAF5EB]/60 px-2.5 py-2 md:px-3 md:py-3"
                     >
-                      {item.value}
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#B8893D]/15 text-[#B8893D]">
+                        <Icon className="h-4 w-4" strokeWidth={2} />
+                      </div>
+                      <div className="min-w-0">
+                        <div
+                          className="text-base md:text-2xl font-medium text-[#1F1109] leading-none"
+                          style={{ fontFamily: "Georgia, serif" }}
+                        >
+                          {item.value}
+                        </div>
+                        <div className="mt-1 text-[10px] md:text-[11px] tracking-[0.04em] uppercase text-[#6B5640]">
+                          {item.label}
+                        </div>
+                      </div>
                     </div>
-                    <div className="mt-1.5 text-[11px] tracking-[0.04em] uppercase text-[#6B5640]">
-                      {item.label}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 
