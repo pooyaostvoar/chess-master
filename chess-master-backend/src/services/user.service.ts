@@ -1,5 +1,6 @@
 import { AppDataSource } from "../database/datasource";
 import { LichessRatingsMap, User } from "../database/entity/user";
+import { UserStatus } from "../database/entity/types";
 
 export interface UpdateUserData {
   email?: string;
@@ -10,6 +11,7 @@ export interface UpdateUserData {
   rating?: number | null;
   bio?: string | null;
   isMaster?: boolean;
+  status?: UserStatus;
   profilePictureThumbnailUrl?: string | null;
   chesscomUrl?: string | null;
   lichessUrl?: string | null;
@@ -47,6 +49,7 @@ export interface SafeUser {
   rating: number | null;
   bio: string | null;
   isMaster: boolean;
+  status: UserStatus;
   profilePictureThumbnailUrl: string | null;
   chesscomUrl: string | null;
   lichessUrl: string | null;
@@ -77,6 +80,7 @@ export function formatUser(user: User): SafeUser {
     rating: user.rating,
     bio: user.bio,
     isMaster: user.isMaster,
+    status: user.status,
     profilePictureThumbnailUrl: user.profilePictureThumbnailUrl,
     chesscomUrl: user.chesscomUrl,
     lichessUrl: user.lichessUrl,
@@ -147,6 +151,7 @@ export async function updateUser(
   if (data.rating !== undefined) user.rating = data.rating;
   if (data.bio !== undefined) user.bio = data.bio;
   if (data.isMaster !== undefined) user.isMaster = data.isMaster;
+  if (data.status !== undefined) user.status = data.status;
   if (data.profilePictureThumbnailUrl !== undefined)
     user.profilePictureThumbnailUrl = data.profilePictureThumbnailUrl;
   if (data.chesscomUrl !== undefined) user.chesscomUrl = data.chesscomUrl;
@@ -203,6 +208,8 @@ export async function updateUser(
 export async function findUsers(filters: UserFilters): Promise<User[]> {
   const repo = AppDataSource.getRepository(User);
   let qb = repo.createQueryBuilder("user");
+
+  qb = qb.andWhere("user.status = :status", { status: UserStatus.Active });
 
   if (filters.username) {
     qb = qb.andWhere("user.username ILIKE :username", {

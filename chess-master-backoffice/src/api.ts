@@ -14,6 +14,7 @@ export type AdminUser = {
   username: string;
   email: string;
   isMaster: boolean;
+  status: string;
   title: string | null;
   rating: number | null;
   bio: string | null;
@@ -131,12 +132,14 @@ export const AdminUsersApi = {
     pageSize: number;
     q?: string;
     role?: "master" | "user";
+    status?: "active" | "disabled" | "all";
   }) => {
     const search = new URLSearchParams();
     search.set("page", String(params.page));
     search.set("pageSize", String(params.pageSize));
     if (params.q) search.set("q", params.q);
     if (params.role) search.set("role", params.role);
+    if (params.status) search.set("status", params.status);
     return request<AdminUserListResponse>(`/admin/users?${search.toString()}`);
   },
   get: (id: number) => request<AdminUser>(`/admin/users/${id}`),

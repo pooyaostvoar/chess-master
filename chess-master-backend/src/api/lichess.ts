@@ -1,6 +1,7 @@
 import express from "express";
 import { AppDataSource } from "../database/datasource";
 import { User } from "../database/entity/user";
+import { UserStatus } from "../database/entity/types";
 import { sendWelcomeEmail } from "../services/brevo_email";
 import {
   buildLichessProfileUrl,
@@ -237,9 +238,19 @@ lichessRouter.get(
           user.title = lichessAccount.title;
         }
       } else {
-        user = await userRepo.findOne({
-          where: [{ lichessId: lichessAccount.id }, { email }],
-        });
+        user = await userRepo
+          .createQueryBuilder("user")
+          .where("user.lichessId = :lichessId", {
+            lichessId: lichessAccount.id,
+          })
+          .orWhere("LOWER(user.email) = LOWER(:email)", { email })
+          .orWhere("LOWER(user.lichessUsername) = LOWER(:lichessUsername)", {
+            lichessUsername: lichessAccount.username,
+          })
+          .orWhere("LOWER(user.lichessUrl) = LOWER(:lichessUrl)", {
+            lichessUrl,
+          })
+          .getOne();
 
         if (!user) {
           isNewUser = true;
@@ -254,6 +265,7 @@ lichessRouter.get(
           });
         } else {
           user.email = email;
+          user.status = UserStatus.Active;
           user.lichessId = lichessAccount.id;
           user.lichessUsername = lichessAccount.username;
           user.lichessRatings = lichessRatings;

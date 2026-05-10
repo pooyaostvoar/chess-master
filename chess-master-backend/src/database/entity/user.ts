@@ -5,10 +5,12 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from "typeorm";
 import { ScheduleSlot } from "./schedule-slots";
 import { PeriodicSlotConfig } from "./periodic-slot-config";
 import { Payment } from "./payment";
+import { UserStatus } from "./types";
 
 export interface LichessPerfData {
   rating?: number;
@@ -22,6 +24,8 @@ export interface LichessPerfData {
 export type LichessRatingsMap = Record<string, LichessPerfData>;
 
 @Entity("users")
+@Index("IDX_users_status", ["status"])
+@Index("IDX_users_status_isMaster", ["status", "isMaster"])
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -46,6 +50,9 @@ export class User {
 
   @Column("boolean", { default: false })
   isMaster: boolean;
+
+  @Column("text", { default: UserStatus.Active })
+  status: UserStatus;
 
   @Column("text", { nullable: true })
   title: string | null;

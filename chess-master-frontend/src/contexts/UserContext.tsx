@@ -9,6 +9,7 @@ export interface User {
   name?: string | null;
   lastname?: string | null;
   isMaster: boolean;
+  status?: "active" | "disabled";
   /** USD per hour; used when suggesting slot prices on the master calendar. */
   hourlyRate?: number | null;
   title?: string | null;
