@@ -89,6 +89,7 @@ export function mapUserToSchemaBase(user: User): BaseUser {
     name: user.name,
     lastname: user.lastname,
     isMaster: user.isMaster,
+    status: user.status,
     title: user.title,
     rating: user.rating,
     bio: user.bio,

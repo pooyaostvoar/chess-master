@@ -1,6 +1,6 @@
 FROM node:20 AS builder
 WORKDIR /app
-RUN npm install -g pnpm
+RUN npm install -g pnpm@9.0.0
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install
 COPY . .

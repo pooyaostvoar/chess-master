@@ -8,12 +8,12 @@ import {
   Form,
   Input,
   Row,
+  Select,
   Space,
   Statistic,
   Table,
   Tag,
   message,
-  Descriptions,
   Typography,
   notification,
 } from "antd";
@@ -51,6 +51,7 @@ export function UserDetailPage({ userId, onBack }: Props) {
     chesscomUrl: data.chesscomUrl ?? "",
     lichessUrl: data.lichessUrl ?? "",
     isMaster: Boolean(data.isMaster),
+    status: data.status ?? "active",
   });
 
   const updateDirtyFlag = (values: Partial<AdminUser>) => {
@@ -197,6 +198,14 @@ export function UserDetailPage({ userId, onBack }: Props) {
                 <Form.Item label="Role">
                   <Input value={user.isMaster ? "Master" : "Normal"} disabled />
                 </Form.Item>
+                <Form.Item label="Status" name="status">
+                  <Select
+                    options={[
+                      { value: "active", label: "Active" },
+                      { value: "disabled", label: "Disabled" },
+                    ]}
+                  />
+                </Form.Item>
                 <Divider />
                 <Form.Item label="Title" name="title">
                   <Input />
@@ -244,6 +253,16 @@ export function UserDetailPage({ userId, onBack }: Props) {
                         <Tag color="blue">Master</Tag>
                       ) : (
                         <Tag>Normal</Tag>
+                      )
+                    }
+                  />
+                  <Statistic
+                    title="Status"
+                    valueRender={() =>
+                      user.status === "disabled" ? (
+                        <Tag color="red">Disabled</Tag>
+                      ) : (
+                        <Tag color="green">Active</Tag>
                       )
                     }
                   />

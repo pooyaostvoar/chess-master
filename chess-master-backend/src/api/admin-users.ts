@@ -17,6 +17,7 @@ adminUsersRouter.get("/", async (req, res, next) => {
     );
     const q = (req.query.q as string)?.trim();
     const role = (req.query.role as string)?.toLowerCase();
+    const status = (req.query.status as string)?.toLowerCase();
 
     const repo = AppDataSource.getRepository(User);
     const qb = repo.createQueryBuilder("user");
@@ -33,7 +34,13 @@ adminUsersRouter.get("/", async (req, res, next) => {
       qb.andWhere("user.isMaster = false");
     }
 
-    qb.skip((page - 1) * pageSize).take(pageSize);
+    if (status === "active" || status === "disabled") {
+      qb.andWhere("user.status = :status", { status });
+    } else if (status !== "all") {
+      qb.andWhere("user.status = :status", { status: "active" });
+    }
+
+    qb.orderBy("user.username", "ASC").skip((page - 1) * pageSize).take(pageSize);
 
     const [items, total] = await qb.getManyAndCount();
 
@@ -124,6 +131,7 @@ adminUsersRouter.patch("/:id", async (req, res, next) => {
       bio,
       chesscomUrl,
       lichessUrl,
+      status,
     } = req.body || {};
 
     if (username !== undefined) user.username = username;
@@ -134,6 +142,7 @@ adminUsersRouter.patch("/:id", async (req, res, next) => {
     if (bio !== undefined) user.bio = bio;
     if (chesscomUrl !== undefined) user.chesscomUrl = chesscomUrl;
     if (lichessUrl !== undefined) user.lichessUrl = lichessUrl;
+    if (status !== undefined) user.status = status;
 
     const updated = await repo.save(user);
     res.json(trimUser(updated));
@@ -148,6 +157,7 @@ function trimUser(user: User) {
     username: user.username,
     email: user.email,
     isMaster: user.isMaster,
+    status: user.status,
     title: user.title,
     rating: user.rating,
     bio: user.bio,

@@ -4,3 +4,8 @@ export enum SlotStatus {
   Reserved = "reserved",
   Paid = "paid",
 }
+
+export enum UserStatus {
+  Active = "active",
+  Disabled = "disabled",
+}

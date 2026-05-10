@@ -46,6 +46,7 @@ export interface User {
   rating?: number | null;
   bio?: string | null;
   isMaster: boolean;
+  status?: "active" | "disabled";
   profilePictureUrl?: string | null;
   profilePictureThumbnailUrl?: string | null;
   chesscomUrl?: string | null;

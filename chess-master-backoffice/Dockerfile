@@ -1,7 +1,7 @@
 FROM node:20-alpine AS build
 
 WORKDIR /app
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
 
 COPY package.json ./
 RUN pnpm install --no-frozen-lockfile
