@@ -1,9 +1,9 @@
 import * as fs from "fs";
 import * as path from "path";
 import { parse } from "csv-parse/sync";
-import { AppDataSource } from "../src/database/datasource";
-import { User } from "../src/database/entity/user";
-import { UserStatus } from "../src/database/entity/types";
+import { AppDataSource } from "../database/datasource";
+import { User } from "../database/entity/user";
+import { UserStatus } from "../database/entity/types";
 
 type CsvRow = Record<string, string>;
 
