@@ -80,10 +80,8 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
     user.profilePictureUrl || user.profilePictureThumbnailUrl;
 
   const fullName = [user.name, user.lastname].filter(Boolean).join(" ").trim();
-  const displayName = `${user.title ? `${user.title} ` : ""}${
-    fullName || user.username
-  }`;
-  const subtitle = fullName ? `@${user.username}` : null;
+  const personLabel = fullName || user.email || user.username;
+  const displayName = `${user.title ? `${user.title} ` : ""}${personLabel}`;
 
   const priceValue = user.hourlyRate
     ? `$${Number(user.hourlyRate).toFixed(0)}`
@@ -126,15 +124,22 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
           {/* META */}
           <div className="min-w-0 flex-1">
           <h1
-            className="text-2xl font-medium tracking-tight sm:text-4xl leading-[1.1]"
+            className="text-2xl tracking-tight sm:text-4xl leading-[1.1]"
             style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
           >
-            {displayName}
+            {user.title && (
+              <span className="font-medium">{user.title} </span>
+            )}
+            <span className="font-normal text-[#F4ECDD]/85 break-all">
+              {personLabel}
+            </span>
           </h1>
-          {subtitle && (
-            <p className="mt-1 text-sm text-[#F4ECDD]/65 truncate">
-              {subtitle}
-            </p>
+          {user.username && (
+            <div className="mt-2">
+              <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-white/15 text-white backdrop-blur">
+                @{user.username}
+              </span>
+            </div>
           )}
 
           {user.location && (
