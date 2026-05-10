@@ -50,6 +50,8 @@ export const userSchemaBase = z.object({
 
   phoneNumber: z.string().nullish(),
 
+  location: z.string().nullish(),
+
   twitchUrl: z.string().nullable().optional(),
 
   youtubeUrl: z.string().nullable().optional(),

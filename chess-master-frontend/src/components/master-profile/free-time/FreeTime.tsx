@@ -64,9 +64,10 @@ const groupSlotsByDay = (slots: ScheduleSlot[]): CalendarDayGroup[] => {
 
 type FreeTimeProps = {
   userId: number;
+  username?: string;
 };
 
-export default function FreeTime({ userId }: FreeTimeProps) {
+export default function FreeTime({ userId, username }: FreeTimeProps) {
   const calendarRef = useRef<HTMLDivElement | null>(null);
   const slotsTopRef = useRef<HTMLDivElement | null>(null);
 
@@ -124,19 +125,45 @@ export default function FreeTime({ userId }: FreeTimeProps) {
     });
   };
 
-  if (!scheduleSlots?.length) {
-    return null;
-  }
-
-  if (!selectedDay) {
+  if (!scheduleSlots?.length || !selectedDay) {
     return (
-      <div className="text-slate-900">
-        <div className="mb-2">
-          <h3 className="text-[20px] font-semibold tracking-tight text-slate-900">
-            Available Time Slots
-          </h3>
-          <p className="mt-2 text-sm text-slate-600">
-            No available lessons at the moment.
+      <div className="text-[#1F1109]">
+        <div
+          className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-1.5"
+          style={{ fontFamily: "Georgia, serif" }}
+        >
+          Schedule
+        </div>
+        <h3
+          className="text-base font-medium text-[#1F1109]"
+          style={{ fontFamily: "Georgia, serif" }}
+        >
+          Available time slots
+        </h3>
+
+        <div className="mt-4 rounded-lg border border-dashed border-[#1F1109]/[0.18] bg-[#FAF5EB]/60 px-5 py-10 text-center">
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[#F4ECDD] text-[#B8893D]">
+            <svg
+              viewBox="0 0 24 24"
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+            >
+              <rect x="4" y="5" width="16" height="15" rx="2" />
+              <path d="M4 9h16M9 3v4M15 3v4" strokeLinecap="round" />
+            </svg>
+          </div>
+          <p
+            className="text-sm font-medium text-[#1F1109]"
+            style={{ fontFamily: "Georgia, serif" }}
+          >
+            No availability published yet
+          </p>
+          <p className="mt-1.5 text-[13px] text-[#6B5640] max-w-sm mx-auto leading-relaxed">
+            {username
+              ? `${username} hasn't opened any lesson slots for booking. Send them a message and they'll get back to you.`
+              : "This coach hasn't opened any lesson slots for booking yet."}
           </p>
         </div>
       </div>
@@ -144,10 +171,19 @@ export default function FreeTime({ userId }: FreeTimeProps) {
   }
 
   return (
-    <div className="text-slate-900">
+    <div className="text-[#1F1109]">
       <div className="mb-2">
-        <h3 className="text-[20px] font-semibold tracking-tight text-slate-900">
-          Available Time Slots
+        <div
+          className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-1.5"
+          style={{ fontFamily: "Georgia, serif" }}
+        >
+          Schedule
+        </div>
+        <h3
+          className="text-base font-medium text-[#1F1109]"
+          style={{ fontFamily: "Georgia, serif" }}
+        >
+          Available time slots
         </h3>
       </div>
 

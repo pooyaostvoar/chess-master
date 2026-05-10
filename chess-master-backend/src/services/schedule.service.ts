@@ -104,6 +104,7 @@ export function mapUserToSchemaBase(user: User): BaseUser {
     languages: user.languages ?? undefined,
     teachingFocuses: user.teachingFocuses ?? undefined,
     phoneNumber: user.phoneNumber,
+    location: user.location,
     twitchUrl: user.twitchUrl,
     youtubeUrl: user.youtubeUrl,
     instagramUrl: user.instagramUrl,
