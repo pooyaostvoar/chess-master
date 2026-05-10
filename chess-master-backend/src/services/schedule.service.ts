@@ -13,6 +13,8 @@ import {
   sendReservationEmail,
   sendReservationRequestEmail,
 } from "./brevo_email";
+import { getStripeInstance } from "./stripe";
+import { PaymentStatus } from "../database/entity/payment";
 
 export interface CreateSlotData {
   masterId: number;
@@ -552,31 +554,11 @@ export async function updateSlotStatus(
     : AppDataSource.getRepository(ScheduleSlot);
   const slot = await repo.findOne({
     where: { id: slotId, master: { id: masterId } },
-    relations: ["reservedBy", "master"],
+    relations: ["reservedBy", "master", "payments"],
   });
 
   if (!slot) {
     throw new Error("Slot not found or you are not the master");
-  }
-
-  // If making it "Free", clear user
-  if (status === SlotStatus.Free && slot.status === SlotStatus.Paid) {
-    throw new Error("Cannot free a paid slot");
-  }
-  if (status === SlotStatus.Free) {
-    slot.reservedBy = null;
-  }
-
-  slot.status = status;
-  await repo.save(slot);
-
-  if (status === SlotStatus.Booked && slot.reservedBy) {
-    await sendReservationEmail({
-      user: slot.reservedBy,
-      master: slot.master,
-      startUtc: slot.startTime,
-      endUtc: slot.endTime,
-    });
   }
 
   if (status === SlotStatus.Paid) {
@@ -594,6 +576,36 @@ export async function updateSlotStatus(
         studentName: slot.reservedBy?.username ?? "",
       }),
     ]);
+  }
+
+  const payment = slot.payments.find(
+    (p) => p.status === PaymentStatus.Reserved
+  );
+  const stripePaymentIntentId = payment?.stripePaymentIntentId;
+  if (!stripePaymentIntentId && slot.price !== 0) {
+    throw new Error("No payment intent found for reserved slot");
+  }
+
+  const stripe = getStripeInstance();
+  if (status === SlotStatus.Free) {
+    slot.reservedBy = null;
+
+    stripePaymentIntentId &&
+      (await stripe.paymentIntents.cancel(stripePaymentIntentId));
+  }
+
+  slot.status = status;
+  await repo.save(slot);
+
+  if (status === SlotStatus.Booked && slot.reservedBy) {
+    stripePaymentIntentId &&
+      (await stripe.paymentIntents.capture(stripePaymentIntentId));
+    await sendReservationEmail({
+      user: slot.reservedBy,
+      master: slot.master,
+      startUtc: slot.startTime,
+      endUtc: slot.endTime,
+    });
   }
 
   // Reload with relations

@@ -85,6 +85,12 @@ export function createCheckoutSession(eventId: number, userId: number) {
           quantity: 1,
         },
       ],
+      payment_intent_data: {
+        capture_method: "manual",
+        metadata: {
+          paymentId: payment.id.toString(),
+        },
+      },
 
       success_url: `${getClientUrl()}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${getClientUrl()}/cancel`,
