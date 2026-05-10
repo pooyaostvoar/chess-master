@@ -162,7 +162,7 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
         </div>
 
         {/* PRICE + ACTIONS */}
-        <div className="flex flex-row items-center justify-between gap-4 md:flex-col md:items-end md:justify-start md:shrink-0">
+        <div className="flex flex-col gap-4 md:items-end md:shrink-0">
           <div className="md:text-right">
             {priceValue ? (
               <>
@@ -184,7 +184,7 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
             )}
           </div>
 
-          <div className="flex flex-row gap-2 md:flex-col md:items-stretch md:w-44">
+          <div className="flex flex-row gap-2 w-full md:flex-col md:items-stretch md:w-44 [&>button]:flex-1 md:[&>button]:flex-none">
             <button
               className="flex items-center justify-center gap-2 rounded-full bg-[#B8893D] px-5 py-2.5 text-sm font-medium text-[#1F1109] transition hover:bg-[#A37728]"
               onClick={() => navigate(`/chat/${user.id}`)}
