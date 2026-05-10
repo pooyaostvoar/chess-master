@@ -62,10 +62,10 @@ const PiecePaths: Record<string, React.ReactNode> = {
 };
 
 const DefaultAvatar: React.FC<{ piece: string }> = ({ piece }) => (
-  <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-[#1F1109] ring-4 ring-[#F4ECDD]/80 shadow-xl sm:h-36 sm:w-36">
+  <div className="flex h-28 w-28 items-center justify-center rounded-3xl bg-[#1F1109] ring-4 ring-[#F4ECDD]/80 shadow-xl sm:h-36 sm:w-36 shrink-0">
     <svg
       viewBox="0 0 45 45"
-      className="h-14 w-14 sm:h-20 sm:w-20"
+      className="h-16 w-16 sm:h-20 sm:w-20"
       aria-hidden="true"
     >
       {PiecePaths[piece] || PiecePaths.pawn}
@@ -86,48 +86,46 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
   }`;
   const subtitle = fullName ? `@${user.username}` : null;
 
-  const priceLabel = user.hourlyRate
-    ? `$${Number(user.hourlyRate).toFixed(0)} / hour`
-    : "Price on request";
+  const priceValue = user.hourlyRate
+    ? `$${Number(user.hourlyRate).toFixed(0)}`
+    : null;
 
   const piece = TITLE_TO_PIECE[user.title || ""] || "pawn";
 
   return (
-    <div className="bg-gradient-to-br from-[#1F1109] via-[#3D2817] to-[#5C3A1E] text-[#F4ECDD]">
-      <div className="flex items-start gap-6 p-4 sm:p-8 justify-between">
-        {/* LEFT — META */}
+    <div className="rounded-xl bg-gradient-to-br from-[#1F1109] via-[#3D2817] to-[#5C3A1E] text-[#F4ECDD] border border-[#1F1109]/[0.12]">
+      <div className="flex flex-col gap-6 p-5 sm:p-8 md:flex-row md:items-center md:gap-8">
+        {/* AVATAR */}
+        {profileImage ? (
+          <img
+            src={MEDIA_URL + profileImage}
+            alt={displayName}
+            className="h-28 w-28 rounded-3xl object-cover shadow-xl ring-4 ring-[#F4ECDD]/80 sm:h-36 sm:w-36 shrink-0"
+          />
+        ) : (
+          <DefaultAvatar piece={piece} />
+        )}
+
+        {/* META */}
         <div className="min-w-0 flex-1">
-          {(user.languages?.length ?? 0) > 0 && (
-            <div className="mb-3">
-              <LanguageRow user={user} />
-            </div>
-          )}
-
-          <div className="mb-4">
-            <SocialMediaRow user={user} />
-          </div>
-
-          <div className="mb-3 flex flex-wrap items-center gap-2">
+          <div className="mb-2 flex flex-wrap items-center gap-2">
             <VerifiedBadge />
-            <span className="rounded-full bg-[#F4ECDD]/15 px-2.5 py-1 text-xs font-medium text-[#F4ECDD] backdrop-blur ring-1 ring-inset ring-[#F4ECDD]/20">
-              {priceLabel}
-            </span>
           </div>
 
           <h1
-            className="text-xl font-medium tracking-tight sm:text-3xl break-words leading-[1.15]"
+            className="text-2xl font-medium tracking-tight sm:text-4xl leading-[1.1]"
             style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
           >
             {displayName}
           </h1>
           {subtitle && (
-            <p className="mt-1 text-xs text-[#F4ECDD]/65 break-all sm:text-sm">
+            <p className="mt-1 text-sm text-[#F4ECDD]/65 truncate">
               {subtitle}
             </p>
           )}
 
           {user.location && (
-            <div className="mt-2 flex items-center gap-1.5 text-sm text-[#F4ECDD]/85">
+            <div className="mt-3 flex items-center gap-1.5 text-sm text-[#F4ECDD]/85">
               <svg
                 viewBox="0 0 20 20"
                 className="h-4 w-4 shrink-0"
@@ -151,23 +149,44 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
               <span>{user.location}</span>
             </div>
           )}
-        </div>
 
-        {/* RIGHT — AVATAR + ACTIONS */}
-        <div className="flex flex-col items-center gap-3">
-          {profileImage ? (
-            <img
-              src={MEDIA_URL + profileImage}
-              alt={displayName}
-              className="h-24 w-24 rounded-3xl object-cover shadow-xl ring-4 ring-[#F4ECDD]/80 sm:h-36 sm:w-36"
-            />
-          ) : (
-            <DefaultAvatar piece={piece} />
+          {(user.languages?.length ?? 0) > 0 && (
+            <div className="mt-3">
+              <LanguageRow user={user} />
+            </div>
           )}
 
-          <div className="flex flex-col items-center gap-2 w-full sm:w-auto">
+          <div className="mt-4">
+            <SocialMediaRow user={user} />
+          </div>
+        </div>
+
+        {/* PRICE + ACTIONS */}
+        <div className="flex flex-row items-center justify-between gap-4 md:flex-col md:items-end md:justify-start md:shrink-0">
+          <div className="md:text-right">
+            {priceValue ? (
+              <>
+                <div
+                  className="text-3xl sm:text-4xl font-medium leading-none text-[#F4ECDD]"
+                  style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
+                >
+                  {priceValue}
+                  <span className="text-base sm:text-lg font-normal text-[#F4ECDD]/65">
+                    /hour
+                  </span>
+                </div>
+                <div className="mt-1 text-[11px] tracking-[0.08em] uppercase text-[#F4ECDD]/55">
+                  Per session
+                </div>
+              </>
+            ) : (
+              <div className="text-sm text-[#F4ECDD]/75">Price on request</div>
+            )}
+          </div>
+
+          <div className="flex flex-row gap-2 md:flex-col md:items-stretch md:w-44">
             <button
-              className="flex items-center justify-center gap-2 rounded-full bg-[#B8893D] px-4 md:px-6 py-2 text-xs font-medium text-[#1F1109] transition hover:bg-[#A37728]"
+              className="flex items-center justify-center gap-2 rounded-full bg-[#B8893D] px-5 py-2.5 text-sm font-medium text-[#1F1109] transition hover:bg-[#A37728]"
               onClick={() => navigate(`/chat/${user.id}`)}
             >
               <svg viewBox="0 0 20 20" className="h-4 w-4">
@@ -180,7 +199,7 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
             </button>
 
             <button
-              className="flex items-center justify-center gap-2 rounded-full border border-[#F4ECDD]/30 bg-[#F4ECDD]/10 px-4 md:px-8 py-2 text-xs font-medium text-[#F4ECDD] backdrop-blur transition hover:bg-[#F4ECDD]/20 lg:hidden"
+              className="flex items-center justify-center gap-2 rounded-full border border-[#F4ECDD]/30 bg-[#F4ECDD]/10 px-5 py-2.5 text-sm font-medium text-[#F4ECDD] backdrop-blur transition hover:bg-[#F4ECDD]/20 lg:hidden"
               onClick={() =>
                 document.getElementById("free-time")?.scrollIntoView({
                   behavior: "smooth",

@@ -56,24 +56,34 @@ export default function MasterProfilePage() {
   const studentsLabel = user.studentsCount ?? 0;
 
   const stats = [
-    { label: "Fide rating", value: user.rating ?? "—" },
-    { label: "Rapid", value: user.lichessRatings?.rapid?.rating ?? "—" },
-    { label: "Blitz", value: user.lichessRatings?.blitz?.rating ?? "—" },
-    { label: "Students", value: studentsLabel ? `${studentsLabel}+` : "—" },
-  ];
+    { label: "Fide rating", value: user.rating },
+    { label: "Rapid", value: user.lichessRatings?.rapid?.rating },
+    { label: "Blitz", value: user.lichessRatings?.blitz?.rating },
+    { label: "Students", value: studentsLabel ? `${studentsLabel}+` : null },
+  ].filter((s) => s.value != null && s.value !== "");
 
   const masterTags = user.teachingFocuses ?? [];
 
   return (
     <div className="min-h-screen bg-[#FAF5EB] text-[#1F1109]">
-      <div className="max-w-5xl mx-auto px-3 sm:px-8 py-6 sm:py-10">
-        <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-          {/* LEFT — PROFILE CARD */}
-          <section className="overflow-hidden rounded-xl bg-white border border-[#1F1109]/[0.12]">
-            <MasterProfileHeader user={user} />
+      <div className="max-w-6xl mx-auto px-3 sm:px-8 py-6 sm:py-10 space-y-6">
+        {/* HERO */}
+        <MasterProfileHeader user={user} />
 
-            <div className="grid gap-6 p-4 md:p-6">
-              <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
+        {/* BODY */}
+        <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
+          {/* LEFT — ABOUT */}
+          <section className="rounded-xl bg-white border border-[#1F1109]/[0.12] p-5 md:p-6 space-y-6">
+            {stats.length > 0 && (
+              <div
+                className={`grid gap-3 ${
+                  stats.length === 1
+                    ? "grid-cols-1"
+                    : stats.length === 2
+                    ? "grid-cols-2"
+                    : "grid-cols-2 md:grid-cols-3"
+                }`}
+              >
                 {stats.map((item) => (
                   <div
                     key={item.label}
@@ -91,85 +101,85 @@ export default function MasterProfilePage() {
                   </div>
                 ))}
               </div>
+            )}
 
-              <div>
-                <div
-                  className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-1.5"
-                  style={{ fontFamily: "Georgia, serif" }}
-                >
-                  About
-                </div>
-                <h3
-                  className="text-base font-medium text-[#1F1109]"
-                  style={{ fontFamily: "Georgia, serif" }}
-                >
-                  Background
-                </h3>
-                {bioText ? (
-                  <div className="mt-2 max-w-3xl">
-                    <p
-                      ref={bioRef}
-                      className={`text-[13px] leading-6 text-[#5C4631] whitespace-pre-wrap ${
-                        !bioExpanded ? "line-clamp-5" : ""
-                      }`}
-                    >
-                      {bioText}
-                    </p>
-                    {!bioExpanded && bioOverflows && (
-                      <button
-                        type="button"
-                        onClick={() => setBioExpanded(true)}
-                        className="mt-1.5 text-xs font-medium text-[#B8893D] hover:underline"
-                      >
-                        See more
-                      </button>
-                    )}
-                    {bioExpanded && (
-                      <button
-                        type="button"
-                        onClick={() => setBioExpanded(false)}
-                        className="mt-1.5 text-xs font-medium text-[#B8893D] hover:underline"
-                      >
-                        See less
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <p className="mt-2 max-w-3xl text-[13px] leading-6 text-[#6B5640]">
-                    No bio yet.
-                  </p>
-                )}
+            <div>
+              <div
+                className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-1.5"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                About
               </div>
-
-              <div>
-                <div
-                  className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-1.5"
-                  style={{ fontFamily: "Georgia, serif" }}
-                >
-                  Specialty
-                </div>
-                <h3
-                  className="text-base font-medium text-[#1F1109]"
-                  style={{ fontFamily: "Georgia, serif" }}
-                >
-                  Coaching focus
-                </h3>
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {masterTags.length > 0 ? (
-                    masterTags.map((item) => (
-                      <span
-                        key={item}
-                        className="rounded-full border border-[#1F1109]/[0.12] bg-[#F4ECDD]/60 px-3 py-1 text-xs text-[#3D2817]"
-                      >
-                        {item}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="text-[13px] text-[#6B5640]">
-                      No coaching focus added yet.
-                    </span>
+              <h3
+                className="text-base font-medium text-[#1F1109]"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                Background
+              </h3>
+              {bioText ? (
+                <div className="mt-2">
+                  <p
+                    ref={bioRef}
+                    className={`text-[13px] leading-6 text-[#5C4631] whitespace-pre-wrap ${
+                      !bioExpanded ? "line-clamp-5" : ""
+                    }`}
+                  >
+                    {bioText}
+                  </p>
+                  {!bioExpanded && bioOverflows && (
+                    <button
+                      type="button"
+                      onClick={() => setBioExpanded(true)}
+                      className="mt-1.5 text-xs font-medium text-[#B8893D] hover:underline"
+                    >
+                      See more
+                    </button>
+                  )}
+                  {bioExpanded && (
+                    <button
+                      type="button"
+                      onClick={() => setBioExpanded(false)}
+                      className="mt-1.5 text-xs font-medium text-[#B8893D] hover:underline"
+                    >
+                      See less
+                    </button>
                   )}
                 </div>
+              ) : (
+                <p className="mt-2 text-[13px] leading-6 text-[#6B5640]">
+                  No bio yet.
+                </p>
+              )}
+            </div>
+
+            <div>
+              <div
+                className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-1.5"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                Specialty
+              </div>
+              <h3
+                className="text-base font-medium text-[#1F1109]"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                Coaching focus
+              </h3>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {masterTags.length > 0 ? (
+                  masterTags.map((item) => (
+                    <span
+                      key={item}
+                      className="rounded-full border border-[#1F1109]/[0.12] bg-[#F4ECDD]/60 px-3 py-1 text-xs text-[#3D2817]"
+                    >
+                      {item}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-[13px] text-[#6B5640]">
+                    No coaching focus added yet.
+                  </span>
+                )}
               </div>
             </div>
           </section>
@@ -177,7 +187,7 @@ export default function MasterProfilePage() {
           {/* RIGHT — SCHEDULE */}
           <section
             id="free-time"
-            className="rounded-xl bg-white border border-[#1F1109]/[0.12] p-4 md:p-6"
+            className="rounded-xl bg-white border border-[#1F1109]/[0.12] p-5 md:p-6"
           >
             <FreeTime userId={user.id} username={user.username} />
           </section>
