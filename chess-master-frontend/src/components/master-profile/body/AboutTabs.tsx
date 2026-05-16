@@ -1,7 +1,13 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { BaseUser } from "@chess-master/schemas";
 
-interface Props {
+interface AboutTabsProps {
   user: BaseUser;
 }
 
@@ -11,7 +17,7 @@ type ProfileTab = {
   content: string;
 };
 
-export const AboutTabs: React.FC<Props> = ({ user }) => {
+export const AboutTabs: React.FC<AboutTabsProps> = ({ user }) => {
   const [active, setActive] = useState("");
   const [bioExpanded, setBioExpanded] = useState(false);
   const [bioOverflows, setBioOverflows] = useState(false);
@@ -31,9 +37,7 @@ export const AboutTabs: React.FC<Props> = ({ user }) => {
     }
 
     const bioText = user.bio?.trim();
-    return bioText
-      ? [{ key: "bio", title: "About me", content: bioText }]
-      : [];
+    return bioText ? [{ key: "bio", title: "About me", content: bioText }] : [];
   }, [user.bio, user.profileSections]);
 
   const activeTab = tabs.find((tab) => tab.key === active) ?? tabs[0];
@@ -57,7 +61,9 @@ export const AboutTabs: React.FC<Props> = ({ user }) => {
 
     const measure = () => {
       if (!bioRef.current) return;
-      setBioOverflows(bioRef.current.scrollHeight > bioRef.current.clientHeight);
+      setBioOverflows(
+        bioRef.current.scrollHeight > bioRef.current.clientHeight
+      );
     };
     measure();
     requestAnimationFrame(measure);
@@ -77,7 +83,9 @@ export const AboutTabs: React.FC<Props> = ({ user }) => {
   const body = (
     <p
       ref={shouldClamp ? bioRef : undefined}
-      className={`whitespace-pre-wrap ${shouldClamp && !bioExpanded ? "line-clamp-6" : ""}`}
+      className={`whitespace-pre-wrap ${
+        shouldClamp && !bioExpanded ? "line-clamp-6" : ""
+      }`}
     >
       {activeTab.content}
     </p>
@@ -85,7 +93,6 @@ export const AboutTabs: React.FC<Props> = ({ user }) => {
 
   return (
     <div>
-      {/* Tab bar */}
       <div className="border-b border-[#1F1109]/[0.12] -mx-1 overflow-x-auto overflow-y-hidden scrollbar-hide">
         <div className="flex gap-1 min-w-max px-1">
           {tabs.map((tab) => {
@@ -135,20 +142,6 @@ export const AboutTabs: React.FC<Props> = ({ user }) => {
               </button>
             )}
           </div>
-
-          {activeTab.title.trim().toLowerCase() === "best skills" &&
-            (user.teachingFocuses?.length ?? 0) > 0 && (
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {user.teachingFocuses?.map((item) => (
-                  <span
-                    key={item}
-                    className="rounded-full border border-[#1F1109]/[0.12] bg-[#F4ECDD]/60 px-3 py-1 text-xs text-[#3D2817]"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-          )}
         </div>
       </div>
     </div>

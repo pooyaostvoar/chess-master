@@ -95,29 +95,35 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
         {/* AVATAR + META wrapper — row on mobile, "contents" on desktop so avatar/meta become direct flex children of the outer row */}
         <div className="flex flex-row items-start gap-4 md:contents">
           {/* AVATAR */}
-          <div className="relative shrink-0">
-            {profileImage ? (
-              <img
-                src={getMediaUrl(profileImage)}
-                alt={displayName}
-                className="h-20 w-20 sm:h-28 sm:w-28 md:h-36 md:w-36 rounded-3xl object-cover shadow-xl ring-4 ring-[#F4ECDD]/80"
-              />
-            ) : (
-              <DefaultAvatar piece={piece} />
-            )}
-            <span
-              className="absolute -bottom-1 -right-1 flex h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 items-center justify-center rounded-full bg-[#B8893D] ring-2 ring-[#1F1109] shadow"
-              title="Verified Coach"
-              aria-label="Verified Coach"
-            >
-              <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 text-[#1F1109]">
-                <path
-                  fillRule="evenodd"
-                  d="M16.704 5.29a1 1 0 00-1.408-1.42L8.5 10.6 5.704 7.79A1 1 0 004.296 9.2l3.5 3.49a1 1 0 001.408 0l7.5-7.4z"
-                  clipRule="evenodd"
+          <div className="flex shrink-0 flex-col items-center gap-2">
+            <div className="relative shrink-0">
+              {profileImage ? (
+                <img
+                  src={getMediaUrl(profileImage)}
+                  alt={displayName}
+                  className="h-20 w-20 sm:h-28 sm:w-28 md:h-36 md:w-36 rounded-3xl object-cover shadow-xl ring-4 ring-[#F4ECDD]/80"
                 />
-              </svg>
-            </span>
+              ) : (
+                <DefaultAvatar piece={piece} />
+              )}
+              <span
+                className="absolute -bottom-1 -right-1 flex h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 items-center justify-center rounded-full bg-[#B8893D] ring-2 ring-[#1F1109] shadow"
+                title="Verified Coach"
+                aria-label="Verified Coach"
+              >
+                <svg
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 text-[#1F1109]"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.704 5.29a1 1 0 00-1.408-1.42L8.5 10.6 5.704 7.79A1 1 0 004.296 9.2l3.5 3.49a1 1 0 001.408 0l7.5-7.4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </span>
+            </div>
             {priceValue && (
               <div className="md:hidden text-center leading-none">
                 <div
@@ -129,69 +135,64 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
                     /hr
                   </span>
                 </div>
-                <div className="mt-1 text-[10px] tracking-[0.08em] uppercase text-[#F4ECDD]/55">
-                  Per hour
-                </div>
               </div>
             )}
           </div>
 
           {/* META */}
           <div className="min-w-0 flex-1">
-          <h1
-            className="text-2xl tracking-tight sm:text-4xl leading-[1.1]"
-            style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
-          >
-            {user.title && (
-              <span className="font-medium">{user.title} </span>
-            )}
-            <span className="font-normal text-[#F4ECDD]/85 break-all">
-              {personLabel}
-            </span>
-          </h1>
-          {user.username && (
-            <div className="mt-2">
-              <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-white/15 text-white backdrop-blur">
-                @{user.username}
+            <h1
+              className="text-2xl tracking-tight sm:text-4xl leading-[1.1]"
+              style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
+            >
+              {user.title && <span className="font-medium">{user.title} </span>}
+              <span className="font-normal text-[#F4ECDD]/85 break-all">
+                {personLabel}
               </span>
-            </div>
-          )}
+            </h1>
+            {user.username && (
+              <div className="mt-2">
+                <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-white/15 text-white backdrop-blur">
+                  @{user.username}
+                </span>
+              </div>
+            )}
 
-          {user.location && (
-            <div className="mt-3 flex items-center gap-1.5 text-sm text-[#F4ECDD]/85">
-              <svg
-                viewBox="0 0 20 20"
-                className="h-4 w-4 shrink-0"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path
-                  d="M10 18s6-5.686 6-10A6 6 0 1 0 4 8c0 4.314 6 10 6 10Z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinejoin="round"
-                />
-                <circle
-                  cx="10"
-                  cy="8"
-                  r="2"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                />
-              </svg>
-              <span>{user.location}</span>
-            </div>
-          )}
+            {user.location && (
+              <div className="mt-3 flex items-center gap-1.5 text-sm text-[#F4ECDD]/85">
+                <svg
+                  viewBox="0 0 20 20"
+                  className="h-4 w-4 shrink-0"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M10 18s6-5.686 6-10A6 6 0 1 0 4 8c0 4.314 6 10 6 10Z"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinejoin="round"
+                  />
+                  <circle
+                    cx="10"
+                    cy="8"
+                    r="2"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  />
+                </svg>
+                <span>{user.location}</span>
+              </div>
+            )}
 
-          {(user.languages?.length ?? 0) > 0 && (
-            <div className="mt-3">
-              <LanguageRow user={user} />
-            </div>
-          )}
+            {(user.languages?.length ?? 0) > 0 && (
+              <div className="mt-3">
+                <LanguageRow user={user} />
+              </div>
+            )}
 
-          <div className="mt-4">
-            <SocialMediaRow user={user} />
-          </div>
+            <div className="mt-4">
+              <SocialMediaRow user={user} />
+            </div>
           </div>
         </div>
 
