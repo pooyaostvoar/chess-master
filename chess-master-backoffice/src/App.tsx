@@ -6,6 +6,8 @@ import { UsersPage } from "./pages/UsersPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { UserDetailPage } from "./pages/UserDetailPage";
 import { SlotsPage } from "./pages/SlotsPage";
+import { BlogPostsPage } from "./pages/BlogPostsPage";
+import { BlogPostDetailPage } from "./pages/BlogPostDetailPage";
 
 export default function App() {
   const [admin, setAdmin] = useState<Admin | null>(null);
@@ -14,6 +16,9 @@ export default function App() {
   const [activePage, setActivePage] = useState("dashboard");
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null);
+  const [selectedBlogPostId, setSelectedBlogPostId] = useState<
+    number | null | "new"
+  >(null);
 
   useEffect(() => {
     AdminApi.me()
@@ -55,6 +60,12 @@ export default function App() {
       ? "User Detail"
       : activePage === "slots"
       ? "Schedule Slots"
+      : activePage === "blogPosts"
+      ? "Blog"
+      : activePage === "blogPostDetail"
+      ? selectedBlogPostId === "new"
+        ? "New Blog Post"
+        : "Edit Blog Post"
       : "";
 
   return (
@@ -88,8 +99,23 @@ export default function App() {
         <SlotsPage
           onSelectSlot={(slot) => {
             setSelectedSlotId(slot.id);
-            // You can add a slot detail page later if needed
-            // setActivePage("slotDetail");
+          }}
+        />
+      ) : null}
+      {activePage === "blogPosts" ? (
+        <BlogPostsPage
+          onSelectPost={(post) => {
+            setSelectedBlogPostId(post === null ? "new" : post.id);
+            setActivePage("blogPostDetail");
+          }}
+        />
+      ) : null}
+      {activePage === "blogPostDetail" ? (
+        <BlogPostDetailPage
+          postId={selectedBlogPostId === "new" ? null : selectedBlogPostId}
+          onBack={() => {
+            setSelectedBlogPostId(null);
+            setActivePage("blogPosts");
           }}
         />
       ) : null}

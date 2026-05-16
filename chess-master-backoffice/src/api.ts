@@ -176,6 +176,58 @@ export const AdminImpersonateApi = {
     }),
 };
 
+export type AdminBlogPost = {
+  id: number;
+  title: string;
+  slug: string;
+  contentHtml: string;
+};
+
+export type AdminBlogPostListResponse = {
+  items: AdminBlogPost[];
+  total: number;
+  page: number;
+  pageSize: number;
+};
+
+export const AdminBlogPostsApi = {
+  list: (params: { page: number; pageSize: number; q?: string }) => {
+    const search = new URLSearchParams();
+    search.set("page", String(params.page));
+    search.set("pageSize", String(params.pageSize));
+    if (params.q) search.set("q", params.q);
+    return request<AdminBlogPostListResponse>(
+      `/posts?${search.toString()}`
+    );
+  },
+  get: (id: number) => request<AdminBlogPost>(`/posts/${id}`),
+  create: (payload: {
+    title: string;
+    slug?: string;
+    contentHtml: string;
+  }) =>
+    request<AdminBlogPost>("/admin/posts", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+  update: (
+    id: number,
+    payload: Partial<{
+      title: string;
+      slug: string;
+      contentHtml: string;
+    }>
+  ) =>
+    request<AdminBlogPost>(`/admin/posts/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    }),
+  delete: (id: number) =>
+    request<{ message: string }>(`/admin/posts/${id}`, {
+      method: "DELETE",
+    }),
+};
+
 export const AdminSlotsApi = {
   list: (params: {
     page: number;

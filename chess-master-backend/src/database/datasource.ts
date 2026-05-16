@@ -9,6 +9,7 @@ import { ensureTestDatabase } from "./utils";
 import { Message } from "./entity/message";
 import { PushSubscription } from "./entity/push-subscription";
 import { Payment } from "./entity/payment";
+import { BlogPost } from "./entity/blog-post";
 
 const defaultConfig: DataSourceOptions = {
   type: "postgres",
@@ -36,6 +37,7 @@ const defaultConfig: DataSourceOptions = {
     Message,
     PushSubscription,
     Payment,
+    BlogPost,
   ],
 };
 
