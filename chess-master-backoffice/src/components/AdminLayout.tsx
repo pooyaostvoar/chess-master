@@ -23,6 +23,7 @@ const navItems: NavItem[] = [
   { key: "dashboard", label: "Dashboard" },
   { key: "users", label: "Users" },
   { key: "slots", label: "Events" },
+  { key: "blogPosts", label: "Blog" },
 ];
 
 export function AdminLayout({
