@@ -140,10 +140,9 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
 
   return (
     <div className="rounded-xl bg-gradient-to-br from-[#1F1109] via-[#3D2817] to-[#5C3A1E] text-[#F4ECDD] border border-[#1F1109]/[0.12]">
-      <div className="flex flex-col gap-4 p-5 sm:p-8 md:flex-row md:items-center md:gap-8">
-        {/* Avatar + meta + stats (stats on the right on mobile) */}
-        <div className="flex min-w-0 flex-1 flex-row items-start gap-3 md:gap-8">
-          <div className="flex min-w-0 flex-1 flex-row items-start gap-4">
+      <div className="flex flex-col gap-4 p-5 sm:p-8 lg:flex-row lg:items-center lg:gap-8">
+        {/* Avatar + meta */}
+        <div className="flex min-w-0 flex-1 flex-row items-start gap-4 lg:gap-8">
           {/* AVATAR */}
           <div className="flex shrink-0 flex-col items-center gap-2">
             <div className="relative shrink-0">
@@ -174,19 +173,19 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
                 </svg>
               </span>
             </div>
-            <div className="w-full max-w-[9rem] text-center leading-none sm:max-w-[10rem] md:max-w-[9rem]">
+            <div className="w-full max-w-[9rem] text-center leading-none sm:max-w-[10rem] lg:max-w-[9rem]">
               {priceValue ? (
                 <div
-                  className="text-2xl font-medium text-[#F4ECDD] md:text-3xl"
+                  className="text-2xl font-medium text-[#F4ECDD] lg:text-3xl"
                   style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
                 >
                   {priceValue}
-                  <span className="text-sm font-normal text-[#F4ECDD]/65 md:text-base">
+                  <span className="text-sm font-normal text-[#F4ECDD]/65 lg:text-base">
                     /hr
                   </span>
                 </div>
               ) : (
-                <div className="text-xs text-[#F4ECDD]/75 md:text-sm">
+                <div className="text-xs text-[#F4ECDD]/75 lg:text-sm">
                   Price on request
                 </div>
               )}
@@ -253,24 +252,23 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
               <SocialMediaRow user={user} />
             </div>
           </div>
-          </div>
-
-          {hasProfileStats(user) && (
-            <div className="w-[9.5rem] shrink-0 sm:w-52 md:hidden">
-              <ProfileStats user={user} />
-            </div>
-          )}
         </div>
 
-        {/* Stats (desktop) + actions */}
-        <div className="flex w-full flex-col gap-2 md:w-52 md:shrink-0">
-          {hasProfileStats(user) && (
-            <div className="hidden md:block">
-              <ProfileStats user={user} />
-            </div>
-          )}
+        {hasProfileStats(user) && (
+          <div className="w-full lg:hidden">
+            <ProfileStats user={user} />
+          </div>
+        )}
 
-          <div className="flex w-full flex-row gap-2 md:flex-col md:items-stretch [&>button]:flex-1 md:[&>button]:flex-none">
+        <div className="flex w-full flex-row gap-2 lg:hidden [&>button]:flex-1">
+          {actionButtons}
+        </div>
+
+        {/* Stats + actions (desktop) */}
+        <div className="hidden w-52 shrink-0 flex-col gap-2 lg:flex">
+          {hasProfileStats(user) && <ProfileStats user={user} />}
+
+          <div className="flex flex-col items-stretch">
             {actionButtons}
           </div>
         </div>

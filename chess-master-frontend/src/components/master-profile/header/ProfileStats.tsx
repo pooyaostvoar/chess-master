@@ -33,26 +33,30 @@ export const ProfileStats: React.FC<ProfileStatsProps> = ({ user }) => {
 
   if (stats.length === 0) return null;
 
+  const containerClassName =
+    "flex w-full gap-1.5 lg:grid lg:grid-cols-2 lg:gap-2";
+  const itemClassName =
+    "flex min-w-0 flex-1 flex-row items-center gap-1.5 rounded-lg border border-[#F4ECDD]/15 bg-[#F4ECDD]/10 px-2 py-1.5 lg:flex-none lg:flex-col lg:items-center lg:justify-center lg:gap-0.5 lg:px-2 lg:py-2 lg:text-center";
+
   return (
-    <div className="grid w-full grid-cols-2 gap-1.5 md:gap-2">
+    <div className={containerClassName}>
       {stats.map((item) => {
         const Icon = item.icon;
         return (
-          <div
-            key={item.label}
-            className="flex flex-col items-center justify-center gap-0.5 rounded-lg border border-[#F4ECDD]/15 bg-[#F4ECDD]/10 px-2 py-2 text-center"
-          >
-            <div className="flex h-5 w-5 items-center justify-center rounded-md bg-[#B8893D]/20 text-[#B8893D]">
+          <div key={item.label} className={itemClassName}>
+            <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-[#B8893D]/20 text-[#B8893D]">
               <Icon className="h-3 w-3" strokeWidth={2} />
             </div>
-            <div
-              className="text-sm font-medium leading-none tabular-nums text-[#F4ECDD]"
-              style={{ fontFamily: "Georgia, serif" }}
-            >
-              {item.value}
-            </div>
-            <div className="text-[8px] font-medium tracking-[0.06em] uppercase text-[#F4ECDD]/65">
-              {item.label}
+            <div className="min-w-0 lg:text-center">
+              <p
+                className="text-sm font-medium leading-none tabular-nums text-[#F4ECDD]"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                {item.value}
+              </p>
+              <p className="mt-0.5 text-[8px] font-medium tracking-[0.06em] uppercase text-[#F4ECDD]/65 lg:mt-0.5">
+                {item.label}
+              </p>
             </div>
           </div>
         );
