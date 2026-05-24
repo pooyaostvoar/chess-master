@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Calendar } from "lucide-react";
 import { DayCalendar } from "./DayCalendar";
 import { AvailableSlotsPanel } from "./AvailableSlotsPanel";
@@ -97,9 +97,12 @@ function FreeTimeHeader() {
   );
 }
 
+const MD_BREAKPOINT_QUERY = "(min-width: 768px)";
+
 export default function FreeTime({ userId, username }: FreeTimeProps) {
-  const calendarRef = useRef<HTMLDivElement | null>(null);
+  const calendarColumnRef = useRef<HTMLDivElement | null>(null);
   const slotsTopRef = useRef<HTMLDivElement | null>(null);
+  const [slotsMaxHeight, setSlotsMaxHeight] = useState<number | null>(null);
 
   const { rawEvents: scheduleSlots, refreshSlots } = useScheduleSlots(
     userId.toString(),
@@ -127,6 +130,34 @@ export default function FreeTime({ userId, username }: FreeTimeProps) {
     [dayGroups, selectedDate],
   );
 
+  useLayoutEffect(() => {
+    const column = calendarColumnRef.current;
+    if (!column) return;
+
+    const media = window.matchMedia(MD_BREAKPOINT_QUERY);
+
+    const syncHeight = () => {
+      if (!media.matches) {
+        setSlotsMaxHeight(null);
+        return;
+      }
+      setSlotsMaxHeight(column.getBoundingClientRect().height);
+    };
+
+    syncHeight();
+
+    const observer = new ResizeObserver(syncHeight);
+    observer.observe(column);
+    media.addEventListener("change", syncHeight);
+    window.addEventListener("resize", syncHeight);
+
+    return () => {
+      observer.disconnect();
+      media.removeEventListener("change", syncHeight);
+      window.removeEventListener("resize", syncHeight);
+    };
+  }, [selectedDate, dayGroups.length]);
+
   const scrollToRef = (ref: React.RefObject<HTMLDivElement | null>) => {
     if (!ref.current) return;
     if (window.innerWidth >= 768) return;
@@ -150,17 +181,17 @@ export default function FreeTime({ userId, username }: FreeTimeProps) {
   const handleBackToCalendar = () => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        scrollToRef(calendarRef);
+        scrollToRef(calendarColumnRef);
       });
     });
   };
 
   if (!scheduleSlots?.length || !selectedDay) {
     return (
-      <div className="text-[#1F1109]">
+      <div className="flex h-full min-h-0 flex-col text-[#1F1109]">
         <FreeTimeHeader />
 
-        <div className="mt-2 rounded-lg border border-dashed border-[#1F1109]/[0.18] bg-[#FAF5EB]/60 px-5 py-10 text-center md:py-12">
+        <div className="mt-2 flex flex-1 flex-col justify-center rounded-lg border border-dashed border-[#1F1109]/[0.18] bg-[#FAF5EB]/60 px-5 py-10 text-center md:py-12">
           <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[#F4ECDD] text-[#B8893D]">
             <Calendar className="h-6 w-6" strokeWidth={1.6} />
           </div>
@@ -178,25 +209,28 @@ export default function FreeTime({ userId, username }: FreeTimeProps) {
   }
 
   return (
-    <div className="text-[#1F1109]">
+    <div className="flex h-full min-h-0 flex-col text-[#1F1109]">
       <FreeTimeHeader />
 
-      <div className="mt-4 grid gap-6 md:mt-5 md:grid-cols-[1.05fr_0.95fr] md:items-start">
-        <div ref={calendarRef}>
-          <DayCalendar
-            dates={dayGroups}
-            selectedDate={selectedDate}
-            onDateSelect={handleDateSelect}
-          />
-        </div>
+      <div className="mt-4 flex flex-1 flex-col md:mt-5">
+        <div className="grid gap-6 md:grid-cols-[1.05fr_0.95fr] md:items-start">
+          <div ref={calendarColumnRef}>
+            <DayCalendar
+              dates={dayGroups}
+              selectedDate={selectedDate}
+              onDateSelect={handleDateSelect}
+            />
+          </div>
 
-        <div className="min-w-0">
-          <AvailableSlotsPanel
-            selectedDay={selectedDay}
-            onBack={handleBackToCalendar}
-            onSlotBooked={refreshSlots}
-            topRef={slotsTopRef}
-          />
+          <div className="min-w-0 md:self-start">
+            <AvailableSlotsPanel
+              selectedDay={selectedDay}
+              onBack={handleBackToCalendar}
+              onSlotBooked={refreshSlots}
+              topRef={slotsTopRef}
+              maxScrollHeight={slotsMaxHeight}
+            />
+          </div>
         </div>
       </div>
     </div>
