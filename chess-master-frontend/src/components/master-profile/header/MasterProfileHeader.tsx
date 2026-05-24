@@ -1,7 +1,9 @@
 import React from "react";
+import { getCountryFlag, getCountryName } from "@chess-master/schemas";
 
 import { LanguageRow } from "./LanguageRow";
 import { SocialMediaRow } from "./SocilaMediaRow";
+import { hasProfileStats, ProfileStats } from "./ProfileStats";
 import { BaseUser } from "@chess-master/schemas";
 import { getMediaUrl } from "../../../services/config";
 import { useNavigate } from "react-router-dom";
@@ -89,11 +91,59 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
 
   const piece = TITLE_TO_PIECE[user.title || ""] || "pawn";
 
+  const actionButtons = (
+    <>
+      <button
+        type="button"
+        className="flex items-center justify-center gap-2 rounded-full bg-[#B8893D] px-5 py-2.5 text-sm font-medium text-[#1F1109] transition hover:bg-[#A37728]"
+        onClick={() => navigate(`/chat/${user.id}`)}
+      >
+        <svg viewBox="0 0 20 20" className="h-4 w-4" aria-hidden>
+          <path
+            d="M4.167 5.833A1.667 1.667 0 0 1 5.833 4.167h8.334a1.667 1.667 0 0 1 1.666 1.666v5.834a1.667 1.667 0 0 1-1.666 1.666H9.18l-2.61 2.135c-.54.442-1.32.058-1.32-.638v-1.497H5.833a1.667 1.667 0 0 1-1.666-1.666V5.833Z"
+            fill="currentColor"
+          />
+        </svg>
+        Message
+      </button>
+
+      <button
+        type="button"
+        className="flex items-center justify-center gap-2 rounded-full border border-[#F4ECDD]/30 bg-[#F4ECDD]/10 px-5 py-2.5 text-sm font-medium text-[#F4ECDD] backdrop-blur transition hover:bg-[#F4ECDD]/20 lg:hidden"
+        onClick={() =>
+          document.getElementById("free-time")?.scrollIntoView({
+            behavior: "smooth",
+          })
+        }
+      >
+        <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" aria-hidden>
+          <rect
+            x="3"
+            y="5"
+            width="14"
+            height="12"
+            rx="2"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          />
+          <path
+            d="M3 8h14M7 3v4M13 3v4"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+        </svg>
+        Book
+      </button>
+    </>
+  );
+
   return (
     <div className="rounded-xl bg-gradient-to-br from-[#1F1109] via-[#3D2817] to-[#5C3A1E] text-[#F4ECDD] border border-[#1F1109]/[0.12]">
       <div className="flex flex-col gap-4 p-5 sm:p-8 md:flex-row md:items-center md:gap-8">
-        {/* AVATAR + META wrapper — row on mobile, "contents" on desktop so avatar/meta become direct flex children of the outer row */}
-        <div className="flex flex-row items-start gap-4 md:contents">
+        {/* Avatar + meta + stats (stats on the right on mobile) */}
+        <div className="flex min-w-0 flex-1 flex-row items-start gap-3 md:gap-8">
+          <div className="flex min-w-0 flex-1 flex-row items-start gap-4">
           {/* AVATAR */}
           <div className="flex shrink-0 flex-col items-center gap-2">
             <div className="relative shrink-0">
@@ -124,19 +174,23 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
                 </svg>
               </span>
             </div>
-            {priceValue && (
-              <div className="md:hidden text-center leading-none">
+            <div className="w-full max-w-[9rem] text-center leading-none sm:max-w-[10rem] md:max-w-[9rem]">
+              {priceValue ? (
                 <div
-                  className="text-2xl font-medium text-[#F4ECDD]"
+                  className="text-2xl font-medium text-[#F4ECDD] md:text-3xl"
                   style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
                 >
                   {priceValue}
-                  <span className="text-sm font-normal text-[#F4ECDD]/65">
+                  <span className="text-sm font-normal text-[#F4ECDD]/65 md:text-base">
                     /hr
                   </span>
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="text-xs text-[#F4ECDD]/75 md:text-sm">
+                  Price on request
+                </div>
+              )}
+            </div>
           </div>
 
           {/* META */}
@@ -150,15 +204,15 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
                 {personLabel}
               </span>
             </h1>
-            {user.username && (
+            {/* {user.username && (
               <div className="mt-2">
                 <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-white/15 text-white backdrop-blur">
                   @{user.username}
                 </span>
               </div>
-            )}
+            )} */}
 
-            {user.location && (
+            {user.country && (
               <div className="mt-3 flex items-center gap-1.5 text-sm text-[#F4ECDD]/85">
                 <svg
                   viewBox="0 0 20 20"
@@ -180,7 +234,12 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
                     strokeWidth="1.5"
                   />
                 </svg>
-                <span>{user.location}</span>
+                <span>
+                  <span className="mr-1.5" aria-hidden="true">
+                    {getCountryFlag(user.country)}
+                  </span>
+                  {getCountryName(user.country)}
+                </span>
               </div>
             )}
 
@@ -194,67 +253,25 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
               <SocialMediaRow user={user} />
             </div>
           </div>
-        </div>
-
-        {/* PRICE + ACTIONS */}
-        <div className="flex flex-col gap-2 md:items-end md:shrink-0">
-          <div className="hidden md:block md:text-right">
-            {priceValue ? (
-              <div
-                className="text-3xl sm:text-4xl font-medium leading-none text-[#F4ECDD]"
-                style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
-              >
-                {priceValue}
-                <span className="text-base sm:text-lg font-normal text-[#F4ECDD]/65">
-                  /hour
-                </span>
-              </div>
-            ) : (
-              <div className="text-sm text-[#F4ECDD]/75">Price on request</div>
-            )}
           </div>
 
-          <div className="flex flex-row gap-2 w-full md:flex-col md:items-stretch md:w-44 [&>button]:flex-1 md:[&>button]:flex-none">
-            <button
-              className="flex items-center justify-center gap-2 rounded-full bg-[#B8893D] px-5 py-2.5 text-sm font-medium text-[#1F1109] transition hover:bg-[#A37728]"
-              onClick={() => navigate(`/chat/${user.id}`)}
-            >
-              <svg viewBox="0 0 20 20" className="h-4 w-4">
-                <path
-                  d="M4.167 5.833A1.667 1.667 0 0 1 5.833 4.167h8.334a1.667 1.667 0 0 1 1.666 1.666v5.834a1.667 1.667 0 0 1-1.666 1.666H9.18l-2.61 2.135c-.54.442-1.32.058-1.32-.638v-1.497H5.833a1.667 1.667 0 0 1-1.666-1.666V5.833Z"
-                  fill="currentColor"
-                />
-              </svg>
-              Message
-            </button>
+          {hasProfileStats(user) && (
+            <div className="w-[9.5rem] shrink-0 sm:w-52 md:hidden">
+              <ProfileStats user={user} />
+            </div>
+          )}
+        </div>
 
-            <button
-              className="flex items-center justify-center gap-2 rounded-full border border-[#F4ECDD]/30 bg-[#F4ECDD]/10 px-5 py-2.5 text-sm font-medium text-[#F4ECDD] backdrop-blur transition hover:bg-[#F4ECDD]/20 lg:hidden"
-              onClick={() =>
-                document.getElementById("free-time")?.scrollIntoView({
-                  behavior: "smooth",
-                })
-              }
-            >
-              <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none">
-                <rect
-                  x="3"
-                  y="5"
-                  width="14"
-                  height="12"
-                  rx="2"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                />
-                <path
-                  d="M3 8h14M7 3v4M13 3v4"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              </svg>
-              Book
-            </button>
+        {/* Stats (desktop) + actions */}
+        <div className="flex w-full flex-col gap-2 md:w-52 md:shrink-0">
+          {hasProfileStats(user) && (
+            <div className="hidden md:block">
+              <ProfileStats user={user} />
+            </div>
+          )}
+
+          <div className="flex w-full flex-row gap-2 md:flex-col md:items-stretch [&>button]:flex-1 md:[&>button]:flex-none">
+            {actionButtons}
           </div>
         </div>
       </div>

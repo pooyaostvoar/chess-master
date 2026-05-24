@@ -46,7 +46,7 @@ export const AvailableSlotsPanel: React.FC<AvailableSlotsPanelProps> = ({
     <div>
       <div ref={topRef} className="h-px scroll-mt-20" />
 
-      <div className="free-time-scroll mt-0 max-h-[620px] overflow-y-auto overflow-x-hidden pr-1">
+      <div className="free-time-scroll mt-0 max-h-[min(680px,70vh)] overflow-y-auto overflow-x-hidden pr-1 md:max-h-[620px]">
         <div className="sticky top-0 z-10 bg-white">
           <button
             type="button"
@@ -99,9 +99,6 @@ export const AvailableSlotsPanel: React.FC<AvailableSlotsPanelProps> = ({
                     {formatPrice(slot)}
                   </span>
                 )}
-                <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-500">
-                  Available
-                </span>
               </div>
             </button>
           ))}

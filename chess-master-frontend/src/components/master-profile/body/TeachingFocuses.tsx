@@ -10,17 +10,17 @@ export const TeachingFocuses: React.FC<TeachingFocusesProps> = ({ user }) => {
   if (focuses.length === 0) return null;
 
   return (
-    <div className="pb-2">
-      <div className="flex flex-wrap gap-1.5">
+    <section className="px-1 py-1">
+      <div className="flex flex-wrap gap-2">
         {focuses.map((item) => (
           <span
             key={item}
-            className="rounded-full border border-[#1F1109]/[0.12] bg-[#F4ECDD]/60 px-3 py-1 text-xs text-[#3D2817]"
+            className="rounded-full border border-[#1F1109]/20 bg-[#1F1109] px-3 py-1 text-xs font-medium text-[#F4ECDD]"
           >
             {item}
           </span>
         ))}
       </div>
-    </div>
+    </section>
   );
 };

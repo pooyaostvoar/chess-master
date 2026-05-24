@@ -32,7 +32,7 @@ export const DayCalendar: React.FC<DayCalendarProps> = ({
 
   return (
     <div>
-      <div className="rounded-[24px] border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
+      <div className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         <div className="free-time-calendar">
           <FullCalendar
             plugins={[dayGridPlugin, interactionPlugin]}
@@ -145,12 +145,12 @@ export const DayCalendar: React.FC<DayCalendarProps> = ({
   }
 
   .free-time-calendar .fc-daygrid-day {
-    height: 44px !important;
+    height: 48px !important;
   }
 
   .free-time-calendar .fc-daygrid-day-frame.fc-scrollgrid-sync-inner {
     min-height: 0 !important;
-    height: 44px !important;
+    height: 48px !important;
     padding: 2px !important;
   }
 
@@ -181,8 +181,8 @@ export const DayCalendar: React.FC<DayCalendarProps> = ({
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 40px !important;
-    min-height: 40px !important;
+    height: 44px !important;
+    min-height: 44px !important;
     width: 100%;
     border-radius: 12px;
     font-size: 0.9rem;
@@ -250,7 +250,7 @@ export const DayCalendar: React.FC<DayCalendarProps> = ({
 
   .free-time-calendar .fc .fc-toolbar-title {
     margin: 0 !important;
-    font-size: 1rem !important;
+    font-size: 1.05rem !important;
     line-height: 1.2 !important;
     white-space: nowrap !important;
     font-weight: 600;

@@ -1,4 +1,5 @@
 import React from "react";
+import { CountrySelect } from "./CountrySelect";
 
 interface BasicInfoSectionProps {
   username: string;
@@ -6,7 +7,7 @@ interface BasicInfoSectionProps {
   name?: string | null;
   lastname?: string | null;
   phoneNumber?: string | null;
-  location?: string | null;
+  country?: string | null;
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => void;
@@ -18,7 +19,7 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
   name,
   lastname,
   phoneNumber,
-  location,
+  country,
   onChange,
 }) => {
   const inputClass =
@@ -51,8 +52,8 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
           <input id="phoneNumber" type="tel" name="phoneNumber" value={phoneNumber || ""} onChange={onChange} placeholder="+44 207 946 0958" className={inputClass} />
         </div>
         <div>
-          <label htmlFor="location" className="block text-[11px] font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]">Location</label>
-          <input id="location" type="text" name="location" value={location || ""} onChange={onChange} placeholder="City, Country" className={inputClass} />
+          <label htmlFor="country" className="block text-[11px] font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]">Country</label>
+          <CountrySelect country={country} onChange={onChange} className={inputClass} />
         </div>
       </div>
     </div>

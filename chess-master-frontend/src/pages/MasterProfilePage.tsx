@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { getPublicUserByUsername } from "../services/api/user.api";
 import FreeTime from "../components/master-profile/free-time/FreeTime";
 import { MasterProfileBody } from "../components/master-profile/body/MasterProfileBody";
+import { TeachingFocuses } from "../components/master-profile/body/TeachingFocuses";
 
 type Status = "loading" | "ready" | "not-found";
 
@@ -49,15 +50,17 @@ export default function MasterProfilePage() {
       <div className="max-w-6xl mx-auto px-3 sm:px-8 py-6 sm:py-10 space-y-6">
         <MasterProfileHeader user={user} />
 
-        <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr]">
-          <MasterProfileBody user={user} />
+        <TeachingFocuses user={user} />
 
+        <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr] lg:items-start">
           <section
             id="free-time"
             className="min-w-0 rounded-xl bg-white border border-[#1F1109]/[0.12] p-5 md:p-6"
           >
             <FreeTime userId={user.id} username={user.username} />
           </section>
+
+          <MasterProfileBody user={user} />
         </div>
       </div>
     </div>
