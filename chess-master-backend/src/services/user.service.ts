@@ -1,3 +1,4 @@
+import { isValidCountryCode } from "@chess-master/schemas";
 import { AppDataSource } from "../database/datasource";
 import { User } from "../database/entity/user";
 import type { LichessRatingsMap, ProfileSections } from "../database/entity/user";
@@ -21,8 +22,10 @@ export interface UpdateUserData {
   hourlyRate?: number | null;
   languages?: string[] | null;
   teachingFocuses?: string[] | null;
+  youtubeVideos?: string[] | null;
   phoneNumber?: string | null;
   location?: string | null;
+  country?: string | null;
   twitchUrl?: string | null;
   youtubeUrl?: string | null;
   instagramUrl?: string | null;
@@ -60,7 +63,9 @@ export interface SafeUser {
   hourlyRate: number | null;
   languages?: string[] | null;
   teachingFocuses?: string[] | null;
+  youtubeVideos?: string[] | null;
   location?: string | null;
+  country?: string | null;
   twitchUrl?: string | null;
   youtubeUrl?: string | null;
   instagramUrl?: string | null;
@@ -92,7 +97,9 @@ export function formatUser(user: User): SafeUser {
     hourlyRate: user.hourlyRate,
     languages: user.languages,
     teachingFocuses: user.teachingFocuses,
+    youtubeVideos: user.youtubeVideos,
     location: user.location,
+    country: user.country,
     twitchUrl: user.twitchUrl,
     youtubeUrl: user.youtubeUrl,
     instagramUrl: user.instagramUrl,
@@ -173,11 +180,26 @@ export async function updateUser(
   if (data.teachingFocuses !== undefined) {
     user.teachingFocuses = data.teachingFocuses;
   }
+  if (data.youtubeVideos !== undefined) {
+    user.youtubeVideos = data.youtubeVideos
+      ?.map((video) => video.trim())
+      .filter(Boolean) ?? null;
+  }
   if (data.phoneNumber !== undefined) {
     user.phoneNumber = data.phoneNumber;
   }
   if (data.location !== undefined) {
     user.location = data.location;
+  }
+  if (data.country !== undefined) {
+    const normalized =
+      data.country && data.country.trim() !== ""
+        ? data.country.trim().toUpperCase()
+        : null;
+    if (normalized && !isValidCountryCode(normalized)) {
+      throw new Error("Invalid or restricted country");
+    }
+    user.country = normalized;
   }
   if (data.twitchUrl !== undefined) {
     user.twitchUrl = data.twitchUrl;

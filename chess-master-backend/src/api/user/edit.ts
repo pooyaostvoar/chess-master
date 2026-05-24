@@ -31,8 +31,10 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
       hourlyRate,
       languages,
       teachingFocuses,
+      youtubeVideos,
       phoneNumber,
       location,
+      country,
       twitchUrl,
       youtubeUrl,
       instagramUrl,
@@ -63,8 +65,10 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
       hourlyRate,
       languages,
       teachingFocuses,
+      youtubeVideos,
       phoneNumber,
       location,
+      country,
       twitchUrl,
       youtubeUrl,
       instagramUrl,
@@ -78,6 +82,9 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
     console.error("Error updating user:", err);
     if (err.message === "User not found") {
       return res.status(404).json({ error: err.message });
+    }
+    if (err.message === "Invalid or restricted country") {
+      return res.status(400).json({ error: err.message });
     }
     res.status(500).json({ error: "Internal server error" });
   }

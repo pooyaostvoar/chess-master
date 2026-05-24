@@ -55,6 +55,10 @@ export class User {
   @Column({ type: "text", nullable: true })
   location: string | null;
 
+  /** ISO 3166-1 alpha-2 country code */
+  @Column({ type: "text", nullable: true })
+  country: string | null;
+
   @Column("boolean", { default: false })
   isMaster: boolean;
 
@@ -159,6 +163,9 @@ export class User {
 
   @Column("text", { array: true, nullable: true })
   teachingFocuses?: string[] | null;
+
+  @Column("text", { array: true, nullable: true })
+  youtubeVideos?: string[] | null;
 
   @Column({
     type: "decimal",

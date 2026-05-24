@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isValidCountryCode } from "./countries";
 
 export const lichessPerfSchema = z.object({
   rating: z.number().int(),
@@ -59,9 +60,21 @@ export const userSchemaBase = z.object({
 
   teachingFocuses: z.array(z.string()).nullish(),
 
+  youtubeVideos: z.array(z.string()).nullish(),
+
   phoneNumber: z.string().nullish(),
 
   location: z.string().nullish(),
+
+  country: z
+    .string()
+    .nullish()
+    .transform((value) =>
+      !value || value.trim() === "" ? null : value.trim().toUpperCase()
+    )
+    .refine((value) => isValidCountryCode(value), {
+      message: "Invalid or restricted country",
+    }),
 
   twitchUrl: z.string().nullable().optional(),
 

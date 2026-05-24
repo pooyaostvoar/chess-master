@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Calendar } from "lucide-react";
 import { DayCalendar } from "./DayCalendar";
 import { AvailableSlotsPanel } from "./AvailableSlotsPanel";
 import { useScheduleSlots } from "../../../hooks/useScheduleSlots";
@@ -28,6 +29,8 @@ export type CalendarDayGroup = {
   slots: ScheduleSlot[];
 };
 
+const SERIF = { fontFamily: "Georgia, serif" } as const;
+
 const formatLocalDate = (date: Date) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -56,7 +59,7 @@ const groupSlotsByDay = (slots: ScheduleSlot[]): CalendarDayGroup[] => {
     .map(([date, daySlots]) => ({
       date,
       slots: [...daySlots].sort(
-        (a, b) => toDate(a.startTime).getTime() - toDate(b.startTime).getTime()
+        (a, b) => toDate(a.startTime).getTime() - toDate(b.startTime).getTime(),
       ),
     }))
     .sort((a, b) => a.date.localeCompare(b.date));
@@ -67,6 +70,33 @@ type FreeTimeProps = {
   username?: string;
 };
 
+function FreeTimeHeader() {
+  return (
+    <header className="mb-4 shrink-0 md:mb-5">
+      <div className="flex items-center gap-2.5">
+        <span
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#B8893D]/15 text-[#B8893D] ring-1 ring-[#B8893D]/20"
+          aria-hidden
+        >
+          <Calendar className="h-[18px] w-[18px]" strokeWidth={2} />
+        </span>
+        <p
+          className="text-xs font-semibold tracking-[0.14em] uppercase text-[#7A2E2E] md:text-[13px]"
+          style={SERIF}
+        >
+          Book a lesson
+        </p>
+      </div>
+      <h2
+        className="mt-2.5 text-[22px] font-medium leading-tight text-[#1F1109] md:text-[26px]"
+        style={SERIF}
+      >
+        Pick a time
+      </h2>
+    </header>
+  );
+}
+
 export default function FreeTime({ userId, username }: FreeTimeProps) {
   const calendarRef = useRef<HTMLDivElement | null>(null);
   const slotsTopRef = useRef<HTMLDivElement | null>(null);
@@ -76,12 +106,12 @@ export default function FreeTime({ userId, username }: FreeTimeProps) {
     {
       showBookingHint: true,
       activeOnly: true,
-    }
+    },
   );
 
   const dayGroups = useMemo(
     () => groupSlotsByDay(scheduleSlots),
-    [scheduleSlots]
+    [scheduleSlots],
   );
 
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -94,7 +124,7 @@ export default function FreeTime({ userId, username }: FreeTimeProps) {
 
   const selectedDay = useMemo(
     () => dayGroups.find((day) => day.date === selectedDate) ?? dayGroups[0],
-    [dayGroups, selectedDate]
+    [dayGroups, selectedDate],
   );
 
   const scrollToRef = (ref: React.RefObject<HTMLDivElement | null>) => {
@@ -128,39 +158,16 @@ export default function FreeTime({ userId, username }: FreeTimeProps) {
   if (!scheduleSlots?.length || !selectedDay) {
     return (
       <div className="text-[#1F1109]">
-        <div
-          className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-1.5"
-          style={{ fontFamily: "Georgia, serif" }}
-        >
-          Schedule
-        </div>
-        <h3
-          className="text-base font-medium text-[#1F1109]"
-          style={{ fontFamily: "Georgia, serif" }}
-        >
-          Available time slots
-        </h3>
+        <FreeTimeHeader />
 
-        <div className="mt-4 rounded-lg border border-dashed border-[#1F1109]/[0.18] bg-[#FAF5EB]/60 px-5 py-10 text-center">
+        <div className="mt-2 rounded-lg border border-dashed border-[#1F1109]/[0.18] bg-[#FAF5EB]/60 px-5 py-10 text-center md:py-12">
           <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[#F4ECDD] text-[#B8893D]">
-            <svg
-              viewBox="0 0 24 24"
-              className="h-6 w-6"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-            >
-              <rect x="4" y="5" width="16" height="15" rx="2" />
-              <path d="M4 9h16M9 3v4M15 3v4" strokeLinecap="round" />
-            </svg>
+            <Calendar className="h-6 w-6" strokeWidth={1.6} />
           </div>
-          <p
-            className="text-sm font-medium text-[#1F1109]"
-            style={{ fontFamily: "Georgia, serif" }}
-          >
+          <p className="text-sm font-medium text-[#1F1109]" style={SERIF}>
             No availability published yet
           </p>
-          <p className="mt-1.5 text-[13px] text-[#6B5640] max-w-sm mx-auto leading-relaxed">
+          <p className="mt-1.5 max-w-sm mx-auto text-[13px] leading-relaxed text-[#6B5640]">
             {username
               ? `${username} hasn't opened any lesson slots for booking. Send them a message and they'll get back to you.`
               : "This coach hasn't opened any lesson slots for booking yet."}
@@ -172,22 +179,9 @@ export default function FreeTime({ userId, username }: FreeTimeProps) {
 
   return (
     <div className="text-[#1F1109]">
-      <div className="mb-2">
-        <div
-          className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-1.5"
-          style={{ fontFamily: "Georgia, serif" }}
-        >
-          Schedule
-        </div>
-        <h3
-          className="text-base font-medium text-[#1F1109]"
-          style={{ fontFamily: "Georgia, serif" }}
-        >
-          Available time slots
-        </h3>
-      </div>
+      <FreeTimeHeader />
 
-      <div className="grid gap-6 md:grid-cols-[1.15fr_0.85fr]">
+      <div className="mt-4 grid gap-6 md:mt-5 md:grid-cols-[1.05fr_0.95fr] md:items-start">
         <div ref={calendarRef}>
           <DayCalendar
             dates={dayGroups}
@@ -196,13 +190,15 @@ export default function FreeTime({ userId, username }: FreeTimeProps) {
           />
         </div>
 
-        <AvailableSlotsPanel
-          selectedDay={selectedDay}
-          onBack={handleBackToCalendar}
-          onSlotBooked={refreshSlots}
-          topRef={slotsTopRef}
-        />
+        <div className="min-w-0">
+          <AvailableSlotsPanel
+            selectedDay={selectedDay}
+            onBack={handleBackToCalendar}
+            onSlotBooked={refreshSlots}
+            topRef={slotsTopRef}
+          />
+        </div>
       </div>
     </div>
   );
-}
+};

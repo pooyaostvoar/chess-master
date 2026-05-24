@@ -14,6 +14,7 @@ import { TeachingFocusesSection } from "../components/profile/TeachingFocusesSec
 import { LichessRatingsSection } from "../components/profile/LichessRatingsSection";
 import { SocialMediaSection } from "../components/profile/SocialMediaSection";
 import { ProfileSectionsSection } from "../components/profile/ProfileSectionsSection";
+import { YoutubeVideosSection } from "../components/profile/YoutubeVideosSection";
 import { uploadProfilePicture } from "../services/api/user.api";
 
 const EditProfile: React.FC = () => {
@@ -43,6 +44,7 @@ const EditProfile: React.FC = () => {
         const userData = {
           ...response.user,
           teachingFocuses: response.user.teachingFocuses ?? [],
+          youtubeVideos: response.user.youtubeVideos ?? [],
           profileSections: response.user.profileSections ?? [],
         };
         setFormData(userData);
@@ -96,7 +98,12 @@ const EditProfile: React.FC = () => {
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev: typeof formData) => ({ ...prev, [name]: value }));
+  };
+
+  const handleYoutubeVideosChange = (youtubeVideos: string[]) => {
+    setFormData((prev: typeof formData) => ({ ...prev, youtubeVideos }));
   };
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -178,8 +185,16 @@ const EditProfile: React.FC = () => {
         hourlyRate: formData.hourlyRate,
         languages: formData.languages,
         teachingFocuses: formData.teachingFocuses,
+        youtubeVideos: formData.isMaster
+          ? (Array.isArray(formData.youtubeVideos)
+              ? formData.youtubeVideos
+              : []
+            )
+              .map((video: string) => String(video).trim())
+              .filter(Boolean)
+          : formData.youtubeVideos,
         phoneNumber: formData.phoneNumber,
-        location: formData.location,
+        country: formData.country || null,
         twitchUrl: formData.twitchUrl,
         youtubeUrl: formData.youtubeUrl,
         instagramUrl: formData.instagramUrl,
@@ -192,6 +207,14 @@ const EditProfile: React.FC = () => {
         setMessage("Profile updated successfully!");
         setMessageType("success");
         setUser(data.user);
+        setFormData((prev: typeof formData) => ({
+          ...prev,
+          ...data.user,
+          youtubeVideos: data.user.youtubeVideos ?? [],
+          profileSections: data.user.profileSections ?? [],
+          teachingFocuses: data.user.teachingFocuses ?? [],
+          languages: data.user.languages ?? [],
+        }));
       } else {
         setMessage("Something went wrong");
         setMessageType("error");
@@ -234,7 +257,7 @@ const EditProfile: React.FC = () => {
 
       <div className="max-w-3xl mx-auto px-5 sm:px-8 py-8">
         <div className="bg-white border border-[#1F1109]/[0.12] rounded-xl p-6 sm:p-8">
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} noValidate className="space-y-8">
             <ProfilePictureSection
               previewImage={previewImage}
               username={formData.username}
@@ -248,7 +271,7 @@ const EditProfile: React.FC = () => {
               name={formData.name}
               lastname={formData.lastname}
               phoneNumber={formData.phoneNumber}
-              location={formData.location}
+              country={formData.country}
               onChange={handleChange}
             />
 
@@ -276,6 +299,17 @@ const EditProfile: React.FC = () => {
                 onChange={(profileSections) =>
                   setFormData({ ...formData, profileSections })
                 }
+              />
+            )}
+
+            {formData.isMaster && (
+              <YoutubeVideosSection
+                youtubeVideos={
+                  Array.isArray(formData.youtubeVideos)
+                    ? formData.youtubeVideos
+                    : []
+                }
+                onChange={handleYoutubeVideosChange}
               />
             )}
 
