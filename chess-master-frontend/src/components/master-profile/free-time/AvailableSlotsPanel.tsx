@@ -7,6 +7,7 @@ type AvailableSlotsPanelProps = {
   onBack: () => void;
   onSlotBooked?: () => void;
   topRef?: React.RefObject<HTMLDivElement | null>;
+  maxScrollHeight?: number | null;
 };
 
 const toDate = (value: Date | string) =>
@@ -39,14 +40,23 @@ export const AvailableSlotsPanel: React.FC<AvailableSlotsPanelProps> = ({
   onBack,
   onSlotBooked,
   topRef,
+  maxScrollHeight,
 }) => {
   const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null);
+
+  const scrollStyle =
+    maxScrollHeight != null && maxScrollHeight > 0
+      ? { maxHeight: maxScrollHeight }
+      : undefined;
 
   return (
     <div>
       <div ref={topRef} className="h-px scroll-mt-20" />
 
-      <div className="free-time-scroll mt-0 max-h-[min(680px,70vh)] overflow-y-auto overflow-x-hidden pr-1 md:max-h-[620px]">
+      <div
+        className="free-time-scroll mt-0 max-h-[min(680px,70vh)] overflow-y-auto overflow-x-hidden pr-1 md:max-h-none"
+        style={scrollStyle}
+      >
         <div className="sticky top-0 z-10 bg-white">
           <button
             type="button"

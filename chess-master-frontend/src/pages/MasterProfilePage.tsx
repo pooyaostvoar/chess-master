@@ -52,15 +52,17 @@ export default function MasterProfilePage() {
 
         <TeachingFocuses user={user} />
 
-        <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr] lg:items-start">
+        <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr] lg:items-stretch">
           <section
             id="free-time"
-            className="min-w-0 rounded-xl bg-white border border-[#1F1109]/[0.12] p-5 md:p-6"
+            className="flex min-h-0 min-w-0 flex-col rounded-xl bg-white border border-[#1F1109]/[0.12] p-5 md:p-6"
           >
             <FreeTime userId={user.id} username={user.username} />
           </section>
 
-          <MasterProfileBody user={user} />
+          <div className="min-h-0 min-w-0">
+            <MasterProfileBody user={user} />
+          </div>
         </div>
       </div>
     </div>
