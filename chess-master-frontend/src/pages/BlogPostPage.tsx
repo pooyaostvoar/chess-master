@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getBlogPostBySlug, type BlogPost } from "../services/api/blog.api";
-import { sanitizeBlogHtml } from "../utils/sanitizeBlogHtml";
+import {
+  runBlogPostScripts,
+  sanitizeBlogHtml,
+} from "../utils/sanitizeBlogHtml";
 
 type PageStatus = "loading" | "ready" | "not-found" | "error";
 
@@ -36,6 +39,13 @@ export default function BlogPostPage() {
       });
   }, [slug]);
 
+  const contentRef = useRef<HTMLDivElement>(null);
+  const scriptsInitializedFor = useRef<string | null>(null);
+  const sanitizedHtml = useMemo(
+    () => (post ? sanitizeBlogHtml(post.contentHtml) : ""),
+    [post]
+  );
+
   useEffect(() => {
     if (status === "ready" && post) {
       document.title = `${post.title} | Chess With Masters`;
@@ -44,6 +54,15 @@ export default function BlogPostPage() {
       };
     }
   }, [post, status]);
+
+  useEffect(() => {
+    const container = contentRef.current;
+    if (!container || status !== "ready" || !sanitizedHtml) return;
+    if (scriptsInitializedFor.current === sanitizedHtml) return;
+    scriptsInitializedFor.current = sanitizedHtml;
+
+    runBlogPostScripts(container);
+  }, [sanitizedHtml, status]);
 
   if (status === "loading") {
     return (
@@ -98,10 +117,9 @@ export default function BlogPostPage() {
 
   return (
     <div
+      ref={contentRef}
       className="blog-post-content text-[15px] text-[#3D2817] leading-relaxed"
-      dangerouslySetInnerHTML={{
-        __html: sanitizeBlogHtml(post.contentHtml),
-      }}
+      dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
     ></div>
   );
 }
