@@ -8,7 +8,6 @@ import { scheduleSlotSchema } from "@chess-master/schemas";
 
 export const router = Router();
 
-// GET /schedule/finished-events - Get slots for a master
 router.get("", async (req, res) => {
   try {
     const repo = AppDataSource.getRepository(ScheduleSlot);

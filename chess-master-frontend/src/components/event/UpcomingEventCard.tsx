@@ -3,6 +3,7 @@ import { Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../contexts/UserContext";
 import { getMediaUrl } from "../../services/config";
+import { navigateToUserProfile } from "../../utils/userProfileNavigation";
 
 interface Props {
   event: any;
@@ -15,6 +16,14 @@ export const UpcomingEventCard: React.FC<Props> = ({ event, onClick }) => {
   const start = new Date(event.startTime);
   const end = new Date(event.endTime);
   const durationMinutes = (end.getTime() - start.getTime()) / 60000;
+  const profileUser = event.master
+    ? {
+        id: event.master.id,
+        username: event.master.username,
+        title: event.master.title,
+        isMaster: true,
+      }
+    : null;
 
   return (
     <div className="bg-white border border-[#1F1109]/[0.12] rounded-xl overflow-hidden flex flex-col h-full hover:shadow-md hover:border-[#1F1109]/25 transition-all">
@@ -27,20 +36,25 @@ export const UpcomingEventCard: React.FC<Props> = ({ event, onClick }) => {
         </h3>
 
         {/* Master info */}
-        <div className="flex items-center gap-2 mb-3">
+        <div
+          className="flex items-center gap-2 mb-3"
+          onClick={() => navigateToUserProfile(navigate, profileUser)}
+        >
           {event.master?.profilePictureThumbnailUrl ? (
             <img
               src={getMediaUrl(event.master.profilePictureThumbnailUrl)}
               alt={event.master?.username}
-              className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+              className="w-12 h-12 rounded-full object-cover flex-shrink-0 cursor-pointer"
             />
           ) : (
-            <div className="w-12 h-12 rounded-full bg-[#3D2817] flex items-center justify-center text-[#F4ECDD] text-base font-medium flex-shrink-0">
+            <div className="w-12 h-12 rounded-full bg-[#3D2817] flex items-center justify-center text-[#F4ECDD] text-base font-medium flex-shrink-0 cursor-pointer">
               {event.master?.username?.charAt(0).toUpperCase() || "M"}
             </div>
           )}
           <div>
-            <span className="text-xs font-medium text-[#1F1109]">{event.master?.username}</span>
+            <span className="text-xs font-medium text-[#1F1109] cursor-pointer hover:text-[#B8893D] transition-colors">
+              {event.master?.username}
+            </span>
             {event.master?.title && (
               <span className="ml-1.5 text-[9px] font-medium bg-[#3D2817] text-[#F4ECDD] px-1.5 py-0.5 rounded tracking-[0.06em]">
                 {event.master.title}

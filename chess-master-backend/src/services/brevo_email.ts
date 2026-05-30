@@ -45,6 +45,11 @@ interface SendEmailOptions {
   fromName?: string;
 }
 
+function isValidEmail(email: string | null | undefined): boolean {
+  if (!email) return false;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+}
+
 export async function sendEmail({
   toEmail,
   toName,
@@ -57,6 +62,10 @@ export async function sendEmail({
   const client = getClient();
   if (!client) {
     console.log("Brevo client not initialized. Email not sent.");
+    return;
+  }
+  if (!isValidEmail(toEmail)) {
+    console.warn(`Skipping email with invalid recipient: ${toEmail}`);
     return;
   }
   try {
@@ -482,11 +491,23 @@ ${meetLink ? `Join Class:\n${meetLink}` : "Calendar invite attached (.ics)"}
   // ---------------------------
   // 4️⃣ Send email (attach ICS only if needed)
   // ---------------------------
+  const recipients = [
+    { email: user.email, name: username },
+    { email: master.email, name: master.username },
+  ].filter((recipient) => isValidEmail(recipient.email));
+
+  if (recipients.length === 0) {
+    console.warn("No valid email recipients for reservation confirmation");
+    return {
+      success: false,
+      meetLink,
+      calendarLink,
+      usedICSFallback: !!icsContent,
+    };
+  }
+
   const sendSmtpEmail: SibApiV3Sdk.SendSmtpEmail = {
-    to: [
-      { email: user.email, name: username },
-      { email: master.email, name: master.email },
-    ],
+    to: recipients,
     sender: {
       email: "no-reply@chesswithmasters.com",
       name: "ChessWithMasters",
@@ -504,7 +525,17 @@ ${meetLink ? `Join Class:\n${meetLink}` : "Calendar invite attached (.ics)"}
     }),
   };
 
-  await client.sendTransacEmail(sendSmtpEmail);
+  try {
+    await client.sendTransacEmail(sendSmtpEmail);
+  } catch (error) {
+    console.error("Error sending reservation confirmation email:", error);
+    return {
+      success: false,
+      meetLink,
+      calendarLink,
+      usedICSFallback: !!icsContent,
+    };
+  }
 
   return {
     success: true,

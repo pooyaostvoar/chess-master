@@ -65,17 +65,13 @@ const PublicUserProfile: React.FC = () => {
     const loadUser = async () => {
       try {
         const res = await getPublicUser(Number(id));
-        setUser(res);
-        // Load recordings for this master
-        if (res.isMaster) {
-          try {
-            const eventsRes = await getFinishedEvents();
-            const masterRecordings = eventsRes.events
-              .filter((e: any) => e.master?.id === Number(id))
-              .slice(0, 3);
-            setRecordings(masterRecordings);
-          } catch {}
+        if (res.isMaster && res.username) {
+          navigate(`/master-profile/${encodeURIComponent(res.username)}`, {
+            replace: true,
+          });
+          return;
         }
+        setUser(res);
       } catch (err) {
         console.error(err);
         setUser(null);
@@ -84,7 +80,7 @@ const PublicUserProfile: React.FC = () => {
       }
     };
     loadUser();
-  }, [id]);
+  }, [id, navigate]);
 
   const normalizeUrl = (url: string) =>
     url.startsWith("http://") || url.startsWith("https://") ? url : `https://${url}`;

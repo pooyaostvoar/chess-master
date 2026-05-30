@@ -5,6 +5,7 @@ import { Badge } from "../ui/badge";
 import { ShieldCheck } from "lucide-react";
 import type { User } from "../../services/auth";
 import { getMediaUrl } from "../../services/config";
+import { getUserProfilePath } from "../../utils/userProfileNavigation";
 
 interface AccountHeaderProps {
   user: User;
@@ -25,7 +26,7 @@ export const AccountHeader: React.FC<AccountHeaderProps> = ({
 
   return (
     <Link
-      to={`/users/${user.id}`}
+      to={getUserProfilePath(user) ?? "#"}
       className="flex items-center gap-4 hover:opacity-90 transition"
     >
       {/* Avatar */}

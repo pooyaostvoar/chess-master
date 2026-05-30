@@ -4,6 +4,7 @@ import { useUser } from "../contexts/UserContext";
 import { getMyBookings } from "../services/bookings";
 import type { Booking } from "../services/bookings";
 import { SlotStatus, updateSlotStatus } from "../services/schedule";
+import { navigateToUserProfile } from "../utils/userProfileNavigation";
 
 const MyBookings: React.FC = () => {
   const { user } = useUser();
@@ -152,6 +153,11 @@ const MyBookings: React.FC = () => {
                 ? booking.reservedBy?.username
                 : booking.master?.username || "Unknown User";
 
+              const profileUser =
+                displayUser?.id === booking.master?.id
+                  ? { ...displayUser, isMaster: true }
+                  : displayUser;
+
               return (
                 <div
                   key={booking.id}
@@ -184,7 +190,7 @@ const MyBookings: React.FC = () => {
                     <div
                       className="flex items-center gap-3 cursor-pointer"
                       onClick={() =>
-                        displayUser?.id && navigate(`/users/${displayUser.id}`)
+                        navigateToUserProfile(navigate, profileUser)
                       }
                     >
                       <div className="w-11 h-11 rounded-full bg-[#3D2817] flex items-center justify-center text-[#F4ECDD] text-lg font-medium flex-shrink-0">

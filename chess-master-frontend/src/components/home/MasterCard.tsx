@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import type { User } from "../../services/auth";
 import { getMediaUrl } from "../../services/config";
+import { getUserProfilePath } from "../../utils/userProfileNavigation";
 
 interface MasterCardProps {
   master: User;
@@ -95,7 +96,7 @@ export const MasterCard: React.FC<MasterCardProps> = ({
 
   return (
     <Link
-      to={`/users/${master.id}`}
+      to={getUserProfilePath(master, true) ?? "#"}
       className="group bg-white border border-[#1F1109]/[0.12] rounded-xl overflow-hidden cursor-pointer transition-all duration-200 hover:border-[#1F1109]/25 hover:-translate-y-0.5"
     >
       {/* Card header */}
