@@ -16,23 +16,12 @@ import type {
   CreateSlotConfirmPayload,
   SlotPeriod,
 } from "./create-slot-modal/types";
+import {
+  formatPriceForInput,
+  suggestedSlotPrice,
+} from "../../utils/slotPricing";
 
 export type { CreateSlotConfirmPayload, SlotPeriod } from "./create-slot-modal/types";
-
-function slotLengthHours(startIso: string, endIso: string): number {
-  const a = new Date(startIso);
-  const b = new Date(endIso);
-  if (Number.isNaN(a.getTime()) || Number.isNaN(b.getTime())) return 0;
-  return Math.max(0, (b.getTime() - a.getTime()) / 3_600_000);
-}
-
-function formatPriceForInput(n: number): string {
-  if (!Number.isFinite(n) || n < 0) return "0";
-  const rounded = Math.round(n * 100) / 100;
-  return Number.isInteger(rounded)
-    ? String(rounded)
-    : rounded.toFixed(2);
-}
 
 interface CreateSlotModalProps {
   open: boolean;
@@ -77,11 +66,14 @@ const CreateSlotModal: React.FC<CreateSlotModalProps> = ({
 
   useEffect(() => {
     if (!open) return;
-    const hr = hourlyRate ?? 0;
-    const slotH = slotLengthHours(intervalStartIso, intervalEndIso);
     const suggested = recurring
-      ? hr * (chunkSizeMinutes / 60)
-      : hr * slotH;
+      ? suggestedSlotPrice(
+          hourlyRate,
+          intervalStartIso,
+          intervalEndIso,
+          chunkSizeMinutes
+        )
+      : suggestedSlotPrice(hourlyRate, intervalStartIso, intervalEndIso);
     setPriceInput(formatPriceForInput(suggested));
   }, [
     open,
