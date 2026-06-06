@@ -5,6 +5,8 @@ import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
 import { parseScheduleFromText } from "../../services/api/chatbot.api";
 import { createPeriodicBatchSlots } from "../../services/schedule";
+import { useUser } from "../../contexts/UserContext";
+import { suggestedSlotPrice } from "../../utils/slotPricing";
 
 type ChatMessage = {
   role: "assistant" | "user";
@@ -23,25 +25,39 @@ const INITIAL_MESSAGES: ChatMessage[] = [
 ];
 
 function toBatchInput(
-  data: CreatePeriodicBatchSlotsInput
+  data: CreatePeriodicBatchSlotsInput,
+  hourlyRate: number | null
 ): Parameters<typeof createPeriodicBatchSlots>[0] {
+  const intervalStart =
+    data.interval.start instanceof Date
+      ? data.interval.start.toISOString()
+      : String(data.interval.start);
+  const intervalEnd =
+    data.interval.end instanceof Date
+      ? data.interval.end.toISOString()
+      : String(data.interval.end);
+
+  const price =
+    data.price != null
+      ? data.price
+      : suggestedSlotPrice(
+          hourlyRate,
+          intervalStart,
+          intervalEnd,
+          data.chunkSizeMinutes
+        );
+
   return {
     interval: {
-      start:
-        data.interval.start instanceof Date
-          ? data.interval.start.toISOString()
-          : String(data.interval.start),
-      end:
-        data.interval.end instanceof Date
-          ? data.interval.end.toISOString()
-          : String(data.interval.end),
+      start: intervalStart,
+      end: intervalEnd,
     },
     chunkSizeMinutes: data.chunkSizeMinutes,
     period: data.period,
     repeatCount: data.repeatCount,
     title: data.title,
     description: data.description,
-    price: data.price,
+    price,
     youtubeId: data.youtubeId,
   };
 }
@@ -51,6 +67,9 @@ interface ScheduleChatbotProps {
 }
 
 const ScheduleChatbot: React.FC<ScheduleChatbotProps> = ({ onSlotsCreated }) => {
+  const { user } = useUser();
+  const hourlyRate =
+    user?.hourlyRate != null ? Number(user.hourlyRate) : null;
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -90,7 +109,7 @@ const ScheduleChatbot: React.FC<ScheduleChatbotProps> = ({ onSlotsCreated }) => 
       setStatusMessage("Adding slots to your calendar…");
       const results = await Promise.all(
         parsedSchedules.map((schedule) =>
-          createPeriodicBatchSlots(toBatchInput(schedule))
+          createPeriodicBatchSlots(toBatchInput(schedule, hourlyRate))
         )
       );
       const totalCreated = results.reduce(
