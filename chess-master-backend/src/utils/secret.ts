@@ -34,3 +34,16 @@ export function getGoogleClientSecret() {
   // }
   return secretCache;
 }
+
+let openAiApiKeyCache: string | undefined;
+
+export function getOpenAiApiKey(): string | undefined {
+  if (openAiApiKeyCache !== undefined) {
+    return openAiApiKeyCache || undefined;
+  }
+  openAiApiKeyCache =
+    readSecret("/run/secrets/openai_api_key") ??
+    process.env.OPENAI_API_KEY ??
+    "";
+  return openAiApiKeyCache || undefined;
+}

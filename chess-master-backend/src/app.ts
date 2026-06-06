@@ -29,6 +29,7 @@ import { gameRouter } from "./api/game/router";
 import { paymentRouter } from "./api/payments/router";
 import { router as webhookRouter } from "./api/payments/webhook";
 import { router as impersonateRouter } from "./api/admin-impersonate";
+import { chatBotRouter } from "./api/chat-bot/router";
 
 export function createApp() {
   const isTesting = process.env.NODE_ENV === "test";
@@ -89,6 +90,7 @@ export function createApp() {
   app.use("/messages", messagesRouter);
   app.use("/games/", gameRouter);
   app.use("/payments", paymentRouter);
+  app.use("/chat-bot", chatBotRouter);
   app.use(cookieParser());
   return app;
 }

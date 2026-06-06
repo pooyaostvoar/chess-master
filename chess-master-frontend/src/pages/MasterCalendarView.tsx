@@ -20,7 +20,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../components/ui/dialog";
-import { createPeriodicBatchSlots } from "../services/schedule";
+import {
+  createPeriodicBatchSlots,
+} from "../services/schedule";
+import ScheduleChatbot from "../components/schedule/ScheduleChatbot";
 
 const DRAFT_EVENT_ID = "draft-slot-pending";
 
@@ -592,6 +595,8 @@ const MasterCalendarView: React.FC = () => {
         onDeleted={handleDeleted}
         onStatusChange={handleStatusChange}
       />
+
+      <ScheduleChatbot onSlotsCreated={refreshSlots} />
     </div>
   );
 };
