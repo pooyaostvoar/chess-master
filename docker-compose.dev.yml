@@ -66,6 +66,7 @@ services:
       - stripe_webhook_secret_dev
       - minio_access_key_id
       - minio_secret_access_key
+      - openai_api_key
       
     depends_on:
       - db
@@ -150,6 +151,8 @@ secrets:
     file: ./secrets/minio_access_key_id.txt
   minio_secret_access_key:
     file: ./secrets/minio_secret_access_key.txt
+  openai_api_key:
+    file: ./secrets/openai_api_key.txt
 volumes:
   postgres_data:
   redis_data:

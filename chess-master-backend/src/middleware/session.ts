@@ -1,16 +1,9 @@
 import session from "express-session";
 import RedisStore from "connect-redis";
-import { createClient } from "redis";
+import { getRedisClient } from "../services/redis";
 import { readSecret } from "../utils/secret";
 
-const redisClient = createClient({
-  url:
-    readSecret("/run/secrets/redis_url") ||
-    process.env.REDIS_URL ||
-    "redis://:redis-pass@localhost:6378",
-});
-
-redisClient.connect().catch(console.error);
+const redisClient = getRedisClient();
 
 const redisStore = new RedisStore({
   client: redisClient,
