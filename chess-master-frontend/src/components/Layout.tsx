@@ -25,6 +25,7 @@ import { OnboardingHint } from "./onboarding/OnboardingHint";
 import AvatarHint from "./onboarding/AvatarHint";
 import { getUnreadSenders } from "../services/api/messages.api";
 import { getMediaUrl } from "../services/config";
+import { Logo } from "./Logo";
 
 const Layout: React.FC = () => {
   const [unreadCount, setUnreadCount] = React.useState(0);
@@ -96,16 +97,12 @@ const Layout: React.FC = () => {
       <nav className="sticky top-0 z-50 w-full border-b shadow-sm bg-[#1F1109] text-[#F4ECDD]">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Link
-              to="/home"
-              className="flex items-center gap-2.5 font-medium text-base"
+            <Logo
+              className="font-medium text-base text-[#F4ECDD]"
+              textClassName={user ? "" : "hidden sm:inline"}
+              iconClassName="h-8 w-auto"
               style={{ fontFamily: "Georgia, serif", letterSpacing: "0.01em" }}
-            >
-              <span className="inline-block w-2.5 h-2.5 bg-[#B8893D] rotate-45" />
-              <span className={user ? "" : "hidden sm:inline"}>
-                Chess With Masters
-              </span>
-            </Link>
+            />
 
             <div className="flex items-center gap-8">
               {!isMobile && (
@@ -314,10 +311,13 @@ const Layout: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-[1.4fr_1fr_1fr] gap-8 mb-9">
               {/* Brand column */}
               <div>
-                <div className="flex items-center gap-2.5 mb-3.5" style={{ fontFamily: "Georgia, serif" }}>
-                  <span className="inline-block w-2.5 h-2.5 bg-[#B8893D] rotate-45" />
-                  <span className="font-medium">Chess With Masters</span>
-                </div>
+                <Logo
+                  to=""
+                  className="mb-3.5 text-[#F4ECDD]"
+                  textClassName="font-medium"
+                  iconClassName="h-8 w-auto"
+                  style={{ fontFamily: "Georgia, serif" }}
+                />
                 <p className="text-xs text-[#F4ECDD]/55 leading-relaxed mb-4">
                   Verified chess coaching from the players who've actually been there.
                 </p>

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { signup } from "../services/auth";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { API_URL } from "../services/config";
 import { Eye, EyeOff } from "lucide-react";
+import { Logo } from "../components/Logo";
 
 const Signup: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -104,14 +105,11 @@ const Signup: React.FC = () => {
           </svg>
 
           <div className="relative z-10">
-            <Link
-              to="/home"
-              className="inline-flex items-center gap-2 text-[#F4ECDD] no-underline mb-20"
+            <Logo
+              className="text-[#F4ECDD] mb-20"
+              iconClassName="h-9 w-auto"
               style={{ fontFamily: "Georgia, serif", fontWeight: 500, fontSize: 16 }}
-            >
-              <span className="inline-block w-[9px] h-[9px] bg-[#B8893D] rotate-45" />
-              Chess With Masters
-            </Link>
+            />
 
             <div
               className="text-[11px] italic text-[#B8893D] tracking-[0.06em] uppercase mb-3.5"
@@ -142,14 +140,11 @@ const Signup: React.FC = () => {
         <div className="max-w-[360px] w-full mx-auto">
           {/* Mobile logo */}
           {isMobile && (
-            <Link
-              to="/home"
-              className="inline-flex items-center gap-2 text-[#1F1109] no-underline mb-8"
+            <Logo
+              className="text-[#1F1109] mb-8"
+              iconClassName="h-9 w-auto"
               style={{ fontFamily: "Georgia, serif", fontWeight: 500, fontSize: 16 }}
-            >
-              <span className="inline-block w-[9px] h-[9px] bg-[#B8893D] rotate-45" />
-              Chess With Masters
-            </Link>
+            />
           )}
 
           {/* Error / success message */}
