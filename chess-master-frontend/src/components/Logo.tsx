@@ -20,7 +20,7 @@ export function Logo({
   const content = (
     <>
       <img
-        src="/logo_transparent.png?v=2"
+        src="/logo_transparent.png"
         alt="Chess With Masters"
         className={iconClassName}
       />
