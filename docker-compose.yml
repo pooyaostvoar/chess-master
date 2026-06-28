@@ -31,6 +31,8 @@ services:
       POSTGRES_DB: chess_master
       REDIS_URL_FILE: /run/secrets/redis_url
       ENV: production
+      LOKI_SERVICE: chess-master-service
+      OTEL_SERVICE_NAME: chess-master-service
     depends_on:
       - db
       - redis
@@ -52,6 +54,12 @@ services:
       - minio_access_key_id
       - minio_secret_access_key
       - openai_api_key
+      - loki_host
+      - loki_user
+      - loki_token
+      - tempo_host
+      - tempo_user
+      - tempo_token
 
   db:
     image: postgres:15-alpine
@@ -138,6 +146,18 @@ secrets:
     file: ./secrets/minio_secret_access_key.txt
   openai_api_key:
     file: ./secrets/openai_api_key.txt
+  loki_host:
+    file: ./secrets/loki_host.txt
+  loki_user:
+    file: ./secrets/loki_user.txt
+  loki_token:
+    file: ./secrets/loki_token.txt
+  tempo_host:
+    file: ./secrets/tempo_host.txt
+  tempo_user:
+    file: ./secrets/tempo_user.txt
+  tempo_token:
+    file: ./secrets/tempo_token.txt
 volumes:
   db_data:
   minio_data:
