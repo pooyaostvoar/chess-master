@@ -1,3 +1,4 @@
+import "./instrumentation";
 import express, { Express } from "express";
 
 import "reflect-metadata";
@@ -30,6 +31,7 @@ import { paymentRouter } from "./api/payments/router";
 import { router as webhookRouter } from "./api/payments/webhook";
 import { router as impersonateRouter } from "./api/admin-impersonate";
 import { chatBotRouter } from "./api/chat-bot/router";
+import { logger } from "./utils/logger";
 
 export function createApp() {
   const isTesting = process.env.NODE_ENV === "test";
@@ -104,6 +106,6 @@ if (process.env.NODE_ENV !== "test") {
   const io = initSocket(server);
 
   server.listen(port, () => {
-    console.log(`[server]: Server is running at http://localhost:${port}`);
+    logger.info({ port }, "Server is running");
   });
 }
