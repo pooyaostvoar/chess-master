@@ -31,7 +31,6 @@ import { paymentRouter } from "./api/payments/router";
 import { router as webhookRouter } from "./api/payments/webhook";
 import { router as impersonateRouter } from "./api/admin-impersonate";
 import { chatBotRouter } from "./api/chat-bot/router";
-import { logsRouter } from "./api/logs";
 import { logger } from "./utils/logger";
 
 export function createApp() {
@@ -94,7 +93,6 @@ export function createApp() {
   app.use("/games/", gameRouter);
   app.use("/payments", paymentRouter);
   app.use("/chat-bot", chatBotRouter);
-  app.use("/logs", logsRouter);
   app.use(cookieParser());
   return app;
 }
