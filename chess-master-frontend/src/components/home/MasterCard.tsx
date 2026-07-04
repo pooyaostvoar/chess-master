@@ -92,7 +92,9 @@ export const MasterCard: React.FC<MasterCardProps> = ({
   const isGold = colorIdx === 1;
   const patternId = `master-pattern-${master.id}-${colorIdx}`;
   const piece = TITLE_TO_PIECE[master.title || ""] || "pawn";
-  const hasPhoto = !!master.profilePictureThumbnailUrl;
+  const profileImage =
+    master.profilePictureThumbnailUrl || master.profilePictureUrl;
+  const hasPhoto = !!profileImage;
 
   return (
     <Link
@@ -101,14 +103,15 @@ export const MasterCard: React.FC<MasterCardProps> = ({
     >
       {/* Card header */}
       <div
-        className="h-[200px] relative flex items-center justify-center overflow-hidden"
+        className="relative aspect-square flex items-center justify-center overflow-hidden bg-[#1F1109]/[0.04]"
         style={hasPhoto ? undefined : { backgroundColor: headerBg }}
       >
         {hasPhoto ? (
           <img
-            className="absolute inset-0 w-full h-full object-cover"
-            src={getMediaUrl(master.profilePictureThumbnailUrl)}
+            className="absolute inset-0 w-full h-full object-cover object-top"
+            src={getMediaUrl(profileImage)}
             alt={master.username}
+            loading="lazy"
           />
         ) : (
           <>
