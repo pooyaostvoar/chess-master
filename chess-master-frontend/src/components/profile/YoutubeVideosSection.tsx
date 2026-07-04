@@ -51,13 +51,13 @@ export const YoutubeVideosSection: React.FC<YoutubeVideosSectionProps> = ({
   };
 
   const inputClass =
-    "w-full bg-white border border-[#1F1109]/[0.18] rounded-lg px-3.5 py-[11px] text-[13px] text-[#1F1109] outline-none transition-colors focus:border-[#B8893D] focus:bg-[#FDF9EE] placeholder:text-[#9C8366]";
+    "w-full bg-white border border-[#1F1109]/[0.18] rounded-lg px-3.5 py-[11px] text-sm text-[#1F1109] outline-none transition-colors focus:border-[#B8893D] focus:bg-[#FDF9EE] placeholder:text-[#9C8366]";
 
   return (
     <div className="space-y-3">
       <div>
         <h3 className="text-sm font-medium text-[#1F1109]">YouTube videos</h3>
-        <p className="text-xs text-[#6B5640] mt-1">
+        <p className="text-sm text-[#6B5640] mt-1">
           Add YouTube links to show on your public master profile.
         </p>
       </div>
@@ -74,7 +74,7 @@ export const YoutubeVideosSection: React.FC<YoutubeVideosSectionProps> = ({
             <button
               type="button"
               onClick={() => removeVideo(index)}
-              className="shrink-0 text-xs font-medium text-[#7A2E2E] hover:underline px-1"
+              className="shrink-0 text-sm font-medium text-[#7A2E2E] hover:underline px-1"
             >
               Remove
             </button>

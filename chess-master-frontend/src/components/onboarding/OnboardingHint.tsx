@@ -18,7 +18,7 @@ export const OnboardingHint: React.FC<OnboardingHintProps> = ({
   return (
     <div className="fixed top-20 right-6 z-50 max-w-sm bg-[#FAF5EB] border border-[#1F1109]/[0.12] shadow-lg rounded-xl p-4 animate-in fade-in slide-in-from-top-2">
       <h3 className="font-medium text-sm text-[#1F1109] mb-1">{title}</h3>
-      <p className="text-xs text-[#6B5640] mb-4 leading-relaxed">{text}</p>
+      <p className="text-sm text-[#6B5640] mb-4 leading-relaxed">{text}</p>
 
       {actions.length > 0 && (
         <div className="flex gap-2">

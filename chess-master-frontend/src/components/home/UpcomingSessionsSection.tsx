@@ -57,12 +57,12 @@ export const UpcomingSessionsSection: React.FC<
     return (
       <div className="bg-white border border-[#1F1109]/[0.12] rounded-xl p-8 text-center">
         <Calendar className="h-12 w-12 text-[#6B5640]/50 mx-auto mb-4" />
-        <p className="text-[13px] text-[#6B5640] mb-4">
+        <p className="text-sm text-[#6B5640] mb-4">
           No upcoming sessions scheduled
         </p>
         <button
           onClick={() => navigate("/masters")}
-          className="text-xs text-[#B8893D] font-medium hover:underline"
+          className="text-sm text-[#B8893D] font-medium hover:underline"
         >
           Browse masters →
         </button>
@@ -112,7 +112,7 @@ export const UpcomingSessionsSection: React.FC<
                   {moment(booking.startTime).format("MMM D, YYYY")}
                 </h3>
               </div>
-              <p className="text-[11px] text-[#6B5640] mb-3">
+              <p className="text-sm text-[#6B5640] mb-3">
                 {moment(booking.startTime).format("h:mm A")} –{" "}
                 {moment(booking.endTime).format("h:mm A")}
               </p>
@@ -136,12 +136,12 @@ export const UpcomingSessionsSection: React.FC<
                   </div>
                 )}
 
-                <span className="text-xs font-medium text-[#1F1109] cursor-pointer hover:text-[#B8893D] transition-colors">
+                <span className="text-sm font-medium text-[#1F1109] cursor-pointer hover:text-[#B8893D] transition-colors">
                   {displayName}
                 </span>
 
                 {!currentUser.isMaster && booking.master?.title && (
-                  <span className="ml-auto text-[9px] font-medium bg-[#3D2817] text-[#F4ECDD] px-1.5 py-0.5 rounded tracking-[0.06em]">
+                  <span className="ml-auto text-xs font-medium bg-[#3D2817] text-[#F4ECDD] px-1.5 py-0.5 rounded tracking-[0.06em]">
                     {booking.master.title}
                   </span>
                 )}
@@ -150,7 +150,7 @@ export const UpcomingSessionsSection: React.FC<
 
             <div className="px-4 pb-4 flex flex-wrap items-center gap-2">
               <span
-                className={`text-[10px] font-medium px-2.5 py-1 rounded-full tracking-wide uppercase ${getStatusStyle(booking.status)}`}
+                className={`text-xs font-medium px-2.5 py-1 rounded-full tracking-wide uppercase ${getStatusStyle(booking.status)}`}
               >
                 {getStatusLabel(booking.status)}
               </span>
@@ -158,7 +158,7 @@ export const UpcomingSessionsSection: React.FC<
               {isCurrentUserMasterOfBooking && booking.status === "paid" && (
                 <>
                   <button
-                    className="text-[11px] font-medium px-3 py-1.5 rounded-full bg-[#B8893D] text-[#1F1109] hover:bg-[#A37728] transition-colors"
+                    className="text-xs font-medium px-3 py-1.5 rounded-full bg-[#B8893D] text-[#1F1109] hover:bg-[#A37728] transition-colors"
                     onClick={async (e) => {
                       e.stopPropagation();
                       await updateSlotStatus(booking.id, SlotStatus.Booked);
@@ -169,7 +169,7 @@ export const UpcomingSessionsSection: React.FC<
                   </button>
 
                   <button
-                    className="text-[11px] font-medium px-3 py-1.5 rounded-full bg-[#7A2E2E]/10 text-[#7A2E2E] hover:bg-[#7A2E2E]/20 transition-colors"
+                    className="text-xs font-medium px-3 py-1.5 rounded-full bg-[#7A2E2E]/10 text-[#7A2E2E] hover:bg-[#7A2E2E]/20 transition-colors"
                     onClick={async (e) => {
                       e.stopPropagation();
                       await updateSlotStatus(booking.id, SlotStatus.Free);

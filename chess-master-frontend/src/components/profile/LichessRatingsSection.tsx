@@ -61,7 +61,7 @@ export const LichessRatingsSection: React.FC<LichessRatingsSectionProps> = ({
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
           <h3 className="text-sm font-medium text-[#1F1109]">Imported from Lichess</h3>
-          <p className="text-[11px] text-[#6B5640] mt-0.5">
+          <p className="text-sm text-[#6B5640] mt-0.5">
             Ratings are read-only and synced from the connected Lichess account.
           </p>
         </div>
@@ -70,7 +70,7 @@ export const LichessRatingsSection: React.FC<LichessRatingsSectionProps> = ({
             href={normalizeUrl(lichessUrl)}
             target="_blank"
             rel="noreferrer"
-            className="text-[11px] font-medium text-[#B8893D] hover:underline"
+            className="text-sm font-medium text-[#B8893D] hover:underline"
           >
             View Lichess profile →
           </a>
@@ -84,15 +84,15 @@ export const LichessRatingsSection: React.FC<LichessRatingsSectionProps> = ({
             className="border border-[#1F1109]/[0.08] rounded-lg bg-[#F4ECDD]/30 px-3.5 py-2.5"
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="text-[13px] font-medium text-[#1F1109]">
+              <span className="text-sm font-medium text-[#1F1109]">
                 {VARIANT_LABELS[variant] ?? variant}
               </span>
               <span className="text-base font-medium text-[#1F1109]">{perf.rating}</span>
             </div>
-            <div className="mt-1 flex items-center gap-2 flex-wrap text-[11px] text-[#6B5640]">
+            <div className="mt-1 flex items-center gap-2 flex-wrap text-sm text-[#6B5640]">
               {typeof perf.games === "number" && <span>{perf.games} games</span>}
               {perf.prov && (
-                <span className="bg-[#B8893D]/[0.14] text-[#6B4F1F] px-2 py-0.5 rounded-full text-[10px]">
+                <span className="bg-[#B8893D]/[0.14] text-[#6B4F1F] px-2 py-0.5 rounded-full text-xs">
                   Provisional
                 </span>
               )}

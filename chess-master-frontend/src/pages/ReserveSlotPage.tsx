@@ -98,10 +98,10 @@ const ReserveSlotPage: React.FC = () => {
 
         <div className="p-6 space-y-5">
           {slot.description && (
-            <p className="text-[13px] text-[#5C4631] leading-relaxed">{slot.description}</p>
+            <p className="text-base text-[#5C4631] leading-relaxed">{slot.description}</p>
           )}
 
-          <div className="text-xs text-[#6B5640]">
+          <div className="text-sm text-[#6B5640]">
             {formatSlotTime(slot.startTime, slot.endTime)}
           </div>
 
@@ -112,13 +112,13 @@ const ReserveSlotPage: React.FC = () => {
             >
               ${slot.price}
             </div>
-            <p className="text-xs text-[#6B5640] mt-1">One game + quick feedback</p>
+            <p className="text-sm text-[#6B5640] mt-1">One game + quick feedback</p>
           </div>
 
           <button
             disabled={loading || slot.status !== "free"}
             onClick={handleReserve}
-            className={`w-full rounded-lg py-3 text-[13px] font-medium transition-colors ${
+            className={`w-full rounded-lg py-3 text-sm font-medium transition-colors ${
               slot.status === "free"
                 ? loading
                   ? "bg-[#8B6F4E] cursor-wait"
@@ -133,7 +133,7 @@ const ReserveSlotPage: React.FC = () => {
               : "Slot unavailable"}
           </button>
 
-          <p className="text-center text-[11px] text-[#8B6F4E]">
+          <p className="text-center text-sm text-[#8B6F4E]">
             Slot held for 15 minutes after reservation
           </p>
 

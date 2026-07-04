@@ -97,7 +97,7 @@ const RecurringSection: React.FC<RecurringSectionProps> = ({
         disabled={isSubmitting}
         aria-label="Availability type"
         aria-describedby="recurring-price-hint"
-        className="h-8 w-44 max-w-full rounded-md border border-[#1F1109]/12 bg-[#fdfaf5] px-2 py-0 text-xs text-[#3D2817] shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8893D]/35 disabled:opacity-60"
+        className="h-8 w-44 max-w-full rounded-md border border-[#1F1109]/12 bg-[#fdfaf5] px-2 py-0 text-base text-[#3D2817] shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8893D]/35 disabled:opacity-60"
       >
         <option value="one-time">One-time (single slot)</option>
         <option value="recurring">Recurring</option>
@@ -117,7 +117,7 @@ const RecurringSection: React.FC<RecurringSectionProps> = ({
               value={period}
               onChange={(e) => onPeriodChange(e.target.value as SlotPeriod)}
               disabled={isSubmitting}
-              className="flex h-10 w-[6rem] rounded-md border border-[#1F1109]/15 bg-[#fdfaf5] px-2 py-2 text-sm text-[#3D2817] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8893D]/35 disabled:opacity-60"
+              className="flex h-10 w-[6rem] rounded-md border border-[#1F1109]/15 bg-[#fdfaf5] px-2 py-2 text-base text-[#3D2817] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8893D]/35 disabled:opacity-60"
             >
               <option value="daily">Daily</option>
               <option value="weekly">Weekly</option>
@@ -143,7 +143,7 @@ const RecurringSection: React.FC<RecurringSectionProps> = ({
             </div>
             <div className="relative">
               <span
-                className="pointer-events-none absolute right-2 top-1/2 z-10 -translate-y-1/2 text-xs text-[#6B5640]"
+                className="pointer-events-none absolute right-2 top-1/2 z-10 -translate-y-1/2 text-sm text-[#6B5640]"
                 aria-hidden
               >
                 min

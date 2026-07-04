@@ -130,7 +130,7 @@ export const AboutTabs: React.FC<AboutTabsProps> = ({ user }) => {
           </h3>
         </div>
         <div className={`mt-4 ${CONTENT_CARD_CLASS} text-center`}>
-          <p className="text-[13px] leading-6 text-[#6B5640]">
+          <p className="text-sm leading-6 text-[#6B5640]">
             No profile details yet.
           </p>
         </div>
@@ -174,7 +174,7 @@ export const AboutTabs: React.FC<AboutTabsProps> = ({ user }) => {
             </h3>
           </div>
           {hasMultipleSections && (
-            <p className="text-[11px] font-medium tracking-wide text-[#6B5640]">
+            <p className="text-xs font-medium tracking-wide text-[#6B5640]">
               {activeIndex + 1} of {sections.length}
             </p>
           )}
@@ -202,7 +202,7 @@ export const AboutTabs: React.FC<AboutTabsProps> = ({ user }) => {
       >
         <div
           key={activeSection.key}
-          className={`${CONTENT_CARD_CLASS} text-[13px] leading-6 text-[#5C4631]`}
+          className={`${CONTENT_CARD_CLASS} text-sm leading-6 text-[#5C4631]`}
         >
           <p
             ref={contentRef}
@@ -216,7 +216,7 @@ export const AboutTabs: React.FC<AboutTabsProps> = ({ user }) => {
             <button
               type="button"
               onClick={() => setContentExpanded(true)}
-              className="mt-2 text-xs font-medium text-[#B8893D] hover:underline"
+              className="mt-2 text-sm font-medium text-[#B8893D] hover:underline"
             >
               See more
             </button>
@@ -225,7 +225,7 @@ export const AboutTabs: React.FC<AboutTabsProps> = ({ user }) => {
             <button
               type="button"
               onClick={() => setContentExpanded(false)}
-              className="mt-2 text-xs font-medium text-[#B8893D] hover:underline"
+              className="mt-2 text-sm font-medium text-[#B8893D] hover:underline"
             >
               See less
             </button>

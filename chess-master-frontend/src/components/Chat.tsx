@@ -90,7 +90,7 @@ const Chat: React.FC<ChatProps> = ({ otherUserId, userId }) => {
                   >
                     <p className="text-sm leading-relaxed">{msg.text}</p>
                     <div
-                      className={`text-[10px] mt-1 text-right ${
+                      className={`text-xs mt-1 text-right ${
                         msg.from === userId
                           ? "text-primary-foreground/70"
                           : "text-muted-foreground"

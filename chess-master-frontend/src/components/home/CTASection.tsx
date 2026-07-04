@@ -29,7 +29,7 @@ export const CTASection: React.FC = () => {
 
       <div className="max-w-5xl mx-auto px-5 sm:px-10 py-16 text-center relative">
         <div
-          className="text-xs italic text-[#B8893D] tracking-[0.04em] mb-3.5"
+          className="text-sm italic text-[#B8893D] tracking-[0.04em] mb-3.5"
           style={{ fontFamily: "Georgia, serif" }}
         >
           It's your turn
@@ -43,7 +43,7 @@ export const CTASection: React.FC = () => {
           <span className="italic text-[#B8893D]">move</span>
         </h2>
 
-        <p className="text-sm text-[#F4ECDD]/[0.78] mb-7 max-w-[440px] mx-auto leading-relaxed">
+        <p className="text-base text-[#F4ECDD]/[0.78] mb-7 max-w-[440px] mx-auto leading-relaxed">
           Verified masters available now. Book your first session in minutes —
           pay only when your master accepts.
         </p>
@@ -51,7 +51,7 @@ export const CTASection: React.FC = () => {
         <div className="inline-flex items-center gap-4 flex-wrap justify-center">
           <button
             onClick={() => navigate("/masters")}
-            className="bg-[#B8893D] text-[#1F1109] px-7 py-3 rounded-full font-medium text-sm hover:bg-[#A67B30] transition-colors"
+            className="bg-[#B8893D] text-[#1F1109] px-7 py-3 rounded-full font-medium text-base hover:bg-[#A67B30] transition-colors"
           >
             Find your master
           </button>
@@ -65,7 +65,7 @@ export const CTASection: React.FC = () => {
                 navigate("/events");
               }
             }}
-            className="text-[13px] text-[#F4ECDD]/85 border-b border-[#F4ECDD]/40 pb-0.5 hover:text-[#F4ECDD] hover:border-[#F4ECDD]/60 transition-colors"
+            className="text-sm text-[#F4ECDD]/85 border-b border-[#F4ECDD]/40 pb-0.5 hover:text-[#F4ECDD] hover:border-[#F4ECDD]/60 transition-colors"
           >
             or watch a sample session →
           </button>

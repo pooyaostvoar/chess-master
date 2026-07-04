@@ -21,7 +21,7 @@ export const AccountTypeSection: React.FC<AccountTypeSectionProps> = ({
           onChange={(e) => onChange(e.target.checked)}
           className="w-4 h-4 accent-[#B8893D] rounded"
         />
-        <span className="text-[13px] text-[#3D2817]">
+        <span className="text-base text-[#3D2817]">
           I am a chess master and want to offer coaching sessions
         </span>
       </label>

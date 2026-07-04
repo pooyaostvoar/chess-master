@@ -2,6 +2,7 @@ import express from "express";
 import {
   getBlogPostById,
   getBlogPostBySlug,
+  getLatestBlogPosts,
   listBlogPosts,
 } from "../services/blog.service";
 
@@ -18,6 +19,19 @@ blogPostsRouter.get("/", async (req, res, next) => {
 
     const result = await listBlogPosts({ page, pageSize, q });
     res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+blogPostsRouter.get("/latest", async (req, res, next) => {
+  try {
+    const limit = Math.min(
+      Math.max(parseInt((req.query.limit as string) || "3", 10), 1),
+      10
+    );
+    const items = await getLatestBlogPosts(limit);
+    res.json({ items });
   } catch (err) {
     next(err);
   }

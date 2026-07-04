@@ -62,7 +62,7 @@ export const ArchiveSection: React.FC = () => {
         <div className="flex justify-between items-end mb-8 gap-5">
           <div>
             <div
-              className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-2"
+              className="text-sm italic text-[#7A2E2E] tracking-[0.04em] mb-2"
               style={{ fontFamily: "Georgia, serif" }}
             >
               From the archive
@@ -73,14 +73,14 @@ export const ArchiveSection: React.FC = () => {
             >
               Watch a real session
             </h2>
-            <p className="text-xs text-[#6B5640] leading-relaxed max-w-[380px] m-0">
+            <p className="text-sm text-[#6B5640] leading-relaxed max-w-[380px] m-0">
               Recorded lessons, game reviews, and tournament breakdowns from our
               masters.
             </p>
           </div>
           <button
             onClick={() => navigate("/events")}
-            className="text-xs text-[#B8893D] font-medium whitespace-nowrap hover:underline"
+            className="text-sm text-[#B8893D] font-medium whitespace-nowrap hover:underline"
           >
             Browse all →
           </button>
@@ -176,19 +176,19 @@ export const ArchiveSection: React.FC = () => {
 
                 {/* Body */}
                 <div className="px-3.5 py-3 pb-3.5">
-                  <div className="text-[13px] font-medium text-[#1F1109] leading-[1.35] mb-2 line-clamp-2">
+                  <div className="text-sm font-medium text-[#1F1109] leading-[1.35] mb-2 line-clamp-2">
                     {event.title}
                   </div>
                   <div className="flex items-center gap-1.5">
                     {event.master?.title && (
                       <span
-                        className="text-[9px] font-medium text-[#F4ECDD] px-1.5 py-0.5 rounded-[3px] tracking-[0.06em]"
+                        className="text-xs font-medium text-[#F4ECDD] px-1.5 py-0.5 rounded-[3px] tracking-[0.06em]"
                         style={{ backgroundColor: bg }}
                       >
                         {event.master.title}
                       </span>
                     )}
-                    <span className="text-[11px] text-[#6B5640]">
+                    <span className="text-sm text-[#6B5640]">
                       {event.master?.username}
                     </span>
                   </div>

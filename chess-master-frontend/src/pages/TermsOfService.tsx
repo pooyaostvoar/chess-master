@@ -6,7 +6,7 @@ const TermsOfService: React.FC = () => {
       <div className="bg-[#F4ECDD] border-b border-[#1F1109]/[0.08]">
         <div className="max-w-3xl mx-auto px-5 sm:px-8 py-8 sm:py-10">
           <div
-            className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-2"
+            className="text-sm italic text-[#7A2E2E] tracking-[0.04em] mb-2"
             style={{ fontFamily: "Georgia, serif" }}
           >
             Legal
@@ -17,14 +17,14 @@ const TermsOfService: React.FC = () => {
           >
             Terms of Service
           </h1>
-          <p className="text-[13px] text-[#5C4631] mt-1.5">
+          <p className="text-base text-[#5C4631] mt-1.5">
             Last updated: {new Date().toLocaleDateString()}
           </p>
         </div>
       </div>
 
       <div className="max-w-3xl mx-auto px-5 sm:px-8 py-8">
-        <div className="bg-white border border-[#1F1109]/[0.12] rounded-xl p-6 sm:p-8 space-y-7 text-[13px] text-[#3D2817] leading-relaxed">
+        <div className="bg-white border border-[#1F1109]/[0.12] rounded-xl p-6 sm:p-8 space-y-7 text-base text-[#3D2817] leading-relaxed">
           <section className="space-y-2">
             <p>Welcome to <strong>Chess With Masters</strong> ("we", "our", or "us"). By accessing or using our website and services, you agree to be bound by these Terms of Service. If you do not agree, please do not use the platform.</p>
           </section>

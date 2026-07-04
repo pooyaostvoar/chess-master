@@ -18,18 +18,18 @@ const MasterInfoHeader: React.FC<MasterInfoHeaderProps> = ({ masterInfo }) => {
         >
           {masterInfo.username}
           {masterInfo.title && (
-            <span className="ml-2 text-[10px] font-medium bg-[#3D2817] text-[#F4ECDD] px-2 py-0.5 rounded tracking-[0.06em] align-middle">
+            <span className="ml-2 text-xs font-medium bg-[#3D2817] text-[#F4ECDD] px-2 py-0.5 rounded tracking-[0.06em] align-middle">
               {masterInfo.title}
             </span>
           )}
         </h2>
       </div>
       {masterInfo.rating && (
-        <p className="text-xs text-[#6B5640] mb-1.5">
+        <p className="text-sm text-[#6B5640] mb-1.5">
           Rating: <span className="font-medium text-[#1F1109]">{masterInfo.rating}</span>
         </p>
       )}
-      <p className="text-xs text-[#B8893D] font-medium">
+      <p className="text-sm text-[#B8893D] font-medium">
         Click on green "Available" slots to book a session
       </p>
     </div>

@@ -68,7 +68,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className={`inline-flex items-center gap-[5px] px-3 py-1.5 border-none rounded-full text-[11px] font-medium text-[#3D2817] whitespace-nowrap cursor-pointer select-none transition-colors ${
+        className={`inline-flex items-center gap-[5px] px-3 py-1.5 border-none rounded-full text-sm font-medium text-[#3D2817] whitespace-nowrap cursor-pointer select-none transition-colors ${
           value ? "bg-[#B8893D]/[0.32] text-[#1F1109]" : "bg-[#B8893D]/[0.12] hover:bg-[#B8893D]/[0.22]"
         }`}
       >
@@ -91,7 +91,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
             <div
               key={opt.value}
               onClick={() => { onChange(opt.value); setOpen(false); }}
-              className={`px-3.5 py-2 flex justify-between items-center cursor-pointer border-l-2 transition-colors text-[13px] ${
+              className={`px-3.5 py-2 flex justify-between items-center cursor-pointer border-l-2 transition-colors text-sm ${
                 isSelected
                   ? "bg-[#B8893D]/[0.14] border-l-[#B8893D] pl-3 font-medium text-[#1F1109]"
                   : "border-l-transparent text-[#3D2817] hover:bg-[#1F1109]/[0.04]"
@@ -235,7 +235,7 @@ const Masters: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div
-            className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-2.5"
+            className="text-sm italic text-[#7A2E2E] tracking-[0.04em] mb-2.5"
             style={{ fontFamily: "Georgia, serif" }}
           >
             The roster
@@ -246,7 +246,7 @@ const Masters: React.FC = () => {
           >
             Browse all masters
           </h1>
-          <p className="text-[13px] text-[#5C4631] leading-relaxed">
+          <p className="text-base text-[#5C4631] leading-relaxed">
             {masters.length} verified titled players available for sessions.
           </p>
         </div>
@@ -260,7 +260,7 @@ const Masters: React.FC = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search by name or country"
-              className="flex-1 border-none outline-none text-xs text-[#1F1109] bg-transparent font-[inherit] min-w-0 placeholder:text-[#8B6F4E]/60"
+              className="flex-1 border-none outline-none text-sm text-[#1F1109] bg-transparent font-[inherit] min-w-0 placeholder:text-[#8B6F4E]/60"
             />
           </div>
 
@@ -292,14 +292,14 @@ const Masters: React.FC = () => {
 
         {/* Result count + sort */}
         <div className="flex justify-between items-center mb-4">
-          <div className="text-xs text-[#6B5640]">
+          <div className="text-sm text-[#6B5640]">
             <span className="text-[#1F1109] font-medium">
               {filtered.length} master{filtered.length !== 1 ? "s" : ""}
             </span>{" "}
             matched
           </div>
 
-          <div className="flex items-center gap-1 text-xs text-[#5C4631]">
+          <div className="flex items-center gap-1 text-base text-[#5C4631]">
             <span>Sort:</span>
             <FilterDropdown
               label="Top rated"
@@ -323,13 +323,13 @@ const Masters: React.FC = () => {
               >
                 No masters match those filters
               </h3>
-              <p className="text-[13px] text-[#6B5640] mb-4">
+              <p className="text-sm text-[#6B5640] mb-4">
                 Try widening your search or removing a filter.
               </p>
               {hasFilters && (
                 <button
                   onClick={clearAllFilters}
-                  className="text-xs text-[#B8893D] font-medium hover:underline"
+                  className="text-sm text-[#B8893D] font-medium hover:underline"
                 >
                   Clear all filters →
                 </button>
@@ -352,7 +352,7 @@ const Masters: React.FC = () => {
             <button
               onClick={() => goToPage(currentPage - 1)}
               disabled={currentPage === 1}
-              className="inline-flex items-center justify-center w-7 h-7 rounded-full border border-[#1F1109]/[0.18] text-[11px] text-[#5C4631] disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:bg-[#1F1109]/[0.06] transition-colors"
+              className="inline-flex items-center justify-center w-7 h-7 rounded-full border border-[#1F1109]/[0.18] text-base text-[#5C4631] disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:bg-[#1F1109]/[0.06] transition-colors"
             >
               ‹
             </button>
@@ -361,7 +361,7 @@ const Masters: React.FC = () => {
               <button
                 key={p}
                 onClick={() => goToPage(p)}
-                className={`inline-flex items-center justify-center min-w-[28px] h-7 px-2.5 rounded-full text-[11px] transition-colors ${
+                className={`inline-flex items-center justify-center min-w-[28px] h-7 px-2.5 rounded-full text-xs transition-colors ${
                   p === currentPage
                     ? "bg-[#3D2817] text-[#F4ECDD] font-medium cursor-default"
                     : "text-[#5C4631] hover:bg-[#1F1109]/[0.06]"
@@ -374,7 +374,7 @@ const Masters: React.FC = () => {
             <button
               onClick={() => goToPage(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="inline-flex items-center justify-center w-7 h-7 rounded-full border border-[#1F1109]/[0.18] text-[11px] text-[#5C4631] disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:bg-[#1F1109]/[0.06] transition-colors"
+              className="inline-flex items-center justify-center w-7 h-7 rounded-full border border-[#1F1109]/[0.18] text-base text-[#5C4631] disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:bg-[#1F1109]/[0.06] transition-colors"
             >
               ›
             </button>

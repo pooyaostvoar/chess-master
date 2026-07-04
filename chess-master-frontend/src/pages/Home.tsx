@@ -7,6 +7,7 @@ import type { Booking } from "../services/bookings";
 import type { User } from "../services/auth";
 import { HeroSection } from "../components/home/HeroSection";
 import { HowItWorksSection } from "../components/home/HowItWorksSection";
+import { LatestBlogsBlock } from "../components/home/LatestBlogsBlock";
 import { ArchiveSection } from "../components/home/ArchiveSection";
 import { CTASection } from "../components/home/CTASection";
 import { TopMastersSection } from "../components/home/TopMastersSection";
@@ -220,6 +221,12 @@ const Home: React.FC = () => {
             >
               <FinishedEventsSection limit={3} searchPhrase={null} />
             </HomeSectionWrapper>
+            <HomeSectionWrapper
+              title="Latest articles"
+              description="Guides, tips, and insights to help you improve your chess"
+            >
+              <LatestBlogsBlock compact />
+            </HomeSectionWrapper>
           </div>
         </div>
       ) : (
@@ -237,12 +244,12 @@ const Home: React.FC = () => {
             <div className="flex justify-between items-baseline mb-5">
               <div>
                 <h2
-                  className="text-lg font-medium text-[#1F1109]"
+                  className="text-xl font-medium text-[#1F1109]"
                   style={{ fontFamily: "Georgia, serif" }}
                 >
                   {isSearchActive ? "Search results" : "Featured masters"}
                 </h2>
-                <p className="text-xs text-[#6B5640] mt-0.5">
+                <p className="text-sm text-[#6B5640] mt-0.5">
                   {isSearchActive
                     ? `${filteredMasters.length} master${filteredMasters.length !== 1 ? "s" : ""} found`
                     : "Top rated masters available for sessions"}
@@ -250,7 +257,7 @@ const Home: React.FC = () => {
               </div>
               <button
                 onClick={() => navigate("/masters")}
-                className="text-xs text-[#B8893D] font-medium hover:underline"
+                className="text-sm text-[#B8893D] font-medium hover:underline"
               >
                 View all →
               </button>
@@ -279,6 +286,8 @@ const Home: React.FC = () => {
           </div>
 
           <HowItWorksSection />
+
+          <LatestBlogsBlock />
 
           <ArchiveSection />
 

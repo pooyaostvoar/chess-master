@@ -69,7 +69,7 @@ export const HowItWorksSection: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-10">
           <div
-            className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-2.5"
+            className="text-sm italic text-[#7A2E2E] tracking-[0.04em] mb-2.5"
             style={{ fontFamily: "Georgia, serif" }}
           >
             The game plan
@@ -80,7 +80,7 @@ export const HowItWorksSection: React.FC = () => {
           >
             How it works
           </h2>
-          <p className="text-[13px] text-[#5C4631] max-w-[420px] mx-auto leading-relaxed">
+          <p className="text-base text-[#5C4631] max-w-[420px] mx-auto leading-relaxed">
             Three steps from search to first move. No subscription, no
             commitment — you pay only when a master accepts your request.
           </p>
@@ -95,7 +95,7 @@ export const HowItWorksSection: React.FC = () => {
             >
               {/* Phase label */}
               <div
-                className="text-[10px] italic text-[#7A2E2E] tracking-[0.08em] uppercase mb-1"
+                className="text-sm italic text-[#7A2E2E] tracking-[0.08em] uppercase mb-1"
                 style={{ fontFamily: "Georgia, serif" }}
               >
                 {step.phase}
@@ -113,10 +113,10 @@ export const HowItWorksSection: React.FC = () => {
               </div>
 
               {/* Title + description */}
-              <div className="text-sm font-medium text-[#1F1109] mb-1.5">
+              <div className="text-base font-medium text-[#1F1109] mb-1.5">
                 {step.title}
               </div>
-              <p className="text-xs text-[#6B5640] leading-relaxed m-0">
+              <p className="text-sm text-[#6B5640] leading-relaxed m-0">
                 {step.description}
               </p>
             </div>
@@ -125,13 +125,13 @@ export const HowItWorksSection: React.FC = () => {
 
         {/* Session formats footer */}
         <div className="text-center mt-9 pt-6 border-t border-[#1F1109]/10">
-          <span className="text-[10px] text-[#6B5640] tracking-[0.08em] uppercase mr-3 align-middle">
+          <span className="text-sm text-[#6B5640] tracking-[0.08em] uppercase mr-3 align-middle">
             Session formats
           </span>
           {SESSION_FORMATS.map((format) => (
             <span
               key={format}
-              className="inline-block px-3 py-1 bg-white/70 border border-[#1F1109]/[0.12] rounded-full text-[11px] text-[#3D2817] m-[3px_2px]"
+              className="inline-block px-3 py-1 bg-white/70 border border-[#1F1109]/[0.12] rounded-full text-base text-[#3D2817] m-[3px_2px]"
             >
               {format}
             </span>

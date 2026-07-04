@@ -68,7 +68,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               : "border-l-transparent hover:bg-[#1F1109]/[0.04] active:bg-[#1F1109]/[0.06]"
           }`}
         >
-          <span className={`text-[13px] text-[#3D2817] ${isSelected ? "font-medium" : ""}`}>
+          <span className={`text-base text-[#3D2817] ${isSelected ? "font-medium" : ""}`}>
             {lang}
           </span>
           {isSelected && (
@@ -119,7 +119,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
       <div className="relative z-10 px-5 sm:px-10 py-14 sm:py-16 text-center max-w-3xl mx-auto">
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#B8893D]/20 rounded-full text-[11px] text-[#6B4F1F] mb-6 tracking-wide">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#B8893D]/20 rounded-full text-xs text-[#6B4F1F] mb-6 tracking-wide">
           <span className="w-[5px] h-[5px] bg-[#B8893D] rounded-full" />
           Verified titled players from 40+ countries
         </div>
@@ -136,7 +136,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         </h1>
 
         {/* Subtext */}
-        <p className="text-sm text-[#5C4631] mb-7 max-w-[460px] mx-auto leading-relaxed">
+        <p className="text-base text-[#5C4631] mb-7 max-w-[460px] mx-auto leading-relaxed">
           One-on-one lessons, game reviews, and live training from the players
           who've actually played the openings you're studying.
         </p>
@@ -155,7 +155,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder='Try "Sicilian Defense" or a master name'
-              className="flex-1 border-none outline-none text-[13px] px-2.5 py-2 bg-transparent text-[#1F1109] min-w-0 font-[inherit] placeholder:text-[#8B6F4E]/60"
+              className="flex-1 border-none outline-none text-sm px-2.5 py-2 bg-transparent text-[#1F1109] min-w-0 font-[inherit] placeholder:text-[#8B6F4E]/60"
             />
 
             <div className="w-px h-[22px] bg-[#1F1109]/[0.14] mx-1 flex-shrink-0" />
@@ -173,7 +173,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 {selectedLang !== "All languages" && (
                   <span className="absolute top-1 right-1 sm:hidden w-[5px] h-[5px] bg-[#B8893D] rounded-full" />
                 )}
-                <span className="hidden sm:flex text-xs text-[#3D2817] font-medium whitespace-nowrap items-center gap-1">
+                <span className="hidden sm:flex text-base text-[#3D2817] font-medium whitespace-nowrap items-center gap-1">
                   {selectedLang !== "All languages" && (
                     <span className="inline-block w-[5px] h-[5px] bg-[#B8893D] rounded-full" />
                   )}
@@ -194,7 +194,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 }`}
                 role="listbox"
               >
-                <div className="sticky top-0 bg-white px-3 pt-2 pb-1.5 text-[10px] text-[#8B6F4E] tracking-[0.06em] uppercase border-b border-[#1F1109]/[0.06]">
+                <div className="sticky top-0 bg-white px-3 pt-2 pb-1.5 text-sm text-[#8B6F4E] tracking-[0.06em] uppercase border-b border-[#1F1109]/[0.06]">
                   Filter by language
                 </div>
                 {renderLanguageOptions()}
@@ -208,13 +208,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   onSearchChange("");
                   onLangChange("All languages");
                 }}
-                className="text-[11px] text-[#6B5640] mr-1.5 sm:mr-2 hover:text-[#1F1109] transition-colors whitespace-nowrap flex-shrink-0"
+                className="text-sm text-[#6B5640] mr-1.5 sm:mr-2 hover:text-[#1F1109] transition-colors whitespace-nowrap flex-shrink-0"
               >
                 Clear
               </button>
             )}
 
-            <button className="bg-[#B8893D] text-white px-3.5 sm:px-5 py-2.5 rounded-full font-medium text-[13px] whitespace-nowrap hover:bg-[#A67B30] transition-colors flex-shrink-0">
+            <button className="bg-[#B8893D] text-white px-3.5 sm:px-5 py-2.5 rounded-full font-medium text-sm whitespace-nowrap hover:bg-[#A67B30] transition-colors flex-shrink-0">
               Search
             </button>
           </div>
@@ -225,7 +225,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               className="sm:hidden border-t border-[#1F1109]/[0.08] max-h-[min(45vh,280px)] overflow-y-auto text-left overscroll-contain"
               role="listbox"
             >
-              <div className="sticky top-0 bg-white px-3.5 pt-2.5 pb-1.5 text-[10px] text-[#8B6F4E] tracking-[0.06em] uppercase border-b border-[#1F1109]/[0.06]">
+              <div className="sticky top-0 bg-white px-3.5 pt-2.5 pb-1.5 text-sm text-[#8B6F4E] tracking-[0.06em] uppercase border-b border-[#1F1109]/[0.06]">
                 Filter by language
               </div>
               {renderLanguageOptions()}

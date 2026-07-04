@@ -89,19 +89,19 @@ export const FinishedEventCard: React.FC<FinishedEventCardProps> = ({
 
       {/* Body */}
       <div className="px-3.5 py-3 pb-3.5">
-        <div className="text-[13px] font-medium text-[#1F1109] leading-[1.35] mb-2 line-clamp-2">
+        <div className="text-sm font-medium text-[#1F1109] leading-[1.35] mb-2 line-clamp-2">
           {event.title}
         </div>
         <div className="flex items-center gap-1.5">
           {event.master?.title && (
             <span
-              className="text-[9px] font-medium text-[#F4ECDD] px-1.5 py-0.5 rounded-[3px] tracking-[0.06em]"
+              className="text-xs font-medium text-[#F4ECDD] px-1.5 py-0.5 rounded-[3px] tracking-[0.06em]"
               style={{ backgroundColor: bg }}
             >
               {event.master.title}
             </span>
           )}
-          <span className="text-[11px] text-[#6B5640]">
+          <span className="text-sm text-[#6B5640]">
             {event.master?.username}
           </span>
         </div>

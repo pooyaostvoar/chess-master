@@ -114,7 +114,7 @@ export const YoutubeVideos: React.FC<YoutubeVideosProps> = ({ user }) => {
             </h3>
           </div>
           {hasMultipleVideos && (
-            <p className="text-[11px] font-medium tracking-wide text-[#6B5640]">
+            <p className="text-xs font-medium tracking-wide text-[#6B5640]">
               {activeIndex + 1} of {videos.length}
             </p>
           )}
@@ -158,7 +158,7 @@ export const YoutubeVideos: React.FC<YoutubeVideosProps> = ({ user }) => {
           </div>
         ) : (
           <div className="rounded-xl border border-dashed border-[#B8893D]/40 bg-[#F4ECDD]/60 px-4 py-5 text-center">
-            <p className="text-[13px] leading-6 text-[#5C4631]">
+            <p className="text-sm leading-6 text-[#5C4631]">
               This link could not be embedded.
             </p>
             <a
@@ -179,7 +179,7 @@ export const YoutubeVideos: React.FC<YoutubeVideosProps> = ({ user }) => {
               href={activeVideo}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-medium text-[#6B5640] transition-colors hover:bg-[#1F1109]/[0.04] hover:text-[#B8893D]"
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium text-[#6B5640] transition-colors hover:bg-[#1F1109]/[0.04] hover:text-[#B8893D]"
             >
               Watch on YouTube
               <ExternalLink className="h-3 w-3" strokeWidth={2} />

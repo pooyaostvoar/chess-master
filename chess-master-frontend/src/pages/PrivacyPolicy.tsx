@@ -9,7 +9,7 @@ const PrivacyPolicy: React.FC = () => {
       <div className="bg-[#F4ECDD] border-b border-[#1F1109]/[0.08]">
         <div className="max-w-3xl mx-auto px-5 sm:px-8 py-8 sm:py-10">
           <div
-            className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-2"
+            className="text-sm italic text-[#7A2E2E] tracking-[0.04em] mb-2"
             style={{ fontFamily: "Georgia, serif" }}
           >
             Legal
@@ -20,14 +20,14 @@ const PrivacyPolicy: React.FC = () => {
           >
             Privacy Policy
           </h1>
-          <p className="text-[13px] text-[#5C4631] mt-1.5">
+          <p className="text-base text-[#5C4631] mt-1.5">
             Last updated: {new Date().toLocaleDateString()}
           </p>
         </div>
       </div>
 
       <div className="max-w-3xl mx-auto px-5 sm:px-8 py-8">
-        <div className="bg-white border border-[#1F1109]/[0.12] rounded-xl p-6 sm:p-8 space-y-7 text-[13px] text-[#3D2817] leading-relaxed">
+        <div className="bg-white border border-[#1F1109]/[0.12] rounded-xl p-6 sm:p-8 space-y-7 text-base text-[#3D2817] leading-relaxed">
           <section className="space-y-2">
             <h3 className="text-sm font-medium text-[#1F1109]">1. Introduction</h3>
             <p>ChessWithMasters ("we", "our", or "us") respects your privacy and is committed to protecting your personal data. This Privacy Policy explains how we collect, use, and safeguard your information when you use our platform.</p>
@@ -88,7 +88,7 @@ const PrivacyPolicy: React.FC = () => {
           <div className="pt-4 text-center">
             <button
               onClick={() => navigate("/")}
-              className="text-xs text-[#B8893D] font-medium hover:underline"
+              className="text-sm text-[#B8893D] font-medium hover:underline"
             >
               ← Back to Home
             </button>

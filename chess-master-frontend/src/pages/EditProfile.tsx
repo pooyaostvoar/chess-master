@@ -238,7 +238,7 @@ const EditProfile: React.FC = () => {
       <div className="bg-[#F4ECDD] border-b border-[#1F1109]/[0.08]">
         <div className="max-w-3xl mx-auto px-5 sm:px-8 py-8 sm:py-10">
           <div
-            className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-2"
+            className="text-sm italic text-[#7A2E2E] tracking-[0.04em] mb-2"
             style={{ fontFamily: "Georgia, serif" }}
           >
             Settings
@@ -249,7 +249,7 @@ const EditProfile: React.FC = () => {
           >
             Edit profile
           </h1>
-          <p className="text-[13px] text-[#5C4631] mt-1.5">
+          <p className="text-base text-[#5C4631] mt-1.5">
             Update your account information
           </p>
         </div>
@@ -335,7 +335,7 @@ const EditProfile: React.FC = () => {
                   <h3 className="text-sm font-medium text-[#1F1109]">
                     Sync from Lichess
                   </h3>
-                  <p className="text-xs text-[#6B5640] mt-1 leading-relaxed">
+                  <p className="text-sm text-[#6B5640] mt-1 leading-relaxed">
                     Connect your Lichess account to import your title and
                     ratings without changing your coaching or pricing details.
                   </p>
@@ -343,7 +343,7 @@ const EditProfile: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleLichessSync}
-                  className="text-xs font-medium text-[#B8893D] border border-[#B8893D]/40 rounded-full px-4 py-1.5 hover:bg-[#B8893D]/10 transition-colors whitespace-nowrap"
+                  className="text-sm font-medium text-[#B8893D] border border-[#B8893D]/40 rounded-full px-4 py-1.5 hover:bg-[#B8893D]/10 transition-colors whitespace-nowrap"
                 >
                   {formData.lichessId
                     ? "Refresh from Lichess"
@@ -372,7 +372,7 @@ const EditProfile: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full rounded-lg px-4 py-3 text-[13px] font-medium text-[#1F1109] transition-colors ${
+              className={`w-full rounded-lg px-4 py-3 text-sm font-medium text-[#1F1109] transition-colors ${
                 loading
                   ? "bg-[#8B6F4E] cursor-wait pointer-events-none"
                   : "bg-[#B8893D] hover:bg-[#A37728] active:scale-[0.99]"
@@ -383,7 +383,7 @@ const EditProfile: React.FC = () => {
 
             {message && (
               <div
-                className={`p-3.5 rounded-lg text-center text-[13px] ${
+                className={`p-3.5 rounded-lg text-center text-sm ${
                   messageType === "success"
                     ? "bg-[#B8893D]/10 border border-[#B8893D]/20 text-[#6B4F1F]"
                     : "bg-[#7A2E2E]/10 border border-[#7A2E2E]/20 text-[#7A2E2E]"

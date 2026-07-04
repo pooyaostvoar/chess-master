@@ -52,11 +52,11 @@ export const UpcomingEventCard: React.FC<Props> = ({ event, onClick }) => {
             </div>
           )}
           <div>
-            <span className="text-xs font-medium text-[#1F1109] cursor-pointer hover:text-[#B8893D] transition-colors">
+            <span className="text-sm font-medium text-[#1F1109] cursor-pointer hover:text-[#B8893D] transition-colors">
               {event.master?.username}
             </span>
             {event.master?.title && (
-              <span className="ml-1.5 text-[9px] font-medium bg-[#3D2817] text-[#F4ECDD] px-1.5 py-0.5 rounded tracking-[0.06em]">
+              <span className="ml-1.5 text-xs font-medium bg-[#3D2817] text-[#F4ECDD] px-1.5 py-0.5 rounded tracking-[0.06em]">
                 {event.master.title}
               </span>
             )}
@@ -67,7 +67,7 @@ export const UpcomingEventCard: React.FC<Props> = ({ event, onClick }) => {
         {event.master?.languages && event.master.languages.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-3">
             {event.master.languages.slice(0, 3).map((lang: string) => (
-              <span key={lang} className="text-[10px] bg-[#B8893D]/[0.14] text-[#6B4F1F] px-2 py-0.5 rounded-full">
+              <span key={lang} className="text-xs bg-[#B8893D]/[0.14] text-[#6B4F1F] px-2 py-0.5 rounded-full">
                 {lang}
               </span>
             ))}
@@ -75,7 +75,7 @@ export const UpcomingEventCard: React.FC<Props> = ({ event, onClick }) => {
         )}
 
         {/* Time */}
-        <div className="flex items-center gap-1.5 text-[11px] text-[#6B5640]">
+        <div className="flex items-center gap-1.5 text-sm text-[#6B5640]">
           <Clock className="h-3 w-3" />
           {start.toLocaleDateString()}, {start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · {durationMinutes} min
         </div>
@@ -87,7 +87,7 @@ export const UpcomingEventCard: React.FC<Props> = ({ event, onClick }) => {
           ${event.price ?? 0}
         </div>
         <button
-          className="w-full bg-[#B8893D] text-[#1F1109] rounded-lg py-2.5 text-[13px] font-medium hover:bg-[#A37728] transition-colors"
+          className="w-full bg-[#B8893D] text-[#1F1109] rounded-lg py-2.5 text-sm font-medium hover:bg-[#A37728] transition-colors"
           onClick={() => {
             if (!user && !isUserloading) {
               navigate("/login");

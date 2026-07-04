@@ -105,7 +105,7 @@ export const AvailableSlotsPanel: React.FC<AvailableSlotsPanelProps> = ({
 
               <div className="ml-4 flex shrink-0 items-center gap-2">
                 {formatPrice(slot) && (
-                  <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-500">
+                  <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-500">
                     {formatPrice(slot)}
                   </span>
                 )}

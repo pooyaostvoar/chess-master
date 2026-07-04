@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 interface HomeSectionWrapperProps {
   title: string;
   description?: string;
-  path: string;
+  path?: string;
   buttonText?: string;
   children: React.ReactNode;
 }
@@ -23,21 +23,23 @@ export const HomeSectionWrapper: React.FC<HomeSectionWrapperProps> = ({
       <div className="flex justify-between items-baseline mb-5">
         <div>
           <h2
-            className="text-lg font-medium text-[#1F1109]"
+            className="text-xl font-medium text-[#1F1109]"
             style={{ fontFamily: "Georgia, serif" }}
           >
             {title}
           </h2>
           {description && (
-            <p className="text-xs text-[#6B5640] mt-0.5">{description}</p>
+            <p className="text-sm text-[#6B5640] mt-0.5">{description}</p>
           )}
         </div>
-        <button
-          onClick={() => navigate(path)}
-          className="text-xs text-[#B8893D] font-medium hover:underline whitespace-nowrap"
-        >
-          {buttonText} →
-        </button>
+        {path && (
+          <button
+            onClick={() => navigate(path)}
+            className="text-sm text-[#B8893D] font-medium hover:underline whitespace-nowrap"
+          >
+            {buttonText} →
+          </button>
+        )}
       </div>
       {children}
     </div>

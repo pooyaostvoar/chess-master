@@ -9,12 +9,28 @@ export type BlogPostDto = {
   contentHtml: string;
 };
 
+export type BlogPostSummaryDto = {
+  id: number;
+  title: string;
+  slug: string;
+  createdAt: string;
+};
+
 export function formatBlogPost(post: BlogPost): BlogPostDto {
   return {
     id: post.id,
     title: post.title,
     slug: post.slug,
     contentHtml: sanitizeBlogHtml(post.contentHtml),
+  };
+}
+
+export function formatBlogPostSummary(post: BlogPost): BlogPostSummaryDto {
+  return {
+    id: post.id,
+    title: post.title,
+    slug: post.slug,
+    createdAt: post.createdAt.toISOString(),
   };
 }
 
@@ -56,7 +72,8 @@ export async function listBlogPosts(params: {
     });
   }
 
-  qb.orderBy("post.id", "DESC")
+  qb.orderBy("post.createdAt", "DESC")
+    .addOrderBy("post.id", "DESC")
     .skip((params.page - 1) * params.pageSize)
     .take(params.pageSize);
 
@@ -68,6 +85,18 @@ export async function listBlogPosts(params: {
     page: params.page,
     pageSize: params.pageSize,
   };
+}
+
+export async function getLatestBlogPosts(limit = 3) {
+  const repo = AppDataSource.getRepository(BlogPost);
+  const safeLimit = Math.min(Math.max(limit, 1), 10);
+
+  const items = await repo.find({
+    order: { createdAt: "DESC", id: "DESC" },
+    take: safeLimit,
+  });
+
+  return items.map(formatBlogPostSummary);
 }
 
 export async function getBlogPostById(id: number) {

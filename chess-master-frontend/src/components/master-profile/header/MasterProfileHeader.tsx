@@ -185,7 +185,7 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
                   </span>
                 </div>
               ) : (
-                <div className="text-xs text-[#F4ECDD]/75 lg:text-sm">
+                <div className="text-sm text-[#F4ECDD]/75 lg:text-sm">
                   Price on request
                 </div>
               )}

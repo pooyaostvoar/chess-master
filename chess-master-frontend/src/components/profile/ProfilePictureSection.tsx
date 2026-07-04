@@ -45,7 +45,7 @@ export const ProfilePictureSection: React.FC<ProfilePictureSectionProps> = ({
           )}
         </div>
         <div className="flex-1 pt-2">
-          <p className="text-xs text-[#3D2817] font-medium mb-2">Upload profile picture</p>
+          <p className="text-base text-[#3D2817] font-medium mb-2">Upload profile picture</p>
           <div className="flex items-center gap-3">
             <label
               htmlFor="profilePicture"
@@ -61,7 +61,7 @@ export const ProfilePictureSection: React.FC<ProfilePictureSectionProps> = ({
               onChange={onImageChange}
               className="hidden"
             />
-            <p className="text-[11px] text-[#8B6F4E]">
+            <p className="text-sm text-[#8B6F4E]">
               JPG, PNG or GIF. Max size 5MB
             </p>
           </div>

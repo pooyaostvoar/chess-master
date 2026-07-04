@@ -16,14 +16,14 @@ export const ChessProfileSection: React.FC<ChessProfileSectionProps> = ({
   onChange,
 }) => {
   const inputClass =
-    "w-full bg-white border border-[#1F1109]/[0.18] rounded-lg px-3.5 py-[11px] text-[13px] text-[#1F1109] outline-none transition-colors focus:border-[#B8893D] focus:bg-[#FDF9EE] placeholder:text-[#9C8366]";
+    "w-full bg-white border border-[#1F1109]/[0.18] rounded-lg px-3.5 py-[11px] text-sm text-[#1F1109] outline-none transition-colors focus:border-[#B8893D] focus:bg-[#FDF9EE] placeholder:text-[#9C8366]";
 
   return (
     <div className="space-y-3">
       <h3 className="text-sm font-medium text-[#1F1109]">Chess profile</h3>
       <div className="space-y-3">
         <div>
-          <label htmlFor="title" className="block text-[11px] font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]">Chess title (optional)</label>
+          <label htmlFor="title" className="block text-sm font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]">Chess title (optional)</label>
           <select
             id="title"
             name="title"
@@ -45,11 +45,11 @@ export const ChessProfileSection: React.FC<ChessProfileSectionProps> = ({
           </select>
         </div>
         <div>
-          <label htmlFor="rating" className="block text-[11px] font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]">Rating (optional)</label>
+          <label htmlFor="rating" className="block text-sm font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]">Rating (optional)</label>
           <input id="rating" type="number" name="rating" value={rating || ""} onChange={onChange} placeholder="e.g., 2000" className={inputClass} />
         </div>
         <div>
-          <label htmlFor="bio" className="block text-[11px] font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]">Bio (optional)</label>
+          <label htmlFor="bio" className="block text-sm font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]">Bio (optional)</label>
           <textarea
             id="bio"
             name="bio"

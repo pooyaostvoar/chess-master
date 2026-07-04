@@ -8,7 +8,7 @@ export const UpcomingEventsPage = () => {
       <div className="bg-[#F4ECDD] border-b border-[#1F1109]/[0.08]">
         <div className="max-w-5xl mx-auto px-5 sm:px-8 py-8 sm:py-10">
           <div
-            className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-2"
+            className="text-sm italic text-[#7A2E2E] tracking-[0.04em] mb-2"
             style={{ fontFamily: "Georgia, serif" }}
           >
             Live sessions

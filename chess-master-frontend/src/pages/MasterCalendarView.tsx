@@ -476,7 +476,7 @@ const MasterCalendarView: React.FC = () => {
         <div className="flex-1 min-w-0">
           <div className="mb-6">
             <div
-              className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-2"
+              className="text-sm italic text-[#7A2E2E] tracking-[0.04em] mb-2"
               style={{ fontFamily: "Georgia, serif" }}
             >
               Your calendar
@@ -487,7 +487,7 @@ const MasterCalendarView: React.FC = () => {
             >
               My Schedule
             </h1>
-            <p className="text-[13px] text-[#5C4631]">
+            <p className="text-base text-[#5C4631]">
               Click and drag to choose a time window, then confirm one-time or
               recurring slots
             </p>

@@ -100,7 +100,7 @@ const PublicUserProfile: React.FC = () => {
           <h2 className="text-lg text-[#1F1109] mb-2" style={{ fontFamily: "Georgia, serif" }}>
             User not found
           </h2>
-          <button onClick={() => navigate("/masters")} className="text-xs text-[#B8893D] font-medium hover:underline">
+          <button onClick={() => navigate("/masters")} className="text-sm text-[#B8893D] font-medium hover:underline">
             Browse masters →
           </button>
         </div>
@@ -149,12 +149,12 @@ const PublicUserProfile: React.FC = () => {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1.5">
                 {user.title && (
-                  <span className="bg-[#F4ECDD]/95 text-[#3D2817] text-[10px] font-medium px-2 py-0.5 rounded tracking-[0.06em]">
+                  <span className="bg-[#F4ECDD]/95 text-[#3D2817] text-xs font-medium px-2 py-0.5 rounded tracking-[0.06em]">
                     {user.title}
                   </span>
                 )}
                 {user.isMaster && (
-                  <span className="text-[11px] text-[#F4ECDD]/50 tracking-wide">Verified</span>
+                  <span className="text-sm text-[#F4ECDD]/50 tracking-wide">Verified</span>
                 )}
               </div>
               <h1
@@ -163,7 +163,7 @@ const PublicUserProfile: React.FC = () => {
               >
                 {user.username}
               </h1>
-              <div className="text-xs text-[#F4ECDD]/70 mt-1.5">
+              <div className="text-sm text-[#F4ECDD]/70 mt-1.5">
                 {user.rating && <>{user.rating} Elo</>}
                 {user.languages && user.languages.length > 0 && (
                   <>{user.rating && " · "}{user.languages.join(", ")}</>
@@ -201,26 +201,26 @@ const PublicUserProfile: React.FC = () => {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6">
               {user.rating && (
                 <div>
-                  <div className="text-[9px] text-[#8B6F4E] tracking-[0.08em] uppercase mb-0.5">Elo Rating</div>
-                  <div className="text-[13px] font-medium text-[#1F1109]">{user.rating}</div>
+                  <div className="text-xs text-[#8B6F4E] tracking-[0.08em] uppercase mb-0.5">Elo Rating</div>
+                  <div className="text-sm font-medium text-[#1F1109]">{user.rating}</div>
                 </div>
               )}
               {user.title && (
                 <div>
-                  <div className="text-[9px] text-[#8B6F4E] tracking-[0.08em] uppercase mb-0.5">Title</div>
-                  <div className="text-[13px] font-medium text-[#1F1109]">{user.title}</div>
+                  <div className="text-xs text-[#8B6F4E] tracking-[0.08em] uppercase mb-0.5">Title</div>
+                  <div className="text-sm font-medium text-[#1F1109]">{user.title}</div>
                 </div>
               )}
               {user.languages && user.languages.length > 0 && (
                 <div>
-                  <div className="text-[9px] text-[#8B6F4E] tracking-[0.08em] uppercase mb-0.5">Languages</div>
-                  <div className="text-[13px] font-medium text-[#1F1109]">{user.languages.length}</div>
+                  <div className="text-xs text-[#8B6F4E] tracking-[0.08em] uppercase mb-0.5">Languages</div>
+                  <div className="text-sm font-medium text-[#1F1109]">{user.languages.length}</div>
                 </div>
               )}
               {user.hourlyRate != null && (
                 <div>
-                  <div className="text-[9px] text-[#8B6F4E] tracking-[0.08em] uppercase mb-0.5">Rate</div>
-                  <div className="text-[13px] font-medium text-[#1F1109]">${user.hourlyRate}/hr</div>
+                  <div className="text-xs text-[#8B6F4E] tracking-[0.08em] uppercase mb-0.5">Rate</div>
+                  <div className="text-sm font-medium text-[#1F1109]">${user.hourlyRate}/hr</div>
                 </div>
               )}
             </div>
@@ -237,12 +237,12 @@ const PublicUserProfile: React.FC = () => {
             {user.bio && (
               <section className="mb-7">
                 <div
-                  className="text-[11px] italic text-[#7A2E2E] tracking-[0.06em] uppercase mb-2"
+                  className="text-sm italic text-[#7A2E2E] tracking-[0.06em] uppercase mb-2"
                   style={{ fontFamily: "Georgia, serif" }}
                 >
                   About {user.username}
                 </div>
-                <p className="text-[13px] text-[#3D2817] leading-[1.65] whitespace-pre-line">
+                <p className="text-base text-[#3D2817] leading-[1.65] whitespace-pre-line">
                   {user.bio}
                 </p>
               </section>
@@ -252,7 +252,7 @@ const PublicUserProfile: React.FC = () => {
             {user.languages && user.languages.length > 0 && (
               <section className="mb-7">
                 <div
-                  className="text-[11px] italic text-[#7A2E2E] tracking-[0.06em] uppercase mb-2.5"
+                  className="text-sm italic text-[#7A2E2E] tracking-[0.06em] uppercase mb-2.5"
                   style={{ fontFamily: "Georgia, serif" }}
                 >
                   Languages
@@ -261,7 +261,7 @@ const PublicUserProfile: React.FC = () => {
                   {user.languages.map((lang: string) => (
                     <span
                       key={lang}
-                      className="bg-[#B8893D]/[0.14] text-[#6B4F1F] text-[11px] px-3 py-1 rounded-full"
+                      className="bg-[#B8893D]/[0.14] text-[#6B4F1F] text-xs px-3 py-1 rounded-full"
                     >
                       {lang}
                     </span>
@@ -274,7 +274,7 @@ const PublicUserProfile: React.FC = () => {
             {user.lichessRatings && (
               <section className="mb-7">
                 <div
-                  className="text-[11px] italic text-[#7A2E2E] tracking-[0.06em] uppercase mb-2.5"
+                  className="text-sm italic text-[#7A2E2E] tracking-[0.06em] uppercase mb-2.5"
                   style={{ fontFamily: "Georgia, serif" }}
                 >
                   Lichess ratings
@@ -291,7 +291,7 @@ const PublicUserProfile: React.FC = () => {
               <section className="mb-7">
                 <div className="flex justify-between items-baseline mb-3">
                   <div
-                    className="text-[11px] italic text-[#7A2E2E] tracking-[0.06em] uppercase"
+                    className="text-sm italic text-[#7A2E2E] tracking-[0.06em] uppercase"
                     style={{ fontFamily: "Georgia, serif" }}
                   >
                     Recordings
@@ -321,7 +321,7 @@ const PublicUserProfile: React.FC = () => {
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="#FAF5EB"><path d="M8 5v14l11-7z" /></svg>
                           </div>
                         </div>
-                        <div className="text-[11px] font-medium text-[#1F1109] mt-1.5 leading-[1.3] line-clamp-2">
+                        <div className="text-sm font-medium text-[#1F1109] mt-1.5 leading-[1.3] line-clamp-2">
                           {rec.title}
                         </div>
                       </div>
@@ -338,7 +338,7 @@ const PublicUserProfile: React.FC = () => {
             {user.isMaster && (
               <div className="bg-white border border-[#1F1109]/[0.12] rounded-xl p-5 mb-3">
                 <div
-                  className="text-[11px] italic text-[#7A2E2E] tracking-[0.06em] uppercase mb-1"
+                  className="text-sm italic text-[#7A2E2E] tracking-[0.06em] uppercase mb-1"
                   style={{ fontFamily: "Georgia, serif" }}
                 >
                   Hourly rate
@@ -357,7 +357,7 @@ const PublicUserProfile: React.FC = () => {
 
                 <button
                   onClick={() => navigate(`/calendar/${user.id}`)}
-                  className="w-full bg-[#B8893D] text-[#1F1109] rounded-lg py-3 text-[13px] font-medium hover:bg-[#A37728] transition-colors"
+                  className="w-full bg-[#B8893D] text-[#1F1109] rounded-lg py-3 text-sm font-medium hover:bg-[#A37728] transition-colors"
                 >
                   View schedule & book →
                 </button>
@@ -368,7 +368,7 @@ const PublicUserProfile: React.FC = () => {
             {(user.chesscomUrl || user.lichessUrl) && (
               <div className="bg-white border border-[#1F1109]/[0.12] rounded-xl p-4">
                 <div
-                  className="text-[11px] italic text-[#7A2E2E] tracking-[0.06em] uppercase mb-3"
+                  className="text-sm italic text-[#7A2E2E] tracking-[0.06em] uppercase mb-3"
                   style={{ fontFamily: "Georgia, serif" }}
                 >
                   Find {user.username} on
@@ -388,7 +388,7 @@ const PublicUserProfile: React.FC = () => {
                           <path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,9.506 13.5,8.5 13.5,7.5 C 14.5,5.5 16.5,4.5 16.5,4.5 L 18,7 L 18,3.5 L 19.5,2.5 L 21,5.5 L 21,2.5 L 22.5,4 L 22.5,5.5 C 26.5,4.5 30.5,7 32.5,12 L 32.5,16 L 31,17 L 29.5,18 C 29.5,18 27.5,18.5 26.5,18.5 L 24,18 z" />
                         </g>
                       </svg>
-                      <span className="text-xs text-[#3D2817]">Lichess</span>
+                      <span className="text-base text-[#3D2817]">Lichess</span>
                     </div>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#8B6F4E" strokeWidth="2"><path d="M7 17L17 7M7 7h10v10" /></svg>
                   </a>
@@ -403,7 +403,7 @@ const PublicUserProfile: React.FC = () => {
                   >
                     <div className="flex items-center gap-2">
                       <div className="w-3.5 h-3.5 rounded-full bg-[#769656]" />
-                      <span className="text-xs text-[#3D2817]">Chess.com</span>
+                      <span className="text-base text-[#3D2817]">Chess.com</span>
                     </div>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#8B6F4E" strokeWidth="2"><path d="M7 17L17 7M7 7h10v10" /></svg>
                   </a>

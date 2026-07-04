@@ -29,13 +29,13 @@ const DashCard: React.FC<DashCardProps> = ({
     } relative`}
   >
     {badge && (
-      <span className="absolute top-3 right-3 text-[9px] font-medium bg-[#B8893D]/20 text-[#6B4F1F] px-2 py-0.5 rounded tracking-wide">
+      <span className="absolute top-3 right-3 text-xs font-medium bg-[#B8893D]/20 text-[#6B4F1F] px-2 py-0.5 rounded tracking-wide">
         {badge}
       </span>
     )}
     <div className="mb-3 text-[#B8893D]">{icon}</div>
     <div className="text-sm font-medium text-[#1F1109] mb-1">{title}</div>
-    <div className="text-xs text-[#6B5640] leading-relaxed">{description}</div>
+    <div className="text-sm text-[#6B5640] leading-relaxed">{description}</div>
   </button>
 );
 
@@ -49,7 +49,7 @@ const Dashboard: React.FC = () => {
       <div className="bg-[#F4ECDD] border-b border-[#1F1109]/[0.08]">
         <div className="max-w-5xl mx-auto px-5 sm:px-8 py-10 sm:py-12">
           <div
-            className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-2"
+            className="text-sm italic text-[#7A2E2E] tracking-[0.04em] mb-2"
             style={{ fontFamily: "Georgia, serif" }}
           >
             Dashboard
@@ -60,7 +60,7 @@ const Dashboard: React.FC = () => {
           >
             Welcome back, <span className="italic text-[#7A2E2E]">{user?.username || "Player"}</span>
           </h1>
-          <p className="text-[13px] text-[#5C4631] leading-relaxed">
+          <p className="text-base text-[#5C4631] leading-relaxed">
             {user?.isMaster
               ? "Manage your schedule and connect with students"
               : "Find your perfect chess master and book a session"}
@@ -151,7 +151,7 @@ const Dashboard: React.FC = () => {
                   >
                     {user.rating || "Unrated"}
                   </div>
-                  <div className="text-xs text-[#F4ECDD]/60">Your Rating</div>
+                  <div className="text-sm text-[#F4ECDD]/60">Your Rating</div>
                 </div>
                 <div className="bg-[#F4ECDD]/10 backdrop-blur-sm rounded-lg p-5 text-center">
                   <div
@@ -160,7 +160,7 @@ const Dashboard: React.FC = () => {
                   >
                     {user.title || "No Title"}
                   </div>
-                  <div className="text-xs text-[#F4ECDD]/60">Chess Title</div>
+                  <div className="text-sm text-[#F4ECDD]/60">Chess Title</div>
                 </div>
               </div>
             </div>

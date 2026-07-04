@@ -90,13 +90,13 @@ const PaymentResultPage: React.FC = () => {
         </h2>
 
         {description && (
-          <p className="text-[13px] text-[#6B5640] mb-6 leading-relaxed">{description}</p>
+          <p className="text-sm text-[#6B5640] mb-6 leading-relaxed">{description}</p>
         )}
 
         {showHome && (
           <button
             onClick={() => navigate("/home")}
-            className="bg-[#B8893D] text-[#1F1109] rounded-lg px-6 py-2.5 text-[13px] font-medium hover:bg-[#A37728] transition-colors"
+            className="bg-[#B8893D] text-[#1F1109] rounded-lg px-6 py-2.5 text-sm font-medium hover:bg-[#A37728] transition-colors"
           >
             Go to home page
           </button>
@@ -105,7 +105,7 @@ const PaymentResultPage: React.FC = () => {
         {showRetry && (
           <button
             onClick={() => navigate(-1)}
-            className="bg-[#B8893D] text-[#1F1109] rounded-lg px-6 py-2.5 text-[13px] font-medium hover:bg-[#A37728] transition-colors"
+            className="bg-[#B8893D] text-[#1F1109] rounded-lg px-6 py-2.5 text-sm font-medium hover:bg-[#A37728] transition-colors"
           >
             Try again
           </button>

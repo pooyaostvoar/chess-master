@@ -75,7 +75,7 @@ const DeleteRecurringSlotModal: React.FC<DeleteRecurringSlotModalProps> = ({
             <Trash2 className="h-5 w-5 text-[#8B6F4E] flex-shrink-0" />
             <div>
               <div className="text-sm font-medium">Only this slot</div>
-              <div className="text-xs text-[#6B5640]">Remove this date only</div>
+              <div className="text-sm text-[#6B5640]">Remove this date only</div>
             </div>
           </button>
           <button

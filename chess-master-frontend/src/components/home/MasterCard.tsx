@@ -147,7 +147,7 @@ export const MasterCard: React.FC<MasterCardProps> = ({
 
         {master.title && (
           <span
-            className={`absolute top-2 left-2 text-[9px] font-medium px-[7px] py-[3px] rounded tracking-[0.06em] ${
+            className={`absolute top-2 left-2 text-xs font-medium px-[7px] py-[3px] rounded tracking-[0.06em] ${
               hasPhoto
                 ? "bg-[#1F1109]/85 text-[#F4ECDD]"
                 : isGold
@@ -162,11 +162,11 @@ export const MasterCard: React.FC<MasterCardProps> = ({
 
       {/* Card body */}
       <div className="px-3 py-[11px] pb-3">
-        <div className="text-xs font-medium text-[#1F1109] mb-0.5 truncate">
+        <div className="text-sm font-medium text-[#1F1109] mb-0.5 truncate">
           {master.username}
         </div>
 
-        <div className="text-[10px] text-[#6B5640] mb-1.5">
+        <div className="text-sm text-[#6B5640] mb-1.5">
           {master.rating && <>{master.rating}</>}
           {master.languages && master.languages.length > 0 && (
             <>
@@ -177,21 +177,21 @@ export const MasterCard: React.FC<MasterCardProps> = ({
         </div>
 
         {master.bio && (
-          <div className="text-[9px] text-[#6B4F1F] mb-2 truncate">
+          <div className="text-xs text-[#6B4F1F] mb-2 truncate">
             {master.bio}
           </div>
         )}
 
         <div className="flex justify-between items-baseline pt-[7px] border-t border-[#1F1109]/[0.08]">
           {master.hourlyRate != null ? (
-            <span className="text-[13px] font-medium text-[#1F1109]">
+            <span className="text-sm font-medium text-[#1F1109]">
               ${master.hourlyRate.toFixed(0)}
               <span className="text-[#6B5640] font-normal">/hr</span>
             </span>
           ) : (
             <span />
           )}
-          <span className="text-[10px] text-[#B8893D] font-medium">View →</span>
+          <span className="text-sm text-[#B8893D] font-medium">View →</span>
         </div>
       </div>
     </Link>

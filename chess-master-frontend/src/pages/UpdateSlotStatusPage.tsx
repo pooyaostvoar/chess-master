@@ -90,7 +90,7 @@ const UpdateSlotStatusPage: React.FC = () => {
       <div className="bg-[#F4ECDD] border-b border-[#1F1109]/[0.08]">
         <div className="max-w-lg mx-auto px-5 sm:px-8 py-8 sm:py-10">
           <div
-            className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-2"
+            className="text-sm italic text-[#7A2E2E] tracking-[0.04em] mb-2"
             style={{ fontFamily: "Georgia, serif" }}
           >
             Slot status
@@ -107,9 +107,9 @@ const UpdateSlotStatusPage: React.FC = () => {
       <div className="max-w-lg mx-auto px-5 sm:px-8 py-8">
         <div className="bg-white border border-[#1F1109]/[0.12] rounded-xl p-6 shadow-sm">
           {paramsInvalid && (
-            <div className="text-[13px] text-[#7A2E2E]">
+            <div className="text-sm text-[#7A2E2E]">
               Invalid URL. Use{" "}
-              <code className="text-[12px] bg-[#FAF5EB] px-1 rounded">
+              <code className="text-sm bg-[#FAF5EB] px-1 rounded">
                 /update-slot-status/&lt;id&gt;/&lt;status&gt;
               </code>{" "}
               where status is one of:{" "}
@@ -126,7 +126,7 @@ const UpdateSlotStatusPage: React.FC = () => {
               >
                 {targetStatus ? updatingLabel(targetStatus) : "Working…"}
               </p>
-              <p className="text-[12px] text-[#6B5640] text-center max-w-[280px]">
+              <p className="text-sm text-[#6B5640] text-center max-w-[280px]">
                 Slot #{slotNumericId}
                 {targetStatus ? (
                   <>
@@ -140,19 +140,19 @@ const UpdateSlotStatusPage: React.FC = () => {
 
           {!paramsInvalid && phase === "error" && errorMessage && (
             <div className="space-y-4">
-              <div className="px-3.5 py-3 rounded-lg bg-[#7A2E2E]/10 border border-[#7A2E2E]/20 text-[13px] text-[#7A2E2E]">
+              <div className="px-3.5 py-3 rounded-lg bg-[#7A2E2E]/10 border border-[#7A2E2E]/20 text-sm text-[#7A2E2E]">
                 {errorMessage}
               </div>
               <button
                 type="button"
                 onClick={() => navigate(afterSuccessPath)}
-                className="w-full rounded-lg px-3.5 py-3 text-[13px] font-medium text-[#1F1109] bg-[#B8893D] hover:bg-[#A37728] transition-colors"
+                className="w-full rounded-lg px-3.5 py-3 text-sm font-medium text-[#1F1109] bg-[#B8893D] hover:bg-[#A37728] transition-colors"
               >
                 {user?.isMaster ? "Back to calendar" : "Back to bookings"}
               </button>
               <Link
                 to="/dashboard"
-                className="block text-center text-[13px] text-[#B8893D] font-medium hover:underline"
+                className="block text-center text-sm text-[#B8893D] font-medium hover:underline"
               >
                 Dashboard
               </Link>
@@ -161,19 +161,19 @@ const UpdateSlotStatusPage: React.FC = () => {
 
           {!paramsInvalid && phase === "success" && (
             <div className="space-y-4">
-              <p className="text-[13px] text-[#3D2817]">
+              <p className="text-base text-[#3D2817]">
                 Slot status was updated successfully.
               </p>
               <button
                 type="button"
                 onClick={() => navigate(afterSuccessPath)}
-                className="w-full rounded-lg px-3.5 py-3 text-[13px] font-medium text-[#1F1109] bg-[#B8893D] hover:bg-[#A37728] transition-colors"
+                className="w-full rounded-lg px-3.5 py-3 text-sm font-medium text-[#1F1109] bg-[#B8893D] hover:bg-[#A37728] transition-colors"
               >
                 {user?.isMaster ? "Go to my calendar" : "Go to my bookings"}
               </button>
               <Link
                 to="/dashboard"
-                className="block text-center text-[13px] text-[#B8893D] font-medium hover:underline"
+                className="block text-center text-sm text-[#B8893D] font-medium hover:underline"
               >
                 Dashboard
               </Link>

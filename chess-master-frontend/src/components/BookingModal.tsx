@@ -92,13 +92,13 @@ const BookingModal: React.FC<BookingModalProps> = ({
             <XCircle className="h-5 w-5 flex-shrink-0 text-[#8B6F4E]" />
             <div className="text-left">
               <div className="text-sm font-medium">No, cancel</div>
-              <div className="text-xs text-[#6B5640]">Close without booking</div>
+              <div className="text-sm text-[#6B5640]">Close without booking</div>
             </div>
           </button>
 
           {message && (
             <div
-              className={`mt-2 text-[13px] font-medium text-center p-3 rounded-lg ${
+              className={`mt-2 text-sm font-medium text-center p-3 rounded-lg ${
                 message.type === "success"
                   ? "bg-[#B8893D]/10 text-[#6B4F1F]"
                   : "bg-[#7A2E2E]/10 text-[#7A2E2E]"

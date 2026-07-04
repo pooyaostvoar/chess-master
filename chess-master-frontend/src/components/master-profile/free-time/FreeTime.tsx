@@ -81,7 +81,7 @@ function FreeTimeHeader() {
           <Calendar className="h-[18px] w-[18px]" strokeWidth={2} />
         </span>
         <p
-          className="text-xs font-semibold tracking-[0.14em] uppercase text-[#7A2E2E] md:text-[13px]"
+          className="text-xs font-semibold tracking-[0.14em] uppercase text-[#7A2E2E] md:text-sm"
           style={SERIF}
         >
           Book a lesson
@@ -198,7 +198,7 @@ export default function FreeTime({ userId, username }: FreeTimeProps) {
           <p className="text-sm font-medium text-[#1F1109]" style={SERIF}>
             No availability published yet
           </p>
-          <p className="mt-1.5 max-w-sm mx-auto text-[13px] leading-relaxed text-[#6B5640]">
+          <p className="mt-1.5 max-w-sm mx-auto text-sm leading-relaxed text-[#6B5640]">
             {username
               ? `${username} hasn't opened any lesson slots for booking. Send them a message and they'll get back to you.`
               : "This coach hasn't opened any lesson slots for booking yet."}

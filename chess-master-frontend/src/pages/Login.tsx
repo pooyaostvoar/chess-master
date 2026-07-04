@@ -110,7 +110,7 @@ const Login: React.FC = () => {
             />
 
             <div
-              className="text-[11px] italic text-[#B8893D] tracking-[0.06em] uppercase mb-3.5"
+              className="text-sm italic text-[#B8893D] tracking-[0.06em] uppercase mb-3.5"
               style={{ fontFamily: "Georgia, serif" }}
             >
               Sign in
@@ -147,7 +147,7 @@ const Login: React.FC = () => {
 
           {/* Error message */}
           {message && (
-            <div className="mb-5 px-3.5 py-3 rounded-lg bg-[#7A2E2E]/10 border border-[#7A2E2E]/20 text-[13px] text-[#7A2E2E] text-center">
+            <div className="mb-5 px-3.5 py-3 rounded-lg bg-[#7A2E2E]/10 border border-[#7A2E2E]/20 text-sm text-[#7A2E2E] text-center">
               {message}
             </div>
           )}
@@ -159,7 +159,7 @@ const Login: React.FC = () => {
                 type="button"
                 onClick={handleGoogleLogin}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2.5 bg-white border border-[#1F1109]/[0.18] rounded-lg px-3.5 py-2.5 text-[13px] font-medium text-[#1F1109] hover:border-[#1F1109]/[0.32] hover:bg-[#FDF9EE] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-2.5 bg-white border border-[#1F1109]/[0.18] rounded-lg px-3.5 py-2.5 text-sm font-medium text-[#1F1109] hover:border-[#1F1109]/[0.32] hover:bg-[#FDF9EE] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -174,7 +174,7 @@ const Login: React.FC = () => {
                 type="button"
                 onClick={handleLichessLogin}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2.5 bg-white border border-[#1F1109]/[0.18] rounded-lg px-3.5 py-2.5 text-[13px] font-medium text-[#1F1109] hover:border-[#1F1109]/[0.32] hover:bg-[#FDF9EE] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-2.5 bg-white border border-[#1F1109]/[0.18] rounded-lg px-3.5 py-2.5 text-sm font-medium text-[#1F1109] hover:border-[#1F1109]/[0.32] hover:bg-[#FDF9EE] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 <svg width="14" height="14" viewBox="0 0 45 45">
                   <g fill="#1F1109" fillRule="evenodd">
@@ -189,7 +189,7 @@ const Login: React.FC = () => {
             {/* Divider */}
             <div className="flex items-center gap-3 mb-5">
               <div className="flex-1 h-px bg-[#1F1109]/[0.15]" />
-              <span className="text-[10px] text-[#8B6F4E] tracking-[0.04em] uppercase">or with email</span>
+              <span className="text-sm text-[#8B6F4E] tracking-[0.04em] uppercase">or with email</span>
               <div className="flex-1 h-px bg-[#1F1109]/[0.15]" />
             </div>
 
@@ -197,7 +197,7 @@ const Login: React.FC = () => {
             <div className="mb-3.5">
               <label
                 htmlFor="login-email"
-                className="block text-[11px] font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]"
+                className="block text-sm font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]"
               >
                 Email
               </label>
@@ -209,7 +209,7 @@ const Login: React.FC = () => {
                 required
                 placeholder="you@example.com"
                 autoComplete="email"
-                className="w-full bg-white border border-[#1F1109]/[0.18] rounded-lg px-3.5 py-[11px] text-[13px] text-[#1F1109] outline-none transition-colors focus:border-[#B8893D] focus:bg-[#FDF9EE] placeholder:text-[#9C8366]"
+                className="w-full bg-white border border-[#1F1109]/[0.18] rounded-lg px-3.5 py-[11px] text-sm text-[#1F1109] outline-none transition-colors focus:border-[#B8893D] focus:bg-[#FDF9EE] placeholder:text-[#9C8366]"
               />
             </div>
 
@@ -218,7 +218,7 @@ const Login: React.FC = () => {
               <div className="flex justify-between items-baseline mb-1.5">
                 <label
                   htmlFor="login-pass"
-                  className="text-[11px] font-medium text-[#3D2817] tracking-[0.02em]"
+                  className="text-sm font-medium text-[#3D2817] tracking-[0.02em]"
                 >
                   Password
                 </label>
@@ -232,7 +232,7 @@ const Login: React.FC = () => {
                   required
                   placeholder="••••••••"
                   autoComplete="current-password"
-                  className="w-full bg-white border border-[#1F1109]/[0.18] rounded-lg pl-3.5 pr-9 py-[11px] text-[13px] text-[#1F1109] outline-none transition-colors focus:border-[#B8893D] focus:bg-[#FDF9EE] placeholder:text-[#9C8366]"
+                  className="w-full bg-white border border-[#1F1109]/[0.18] rounded-lg pl-3.5 pr-9 py-[11px] text-sm text-[#1F1109] outline-none transition-colors focus:border-[#B8893D] focus:bg-[#FDF9EE] placeholder:text-[#9C8366]"
                 />
                 <button
                   type="button"
@@ -253,7 +253,7 @@ const Login: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full rounded-lg px-3.5 py-3 text-[13px] font-medium text-[#1F1109] mt-[18px] transition-colors ${
+              className={`w-full rounded-lg px-3.5 py-3 text-sm font-medium text-[#1F1109] mt-[18px] transition-colors ${
                 loading
                   ? "bg-[#8B6F4E] cursor-wait pointer-events-none"
                   : "bg-[#B8893D] hover:bg-[#A37728] active:scale-[0.99]"
@@ -270,7 +270,7 @@ const Login: React.FC = () => {
 
           {/* Footer links */}
           <div className="text-center mt-6">
-            <p className="text-xs text-[#6B5640]">
+            <p className="text-sm text-[#6B5640]">
               Don't have an account?{" "}
               <button
                 onClick={() => navigate("/signup")}
@@ -283,7 +283,7 @@ const Login: React.FC = () => {
             <div className="mt-4 pt-4 border-t border-[#1F1109]/[0.08]">
               <button
                 onClick={() => navigate("/masters")}
-                className="text-xs text-[#3D2817] font-medium bg-transparent border-none cursor-pointer hover:underline"
+                className="text-base text-[#3D2817] font-medium bg-transparent border-none cursor-pointer hover:underline"
               >
                 Browse masters first →
               </button>

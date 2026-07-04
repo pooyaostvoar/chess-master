@@ -173,7 +173,7 @@ const ScheduleChatbot: React.FC<ScheduleChatbotProps> = ({ onSlotsCreated }) => 
           >
             Schedule assistant
           </h3>
-          <p className="text-xs text-[#5C4631]">Describe your availability</p>
+          <p className="text-base text-[#5C4631]">Describe your availability</p>
         </div>
         <button
           type="button"
@@ -205,7 +205,7 @@ const ScheduleChatbot: React.FC<ScheduleChatbotProps> = ({ onSlotsCreated }) => 
 
         {statusMessage && (
           <div className="flex justify-start">
-            <div className="rounded-2xl border border-[#1F1109]/[0.08] bg-white px-3 py-2 text-sm text-[#5C4631]">
+            <div className="rounded-2xl border border-[#1F1109]/[0.08] bg-white px-3 py-2 text-base text-[#5C4631]">
               {statusMessage}
             </div>
           </div>

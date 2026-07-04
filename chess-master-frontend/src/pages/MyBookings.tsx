@@ -81,7 +81,7 @@ const MyBookings: React.FC = () => {
   if (error) {
     return (
       <div className="bg-[#FAF5EB] min-h-screen flex items-center justify-center">
-        <div className="bg-[#7A2E2E]/10 border border-[#7A2E2E]/20 text-[#7A2E2E] text-[13px] px-4 py-3 rounded-lg">
+        <div className="bg-[#7A2E2E]/10 border border-[#7A2E2E]/20 text-[#7A2E2E] text-sm px-4 py-3 rounded-lg">
           {error}
         </div>
       </div>
@@ -94,7 +94,7 @@ const MyBookings: React.FC = () => {
       <div className="bg-[#F4ECDD] border-b border-[#1F1109]/[0.08]">
         <div className="max-w-5xl mx-auto px-5 sm:px-8 py-8 sm:py-10">
           <div
-            className="text-xs italic text-[#7A2E2E] tracking-[0.04em] mb-2"
+            className="text-sm italic text-[#7A2E2E] tracking-[0.04em] mb-2"
             style={{ fontFamily: "Georgia, serif" }}
           >
             Sessions
@@ -105,7 +105,7 @@ const MyBookings: React.FC = () => {
           >
             My bookings
           </h1>
-          <p className="text-[13px] text-[#5C4631] mt-1.5">
+          <p className="text-base text-[#5C4631] mt-1.5">
             View all slot requests and confirmed bookings
           </p>
         </div>
@@ -129,12 +129,12 @@ const MyBookings: React.FC = () => {
             >
               No bookings yet
             </h2>
-            <p className="text-[13px] text-[#6B5640] mb-5">
+            <p className="text-sm text-[#6B5640] mb-5">
               You don't have any bookings yet.
             </p>
             <button
               onClick={() => navigate("/masters")}
-              className="text-xs text-[#B8893D] font-medium hover:underline"
+              className="text-sm text-[#B8893D] font-medium hover:underline"
             >
               Browse masters →
             </button>
@@ -169,7 +169,7 @@ const MyBookings: React.FC = () => {
                       <div className="text-sm font-medium text-[#1F1109] mb-1">
                         {formatDate(booking.startTime)}
                       </div>
-                      <div className="text-[11px] text-[#6B5640]">
+                      <div className="text-sm text-[#6B5640]">
                         {Math.round(
                           (new Date(booking.endTime).getTime() -
                             new Date(booking.startTime).getTime()) /
@@ -179,7 +179,7 @@ const MyBookings: React.FC = () => {
                       </div>
                     </div>
                     <span
-                      className={`text-[10px] font-medium px-2.5 py-1 rounded-full tracking-wide uppercase ${getStatusStyle(booking.status)}`}
+                      className={`text-xs font-medium px-2.5 py-1 rounded-full tracking-wide uppercase ${getStatusStyle(booking.status)}`}
                     >
                       {getStatusLabel(booking.status)}
                     </span>
@@ -200,13 +200,13 @@ const MyBookings: React.FC = () => {
                         <div className="text-sm font-medium text-[#1F1109] flex items-center gap-2">
                           {displayName || "Unknown User"}
                           {displayUser?.title && (
-                            <span className="text-[9px] font-medium bg-[#3D2817] text-[#F4ECDD] px-1.5 py-0.5 rounded tracking-[0.06em]">
+                            <span className="text-xs font-medium bg-[#3D2817] text-[#F4ECDD] px-1.5 py-0.5 rounded tracking-[0.06em]">
                               {displayUser.title}
                             </span>
                           )}
                         </div>
                         {displayUser?.rating && (
-                          <div className="text-[11px] text-[#6B5640]">
+                          <div className="text-sm text-[#6B5640]">
                             {displayUser.rating} Elo
                           </div>
                         )}
@@ -223,7 +223,7 @@ const MyBookings: React.FC = () => {
                                 await updateSlotStatus(booking.id, SlotStatus.Booked);
                                 loadBookings();
                               }}
-                              className="text-[11px] font-medium px-3 py-1.5 rounded-full bg-[#B8893D] text-[#1F1109] hover:bg-[#A37728] transition-colors"
+                              className="text-xs font-medium px-3 py-1.5 rounded-full bg-[#B8893D] text-[#1F1109] hover:bg-[#A37728] transition-colors"
                             >
                               Approve
                             </button>
@@ -233,7 +233,7 @@ const MyBookings: React.FC = () => {
                                 await updateSlotStatus(booking.id, SlotStatus.Free);
                                 loadBookings();
                               }}
-                              className="text-[11px] font-medium px-3 py-1.5 rounded-full bg-[#7A2E2E]/10 text-[#7A2E2E] hover:bg-[#7A2E2E]/20 transition-colors"
+                              className="text-xs font-medium px-3 py-1.5 rounded-full bg-[#7A2E2E]/10 text-[#7A2E2E] hover:bg-[#7A2E2E]/20 transition-colors"
                             >
                               Reject
                             </button>
@@ -244,7 +244,7 @@ const MyBookings: React.FC = () => {
                           e.stopPropagation();
                           if (displayUser?.id) navigate(`/chat/${displayUser.id}`);
                         }}
-                        className="text-[11px] font-medium px-3 py-1.5 rounded-full border border-[#1F1109]/[0.15] text-[#3D2817] hover:bg-[#1F1109]/[0.04] transition-colors"
+                        className="text-xs font-medium px-3 py-1.5 rounded-full border border-[#1F1109]/[0.15] text-[#3D2817] hover:bg-[#1F1109]/[0.04] transition-colors"
                       >
                         Message
                       </button>
@@ -254,7 +254,7 @@ const MyBookings: React.FC = () => {
                   {/* Pending note */}
                   {booking.status === "reserved" &&
                     !isCurrentUserMasterOfBooking && (
-                      <div className="mt-4 px-3.5 py-2.5 bg-[#B8893D]/10 border-l-2 border-[#B8893D] rounded-r-lg text-[12px] text-[#6B4F1F]">
+                      <div className="mt-4 px-3.5 py-2.5 bg-[#B8893D]/10 border-l-2 border-[#B8893D] rounded-r-lg text-sm text-[#6B4F1F]">
                         Waiting for master approval
                       </div>
                     )}

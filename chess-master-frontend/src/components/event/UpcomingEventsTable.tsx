@@ -74,7 +74,7 @@ export const UpcomingEventsTable: React.FC<Props> = ({
       <div className="flex justify-between items-center mb-4">
         <button
           onClick={() => goWeek(-1)}
-          className="flex items-center gap-1 px-3 py-2 rounded-lg border border-[#1F1109]/[0.15] text-xs font-medium text-[#3D2817] hover:bg-[#1F1109]/[0.04] transition-colors"
+          className="flex items-center gap-1 px-3 py-2 rounded-lg border border-[#1F1109]/[0.15] text-sm font-medium text-[#3D2817] hover:bg-[#1F1109]/[0.04] transition-colors"
         >
           <ChevronLeft className="w-3.5 h-3.5" /> Prev
         </button>
@@ -86,7 +86,7 @@ export const UpcomingEventsTable: React.FC<Props> = ({
         </h2>
         <button
           onClick={() => goWeek(1)}
-          className="flex items-center gap-1 px-3 py-2 rounded-lg border border-[#1F1109]/[0.15] text-xs font-medium text-[#3D2817] hover:bg-[#1F1109]/[0.04] transition-colors"
+          className="flex items-center gap-1 px-3 py-2 rounded-lg border border-[#1F1109]/[0.15] text-sm font-medium text-[#3D2817] hover:bg-[#1F1109]/[0.04] transition-colors"
         >
           Next <ChevronRight className="w-3.5 h-3.5" />
         </button>
@@ -125,7 +125,7 @@ export const UpcomingEventsTable: React.FC<Props> = ({
         loadEvents={loadEvents}
       />
       {getEventsForDay(activeDayIndex).length === 0 && !loading && (
-        <p className="text-xs text-[#6B5640] text-center py-4 italic">
+        <p className="text-sm text-[#6B5640] text-center py-4 italic">
           No events this day.
         </p>
       )}
