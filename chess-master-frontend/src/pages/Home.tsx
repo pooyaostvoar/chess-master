@@ -111,6 +111,18 @@ const Home: React.FC = () => {
     loadData();
   }, [user]);
 
+  const languageOptions = useMemo(() => {
+    const counts: Record<string, number> = {};
+    allMasters.forEach((m) =>
+      m.languages?.forEach((l) => {
+        counts[l] = (counts[l] || 0) + 1;
+      })
+    );
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(([lang]) => lang);
+  }, [allMasters]);
+
   // Client-side filtering for the non-logged-in view
   const isSearchActive = searchQuery.trim() !== "" || selectedLang !== "All languages";
 
@@ -217,6 +229,7 @@ const Home: React.FC = () => {
             onSearchChange={setSearchQuery}
             selectedLang={selectedLang}
             onLangChange={setSelectedLang}
+            languages={languageOptions}
           />
 
           {/* Featured Masters */}
