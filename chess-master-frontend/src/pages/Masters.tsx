@@ -3,6 +3,12 @@ import { Search, Globe, ChevronDown } from "lucide-react";
 import { findUsers } from "../services/auth";
 import type { User } from "../services/auth";
 import { MasterCard } from "../components/home/MasterCard";
+import { LanguageFilterOptions } from "../components/shared/LanguageFilterOptions";
+import {
+  languageMatchesQuery,
+  masterSpeaksLanguage,
+  toCanonicalLanguage,
+} from "../constants/languages";
 
 /* ─── constants ─── */
 
@@ -34,6 +40,9 @@ interface FilterDropdownProps {
   onChange: (value: string) => void;
   icon?: React.ReactNode;
   formatLabel?: (label: string) => string;
+  searchable?: boolean;
+  searchPool?: string[];
+  allLabel?: string;
 }
 
 const FilterDropdown: React.FC<FilterDropdownProps> = ({
@@ -43,6 +52,9 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   onChange,
   icon,
   formatLabel,
+  searchable,
+  searchPool,
+  allLabel,
 }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -85,27 +97,40 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
           open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-1 pointer-events-none"
         }`}
       >
-        {options.map((opt) => {
-          const isSelected = value === opt.value;
-          return (
-            <div
-              key={opt.value}
-              onClick={() => { onChange(opt.value); setOpen(false); }}
-              className={`px-3.5 py-2 flex justify-between items-center cursor-pointer border-l-2 transition-colors text-sm ${
-                isSelected
-                  ? "bg-[#B8893D]/[0.14] border-l-[#B8893D] pl-3 font-medium text-[#1F1109]"
-                  : "border-l-transparent text-[#3D2817] hover:bg-[#1F1109]/[0.04]"
-              }`}
-            >
-              <span>{opt.label}</span>
-              {isSelected && (
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#B8893D" strokeWidth="2.5" strokeLinecap="round">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              )}
-            </div>
-          );
-        })}
+        {searchable && searchPool ? (
+          <LanguageFilterOptions
+            options={searchPool}
+            selected={value || allLabel || label}
+            allLabel={allLabel || label}
+            onSelect={(lang) => {
+              onChange(lang === (allLabel || label) ? "" : lang);
+              setOpen(false);
+            }}
+            optionClassName="px-3.5 py-2"
+          />
+        ) : (
+          options.map((opt) => {
+            const isSelected = value === opt.value;
+            return (
+              <div
+                key={opt.value}
+                onClick={() => { onChange(opt.value); setOpen(false); }}
+                className={`px-3.5 py-2 flex justify-between items-center cursor-pointer border-l-2 transition-colors text-sm ${
+                  isSelected
+                    ? "bg-[#B8893D]/[0.14] border-l-[#B8893D] pl-3 font-medium text-[#1F1109]"
+                    : "border-l-transparent text-[#3D2817] hover:bg-[#1F1109]/[0.04]"
+                }`}
+              >
+                <span>{opt.label}</span>
+                {isSelected && (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#B8893D" strokeWidth="2.5" strokeLinecap="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                )}
+              </div>
+            );
+          })
+        )}
       </div>
     </div>
   );
@@ -136,15 +161,26 @@ const Masters: React.FC = () => {
   }, []);
 
   // derive language options from data
-  const languageOptions = useMemo(() => {
+  const languagePool = useMemo(() => {
     const counts: Record<string, number> = {};
-    masters.forEach((m) => m.languages?.forEach((l) => { counts[l] = (counts[l] || 0) + 1; }));
-    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-    return [
-      { value: "", label: "All languages" },
-      ...sorted.map(([l]) => ({ value: l, label: l })),
-    ];
+    masters.forEach((m) =>
+      m.languages?.forEach((l) => {
+        const canonical = toCanonicalLanguage(l);
+        counts[canonical] = (counts[canonical] || 0) + 1;
+      })
+    );
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(([lang]) => lang);
   }, [masters]);
+
+  const languageOptions = useMemo(
+    () => [
+      { value: "", label: "All languages" },
+      ...languagePool.map((l) => ({ value: l, label: l })),
+    ],
+    [languagePool]
+  );
 
   // derive title options from data
   const titleOptions = useMemo(() => {
@@ -167,11 +203,11 @@ const Masters: React.FC = () => {
         m.username.toLowerCase().includes(s) ||
         m.bio?.toLowerCase().includes(s) ||
         m.title?.toLowerCase().includes(s) ||
-        m.languages?.some((l) => l.toLowerCase().includes(s))
+        m.languages?.some((l) => languageMatchesQuery(l, s))
       );
     }
     if (language) {
-      results = results.filter((m) => m.languages?.includes(language));
+      results = results.filter((m) => masterSpeaksLanguage(m.languages, language));
     }
     if (title) {
       results = results.filter((m) => m.title === title);
@@ -272,6 +308,9 @@ const Masters: React.FC = () => {
             options={languageOptions}
             onChange={setLanguage}
             icon={<Globe className="w-[11px] h-[11px] text-[#6B4F1F]" strokeWidth={2} />}
+            searchable
+            searchPool={languagePool}
+            allLabel="All languages"
           />
 
           <FilterDropdown

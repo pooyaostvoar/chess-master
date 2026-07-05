@@ -20,6 +20,11 @@ import { UpcomingEventsSection } from "../components/event/UpcomingEventsSection
 import { useUpcomingEvents } from "../hooks/useUpcomingEvents";
 
 import { sortMastersByEvents } from "../services/users";
+import {
+  languageMatchesQuery,
+  masterSpeaksLanguage,
+  toCanonicalLanguage,
+} from "../constants/languages";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -116,7 +121,8 @@ const Home: React.FC = () => {
     const counts: Record<string, number> = {};
     allMasters.forEach((m) =>
       m.languages?.forEach((l) => {
-        counts[l] = (counts[l] || 0) + 1;
+        const canonical = toCanonicalLanguage(l);
+        counts[canonical] = (counts[canonical] || 0) + 1;
       })
     );
     return Object.entries(counts)
@@ -137,20 +143,20 @@ const Home: React.FC = () => {
           m.username,
           m.bio,
           m.title,
-          ...(m.languages || []),
         ]
           .filter(Boolean)
           .join(" ")
           .toLowerCase();
-        return searchableText.includes(q);
+        return (
+          searchableText.includes(q) ||
+          m.languages?.some((lang) => languageMatchesQuery(lang, q))
+        );
       });
     }
 
     if (selectedLang !== "All languages") {
       results = results.filter((m) =>
-        m.languages?.some(
-          (lang) => lang.toLowerCase() === selectedLang.toLowerCase()
-        )
+        masterSpeaksLanguage(m.languages, selectedLang)
       );
     }
 

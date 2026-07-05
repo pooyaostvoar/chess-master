@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Search, Globe, ChevronDown } from "lucide-react";
+import { LanguageFilterOptions } from "../shared/LanguageFilterOptions";
 
 const TOPIC_TAGS = [
   "Openings",
@@ -25,7 +26,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onLangChange,
   languages,
 }) => {
-  const languageOptions = ["All languages", ...languages];
   const [langOpen, setLangOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
 
@@ -50,35 +50,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     onSearchChange(searchQuery === tag ? "" : tag);
   };
 
-  const renderLanguageOptions = () =>
-    languageOptions.map((lang) => {
-      const isSelected = selectedLang === lang;
-      return (
-        <div
-          key={lang}
-          role="option"
-          aria-selected={isSelected}
-          onClick={() => {
-            onLangChange(lang);
-            setLangOpen(false);
-          }}
-          className={`px-3.5 py-2.5 sm:py-2 flex justify-between items-center cursor-pointer border-l-2 transition-colors ${
-            isSelected
-              ? "bg-[#B8893D]/[0.14] border-l-[#B8893D] pl-3"
-              : "border-l-transparent hover:bg-[#1F1109]/[0.04] active:bg-[#1F1109]/[0.06]"
-          }`}
-        >
-          <span className={`text-base text-[#3D2817] ${isSelected ? "font-medium" : ""}`}>
-            {lang}
-          </span>
-          {isSelected && (
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#B8893D" strokeWidth="2.5" strokeLinecap="round">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          )}
-        </div>
-      );
-    });
+  const handleLanguageSelect = (lang: string) => {
+    onLangChange(lang);
+    setLangOpen(false);
+  };
 
   return (
     <div className="bg-[#F4ECDD] relative" style={{ minHeight: 460 }}>
@@ -194,10 +169,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 }`}
                 role="listbox"
               >
-                <div className="sticky top-0 bg-white px-3 pt-2 pb-1.5 text-sm text-[#8B6F4E] tracking-[0.06em] uppercase border-b border-[#1F1109]/[0.06]">
-                  Filter by language
-                </div>
-                {renderLanguageOptions()}
+                <LanguageFilterOptions
+                  options={languages}
+                  selected={selectedLang}
+                  onSelect={handleLanguageSelect}
+                />
               </div>
             </div>
 
@@ -225,10 +201,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               className="sm:hidden border-t border-[#1F1109]/[0.08] max-h-[min(45vh,280px)] overflow-y-auto text-left overscroll-contain"
               role="listbox"
             >
-              <div className="sticky top-0 bg-white px-3.5 pt-2.5 pb-1.5 text-sm text-[#8B6F4E] tracking-[0.06em] uppercase border-b border-[#1F1109]/[0.06]">
-                Filter by language
-              </div>
-              {renderLanguageOptions()}
+              <LanguageFilterOptions
+                options={languages}
+                selected={selectedLang}
+                onSelect={handleLanguageSelect}
+                optionClassName="px-3.5 py-2.5 sm:py-2"
+              />
             </div>
           )}
         </div>
