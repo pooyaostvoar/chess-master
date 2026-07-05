@@ -5,12 +5,14 @@ export const blogPostSchema = z.object({
   title: z.string(),
   slug: z.string(),
   contentHtml: z.string(),
+  imageUrl: z.string().nullish(),
 });
 
 export const blogPostCreateSchema = z.object({
   title: z.string().trim().min(1, "Title is required"),
   slug: z.string().trim().optional(),
   contentHtml: z.string(),
+  imageUrl: z.string().nullish(),
 });
 
 export const blogPostUpdateSchema = blogPostCreateSchema.partial();

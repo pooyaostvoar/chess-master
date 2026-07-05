@@ -28,6 +28,7 @@ import PaymentResultPage from "./pages/PaymentResultPage";
 
 import MasterProfilePage from "./pages/MasterProfilePage";
 import BlogPostPage from "./pages/BlogPostPage";
+import BlogPostsPage from "./pages/BlogPostsPage";
 import UpdateSlotStatusPage from "./pages/UpdateSlotStatusPage";
 import { RequireAuth } from "./components/RequireAuth";
 
@@ -122,6 +123,7 @@ const App: React.FC = () => {
               />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/posts" element={<BlogPostsPage />} />
               <Route path="/posts/:slug" element={<BlogPostPage />} />
               <Route
                 path="/success"

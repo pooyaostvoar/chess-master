@@ -1,4 +1,6 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3004";
+export const MEDIA_URL =
+  import.meta.env.VITE_MEDIA_URL || "http://localhost:9000/images";
 
 export type Admin = {
   id: number;
@@ -181,6 +183,7 @@ export type AdminBlogPost = {
   title: string;
   slug: string;
   contentHtml: string;
+  imageUrl: string | null;
 };
 
 export type AdminBlogPostListResponse = {
@@ -205,6 +208,7 @@ export const AdminBlogPostsApi = {
     title: string;
     slug?: string;
     contentHtml: string;
+    imageUrl?: string | null;
   }) =>
     request<AdminBlogPost>("/admin/posts", {
       method: "POST",
@@ -216,6 +220,7 @@ export const AdminBlogPostsApi = {
       title: string;
       slug: string;
       contentHtml: string;
+      imageUrl: string | null;
     }>
   ) =>
     request<AdminBlogPost>(`/admin/posts/${id}`, {
@@ -226,6 +231,31 @@ export const AdminBlogPostsApi = {
     request<{ message: string }>(`/admin/posts/${id}`, {
       method: "DELETE",
     }),
+};
+
+export const AdminImagesApi = {
+  upload: async (file: File) => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const res = await fetch(`${API_URL}/admin/images`, {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text || `Upload failed: ${res.status}`);
+    }
+
+    const data = (await res.json()) as { success: boolean; url?: string; error?: string };
+    if (!data.success || !data.url) {
+      throw new Error(data.error || "Upload failed");
+    }
+
+    return data;
+  },
 };
 
 export const AdminSlotsApi = {

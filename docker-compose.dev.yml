@@ -43,6 +43,7 @@ services:
       - "3004:3004"
     volumes:
       - ./chess-master-backend/src:/app/chess-master-backend/src
+      - ./chess-master-backend/package.json:/app/chess-master-backend/package.json
       - ./packages/utils/src:/app/packages/utils/src
       - ./packages/schemas/src:/app/packages/schemas/src
     environment:

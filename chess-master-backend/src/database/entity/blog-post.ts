@@ -21,6 +21,9 @@ export class BlogPost {
   @Column({ type: "text" })
   contentHtml: string;
 
+  @Column({ type: "text", nullable: true })
+  imageUrl: string | null;
+
   @CreateDateColumn({ type: "timestamp" })
   createdAt: Date;
 }

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { getLatestBlogPosts, type BlogPostSummary } from "../../services/api/blog.api";
 import { LatestBlogsSection } from "./LatestBlogsSection";
 
@@ -24,22 +25,30 @@ export const LatestBlogsBlock: React.FC<{ compact?: boolean }> = ({
   return (
     <section className="bg-[#FAF5EB] border-t border-[#1F1109]/[0.08]">
       <div className="max-w-5xl mx-auto px-5 sm:px-8 py-14 sm:py-16">
-        <div className="mb-8">
-          <div
-            className="text-sm italic text-[#7A2E2E] tracking-[0.04em] mb-2"
-            style={{ fontFamily: "Georgia, serif" }}
-          >
-            From the blog
+        <div className="flex justify-between items-baseline mb-8 gap-4">
+          <div>
+            <div
+              className="text-sm italic text-[#7A2E2E] tracking-[0.04em] mb-2"
+              style={{ fontFamily: "Georgia, serif" }}
+            >
+              From the blog
+            </div>
+            <h2
+              className="text-[24px] sm:text-[28px] font-medium text-[#1F1109] leading-[1.1] mb-1.5 tracking-[-0.01em]"
+              style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
+            >
+              Latest articles
+            </h2>
+            <p className="text-sm text-[#6B5640] leading-relaxed max-w-[380px] m-0">
+              Guides, tips, and insights to help you improve your chess.
+            </p>
           </div>
-          <h2
-            className="text-[24px] sm:text-[28px] font-medium text-[#1F1109] leading-[1.1] mb-1.5 tracking-[-0.01em]"
-            style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
+          <Link
+            to="/posts"
+            className="text-sm text-[#B8893D] font-medium hover:underline whitespace-nowrap"
           >
-            Latest articles
-          </h2>
-          <p className="text-sm text-[#6B5640] leading-relaxed max-w-[380px] m-0">
-            Guides, tips, and insights to help you improve your chess.
-          </p>
+            View all articles →
+          </Link>
         </div>
 
         <LatestBlogsSection posts={posts} loading={loading} />

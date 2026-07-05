@@ -25,6 +25,7 @@ import pushRouter from "./api/push";
 import { messagesRouter } from "./api/messages/router";
 import { adminSlotsRouter } from "./api/admin-slots";
 import { adminBlogPostsRouter } from "./api/admin-blog-posts";
+import { adminImagesRouter } from "./api/admin-images";
 import { blogPostsRouter } from "./api/blog-posts";
 import { gameRouter } from "./api/game/router";
 import { paymentRouter } from "./api/payments/router";
@@ -84,6 +85,7 @@ export function createApp() {
   app.use("/admin/users", adminUsersRouter);
   app.use("/admin/slots", adminSlotsRouter);
   app.use("/admin/posts", adminBlogPostsRouter);
+  app.use("/admin/images", adminImagesRouter);
   app.use("/posts", blogPostsRouter);
   app.use("/admin/stats", adminStatsRouter);
   app.use("/admin/activity", adminActivityRouter);
