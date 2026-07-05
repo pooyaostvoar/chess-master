@@ -31,6 +31,7 @@ WORKDIR /app/chess-master-backoffice
 
 # Set API URL for production
 ENV VITE_API_URL=https://chesswithmasters.com/api
+ENV VITE_MEDIA_URL=https://chesswithmasters.com/images
 
 # Build Vite app (outputs 'dist' folder)
 RUN pnpm build

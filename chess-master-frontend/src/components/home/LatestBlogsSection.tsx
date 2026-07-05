@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import type { BlogPostSummary } from "../../services/api/blog.api";
+import { getMediaUrl } from "../../services/config";
 
 const HEADER_COLORS = ["#5C3A1E", "#B8893D", "#7A2E2E"] as const;
 
@@ -71,6 +72,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ post }) => {
   const isGold = colorIdx === 1;
   const patternId = `blog-pattern-${post.id}-${colorIdx}`;
   const piece = getPiece(post.id);
+  const hasImage = !!post.imageUrl;
 
   return (
     <Link
@@ -79,39 +81,50 @@ export const BlogCard: React.FC<BlogCardProps> = ({ post }) => {
     >
       <div
         className="relative aspect-[4/3] flex items-center justify-center overflow-hidden"
-        style={{ backgroundColor: headerBg }}
+        style={hasImage ? undefined : { backgroundColor: headerBg }}
       >
-        <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
-          <defs>
-            <pattern
-              id={patternId}
-              x="0"
-              y="0"
-              width="36"
-              height="36"
-              patternUnits="userSpaceOnUse"
-            >
-              <rect
-                x="0"
-                y="0"
-                width="18"
-                height="18"
-                fill={isGold ? "#1F1109" : "#FAF5EB"}
-                fillOpacity={isGold ? "0.06" : "0.05"}
-              />
-              <rect
-                x="18"
-                y="18"
-                width="18"
-                height="18"
-                fill={isGold ? "#1F1109" : "#FAF5EB"}
-                fillOpacity={isGold ? "0.06" : "0.05"}
-              />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill={`url(#${patternId})`} />
-        </svg>
-        <PieceSvg piece={piece} />
+        {hasImage ? (
+          <img
+            className="absolute inset-0 w-full h-full object-cover"
+            src={getMediaUrl(post.imageUrl)}
+            alt={post.title}
+            loading="lazy"
+          />
+        ) : (
+          <>
+            <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+              <defs>
+                <pattern
+                  id={patternId}
+                  x="0"
+                  y="0"
+                  width="36"
+                  height="36"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <rect
+                    x="0"
+                    y="0"
+                    width="18"
+                    height="18"
+                    fill={isGold ? "#1F1109" : "#FAF5EB"}
+                    fillOpacity={isGold ? "0.06" : "0.05"}
+                  />
+                  <rect
+                    x="18"
+                    y="18"
+                    width="18"
+                    height="18"
+                    fill={isGold ? "#1F1109" : "#FAF5EB"}
+                    fillOpacity={isGold ? "0.06" : "0.05"}
+                  />
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill={`url(#${patternId})`} />
+            </svg>
+            <PieceSvg piece={piece} />
+          </>
+        )}
       </div>
 
       <div className="px-3.5 py-3 pb-3.5">

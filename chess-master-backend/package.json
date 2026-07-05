@@ -10,7 +10,8 @@
     "migration:generate": "pnpm run typeorm -d src/database/datasource.ts migration:generate",
     "migration:run": "pnpm run typeorm -d src/database/datasource.ts migration:run",
     "migration:revert": "pnpm run typeorm -d src/database/datasource.ts migration:revert",
-    "migration:create": "pnpm run typeorm migration:create"
+    "migration:create": "pnpm run typeorm migration:create",
+    "admin:create": "ts-node --project tsconfig.json -r tsconfig-paths/register src/scripts/create-dev-admin.ts"
   },
   "author": "",
   "license": "ISC",

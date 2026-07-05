@@ -7,6 +7,7 @@ export type BlogPostDto = {
   title: string;
   slug: string;
   contentHtml: string;
+  imageUrl: string | null;
 };
 
 export type BlogPostSummaryDto = {
@@ -14,6 +15,7 @@ export type BlogPostSummaryDto = {
   title: string;
   slug: string;
   createdAt: string;
+  imageUrl: string | null;
 };
 
 export function formatBlogPost(post: BlogPost): BlogPostDto {
@@ -22,6 +24,7 @@ export function formatBlogPost(post: BlogPost): BlogPostDto {
     title: post.title,
     slug: post.slug,
     contentHtml: sanitizeBlogHtml(post.contentHtml),
+    imageUrl: post.imageUrl ?? null,
   };
 }
 
@@ -31,6 +34,7 @@ export function formatBlogPostSummary(post: BlogPost): BlogPostSummaryDto {
     title: post.title,
     slug: post.slug,
     createdAt: post.createdAt.toISOString(),
+    imageUrl: post.imageUrl ?? null,
   };
 }
 
@@ -80,7 +84,7 @@ export async function listBlogPosts(params: {
   const [items, total] = await qb.getManyAndCount();
 
   return {
-    items: items.map(formatBlogPost),
+    items: items.map(formatBlogPostSummary),
     total,
     page: params.page,
     pageSize: params.pageSize,
@@ -115,6 +119,7 @@ export async function createBlogPost(data: {
   title: string;
   slug?: string;
   contentHtml: string;
+  imageUrl?: string | null;
 }) {
   const repo = AppDataSource.getRepository(BlogPost);
   const baseSlug = normalizeSlug(data.slug || data.title);
@@ -126,6 +131,7 @@ export async function createBlogPost(data: {
     title: data.title.trim(),
     slug: await ensureUniqueSlug(baseSlug),
     contentHtml: sanitizeBlogHtml(data.contentHtml),
+    imageUrl: data.imageUrl ?? null,
   });
 
   const saved = await repo.save(post);
@@ -134,7 +140,12 @@ export async function createBlogPost(data: {
 
 export async function updateBlogPost(
   id: number,
-  data: Partial<{ title: string; slug: string; contentHtml: string }>
+  data: Partial<{
+    title: string;
+    slug: string;
+    contentHtml: string;
+    imageUrl: string | null;
+  }>
 ) {
   const repo = AppDataSource.getRepository(BlogPost);
   const post = await repo.findOne({ where: { id } });
@@ -150,6 +161,9 @@ export async function updateBlogPost(
       throw new Error("INVALID_SLUG");
     }
     post.slug = await ensureUniqueSlug(baseSlug, id);
+  }
+  if (data.imageUrl !== undefined) {
+    post.imageUrl = data.imageUrl;
   }
 
   const saved = await repo.save(post);

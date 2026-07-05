@@ -173,6 +173,33 @@ docker compose -f docker-compose.yml logs -f
 
 ## Admin (backoffice) access
 
+### Create a dev admin user
+
+With Docker dev running:
+
+```bash
+./scripts/dev-admin.sh
+```
+
+This creates (or resets) an admin with:
+
+- **Username:** `admin`
+- **Password:** `admin`
+- **Backoffice:** http://localhost:3001
+
+Custom credentials:
+
+```bash
+./scripts/dev-admin.sh --username myadmin --email myadmin@dev.local --password secret
+```
+
+Without Docker (requires local Postgres on `localhost:5432`):
+
+```bash
+cd chess-master-backend
+DB_HOST=localhost DB_USER=chessuser DB_PASSWORD=chesspass DB_NAME=chess_master pnpm admin:create
+```
+
 ### Create an admin user (manual)
 
 Passwords must be hashed before inserting into Postgres. Store them as `bytea` using `decode()`.

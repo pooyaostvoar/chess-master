@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { AdminBlogPostsApi } from "../api";
-import { Button, Form, Input, Space, Typography, message } from "antd";
+import { AdminBlogPostsApi, AdminImagesApi, MEDIA_URL } from "../api";
+import { Button, Form, Input, Space, Typography, Upload, message } from "antd";
+import type { UploadProps } from "antd";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -14,17 +15,34 @@ type FormValues = {
   title: string;
   slug: string;
   contentHtml: string;
+  imageUrl: string | null;
 };
+
+function getImageSrc(imageUrl: string | null | undefined): string | undefined {
+  if (!imageUrl) return undefined;
+  if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+    return imageUrl;
+  }
+  return MEDIA_URL + imageUrl;
+}
 
 export function BlogPostDetailPage({ postId, onBack }: Props) {
   const isNew = postId === null;
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [form] = Form.useForm<FormValues>();
+
+  const imageUrl = Form.useWatch("imageUrl", form);
 
   useEffect(() => {
     if (isNew) {
-      form.setFieldsValue({ title: "", slug: "", contentHtml: "" });
+      form.setFieldsValue({
+        title: "",
+        slug: "",
+        contentHtml: "",
+        imageUrl: null,
+      });
       setLoading(false);
       return;
     }
@@ -36,11 +54,28 @@ export function BlogPostDetailPage({ postId, onBack }: Props) {
           title: post.title,
           slug: post.slug,
           contentHtml: post.contentHtml,
+          imageUrl: post.imageUrl ?? null,
         });
       })
       .catch((err: Error) => message.error(err.message || "Failed to load post"))
       .finally(() => setLoading(false));
   }, [form, isNew, postId]);
+
+  const handleImageUpload: UploadProps["customRequest"] = async (options) => {
+    const file = options.file as File;
+    setUploading(true);
+    try {
+      const result = await AdminImagesApi.upload(file);
+      form.setFieldValue("imageUrl", result.url);
+      message.success("Image uploaded");
+      options.onSuccess?.(result);
+    } catch (err: any) {
+      message.error(err.message || "Upload failed");
+      options.onError?.(err);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSave = async (values: FormValues) => {
     setSaving(true);
@@ -49,6 +84,7 @@ export function BlogPostDetailPage({ postId, onBack }: Props) {
         title: values.title.trim(),
         slug: values.slug.trim() || undefined,
         contentHtml: values.contentHtml,
+        imageUrl: values.imageUrl ?? null,
       };
 
       if (isNew) {
@@ -102,6 +138,45 @@ export function BlogPostDetailPage({ postId, onBack }: Props) {
           }
         >
           <Input placeholder="myBlogPost" />
+        </Form.Item>
+
+        <Form.Item label="Cover image" name="imageUrl">
+          <div>
+            {imageUrl && (
+              <div style={{ marginBottom: 12 }}>
+                <img
+                  src={getImageSrc(imageUrl)}
+                  alt="Cover preview"
+                  style={{
+                    maxWidth: 320,
+                    maxHeight: 200,
+                    objectFit: "cover",
+                    borderRadius: 8,
+                    border: "1px solid #d9d9d9",
+                  }}
+                />
+              </div>
+            )}
+            <Space>
+              <Upload
+                accept="image/jpeg,image/png,image/webp"
+                showUploadList={false}
+                customRequest={handleImageUpload}
+              >
+                <Button loading={uploading}>
+                  {imageUrl ? "Replace image" : "Upload image"}
+                </Button>
+              </Upload>
+              {imageUrl && (
+                <Button onClick={() => form.setFieldValue("imageUrl", null)}>
+                  Remove
+                </Button>
+              )}
+            </Space>
+            <div style={{ marginTop: 8 }}>
+              <Text type="secondary">JPEG, PNG or WebP. Max size 5MB.</Text>
+            </div>
+          </div>
         </Form.Item>
 
         <Form.Item label="Content (HTML)" name="contentHtml">

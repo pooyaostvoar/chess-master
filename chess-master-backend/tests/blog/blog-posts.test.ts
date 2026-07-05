@@ -65,7 +65,7 @@ describe("Blog posts API", () => {
       expect(res.body.items[0]).toMatchObject({
         title: expect.any(String),
         slug: expect.any(String),
-        contentHtml: expect.any(String),
+        createdAt: expect.any(String),
       });
     });
 
@@ -121,6 +121,7 @@ describe("Blog posts API", () => {
           title: "New Post",
           slug: "newPost",
           contentHtml: "<p>Created</p>",
+          imageUrl: "/test-cover.jpg",
         })
         .expect(201);
 
@@ -128,6 +129,7 @@ describe("Blog posts API", () => {
         title: "New Post",
         slug: "newPost",
         contentHtml: "<p>Created</p>",
+        imageUrl: "/test-cover.jpg",
       });
 
       const listed = await unauthAgent.get("/posts").expect(200);
@@ -168,6 +170,33 @@ describe("Blog posts API", () => {
         .patch(`/admin/posts/${id}`)
         .send({ title: "Hacked" })
         .expect(403);
+    });
+
+    it("GET /posts/latest returns summaries with imageUrl", async () => {
+      const repo = AppDataSource.getRepository(BlogPost);
+      await repo.save(
+        repo.create({
+          title: "With Image",
+          slug: "withImage",
+          contentHtml: "<p>img</p>",
+          imageUrl: "/cover.jpg",
+        })
+      );
+
+      const res = await unauthAgent.get("/posts/latest").expect(200);
+
+      const withImage = res.body.items.find(
+        (p: { slug: string }) => p.slug === "withImage"
+      );
+      expect(withImage).toMatchObject({
+        title: "With Image",
+        slug: "withImage",
+        imageUrl: "/cover.jpg",
+      });
+    });
+
+    it("POST /admin/images requires admin auth", async () => {
+      await unauthAgent.post("/admin/images").expect(403);
     });
 
     it("DELETE /admin/posts/:id requires admin auth", async () => {

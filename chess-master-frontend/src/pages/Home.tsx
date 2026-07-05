@@ -230,6 +230,8 @@ const Home: React.FC = () => {
             <HomeSectionWrapper
               title="Latest articles"
               description="Guides, tips, and insights to help you improve your chess"
+              path="/posts"
+              buttonText="View all articles"
             >
               <LatestBlogsBlock compact />
             </HomeSectionWrapper>
