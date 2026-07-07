@@ -80,12 +80,12 @@ export const BlogCard: React.FC<BlogCardProps> = ({ post }) => {
       className="group bg-white border border-[#1F1109]/[0.12] rounded-xl overflow-hidden transition-all duration-200 hover:border-[#1F1109]/25 hover:-translate-y-0.5"
     >
       <div
-        className="relative aspect-[4/3] flex items-center justify-center overflow-hidden"
+        className="relative aspect-video flex items-center justify-center overflow-hidden bg-[#1F1109]"
         style={hasImage ? undefined : { backgroundColor: headerBg }}
       >
         {hasImage ? (
           <img
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover object-center"
             src={getMediaUrl(post.imageUrl)}
             alt={post.title}
             loading="lazy"
