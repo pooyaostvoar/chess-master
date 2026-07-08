@@ -1,6 +1,7 @@
 import express from "express";
 import { AppDataSource } from "../database/datasource";
 import { User } from "../database/entity/user";
+import { UserStatus } from "../database/entity/types";
 import { isAdmin } from "../middleware/passport";
 import { ScheduleSlot } from "../database/entity/schedule-slots";
 
@@ -153,7 +154,12 @@ adminUsersRouter.patch("/:id", async (req, res, next) => {
     }
     if (chesscomUrl !== undefined) user.chesscomUrl = chesscomUrl;
     if (lichessUrl !== undefined) user.lichessUrl = lichessUrl;
-    if (status !== undefined) user.status = status;
+    if (status !== undefined) {
+      if (!Object.values(UserStatus).includes(status)) {
+        return res.status(400).json({ message: "Invalid status" });
+      }
+      user.status = status;
+    }
 
     const updated = await repo.save(user);
     res.json(trimUser(updated));

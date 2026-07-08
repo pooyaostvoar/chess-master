@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AdminUsersApi, type AdminUser } from "../api";
-import { Input, Select, Space, Table, Tag, Typography } from "antd";
+import { Input, Select, Space, Table, Tag, Typography, message } from "antd";
 
 const { Title, Text } = Typography;
 
@@ -9,12 +9,19 @@ type Props = {
   onSelectUser: (user: AdminUser) => void;
 };
 
+const STATUS_OPTIONS = [
+  { value: "active", label: "Active" },
+  { value: "disabled", label: "Disabled" },
+] as const;
+
 export function UsersPage({ onSelectUser }: Props) {
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [role, setRole] = useState<"master" | "user" | undefined>();
   const [status, setStatus] = useState<"active" | "disabled" | "all">("active");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [updatingUserId, setUpdatingUserId] = useState<number | null>(null);
 
   const usersQuery = useQuery({
     queryKey: ["admin-users", { page, pageSize, search, role, status }],
@@ -26,6 +33,29 @@ export function UsersPage({ onSelectUser }: Props) {
         role,
         status,
       }),
+  });
+
+  const statusMutation = useMutation({
+    mutationFn: ({
+      userId,
+      nextStatus,
+    }: {
+      userId: number;
+      nextStatus: "active" | "disabled";
+    }) => AdminUsersApi.update(userId, { status: nextStatus }),
+    onMutate: ({ userId }) => {
+      setUpdatingUserId(userId);
+    },
+    onSuccess: () => {
+      message.success("User status updated");
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+    },
+    onError: (err: Error) => {
+      message.error(err.message || "Failed to update user status");
+    },
+    onSettled: () => {
+      setUpdatingUserId(null);
+    },
   });
 
   const columns = useMemo(
@@ -57,12 +87,25 @@ export function UsersPage({ onSelectUser }: Props) {
         title: "Status",
         dataIndex: "status",
         key: "status",
-        render: (val: string) =>
-          val === "disabled" ? (
-            <Tag color="red">Disabled</Tag>
-          ) : (
-            <Tag color="green">Active</Tag>
-          ),
+        render: (val: string, record: AdminUser) => (
+          <div onClick={(e) => e.stopPropagation()}>
+            <Select
+              size="small"
+              style={{ width: 120 }}
+              value={val === "disabled" ? "disabled" : "active"}
+              loading={updatingUserId === record.id}
+              disabled={updatingUserId === record.id}
+              options={[...STATUS_OPTIONS]}
+              onChange={(nextStatus) => {
+                if (nextStatus === val) return;
+                statusMutation.mutate({
+                  userId: record.id,
+                  nextStatus,
+                });
+              }}
+            />
+          </div>
+        ),
       },
       {
         title: "Rating",
@@ -77,7 +120,7 @@ export function UsersPage({ onSelectUser }: Props) {
         render: (val: string | null) => val || "—",
       },
     ],
-    []
+    [statusMutation, updatingUserId]
   );
 
   return (
