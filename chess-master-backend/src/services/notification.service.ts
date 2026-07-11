@@ -53,10 +53,7 @@ function getTelegramChatId() {
   return telegramChatId;
 }
 
-export async function sendNotificationToTelegram(data: {
-  master: string;
-  reservedBy: string;
-}) {
+export async function sendTelegramMessage(text: string) {
   const token = getTelegramToken();
   const chatId = getTelegramChatId();
 
@@ -66,12 +63,6 @@ export async function sendNotificationToTelegram(data: {
   }
 
   const url = `https://api.telegram.org/bot${token}/sendMessage`;
-
-  const text = `
-  📢 Reservation Update
-  Master: ${data.master}
-  Reserved by: ${data.reservedBy}
-  `.trim();
 
   return fetch(url, {
     method: "POST",
@@ -88,4 +79,17 @@ export async function sendNotificationToTelegram(data: {
     .catch((err) => {
       console.error("Telegram error:", err);
     });
+}
+
+export async function sendNotificationToTelegram(data: {
+  master: string;
+  reservedBy: string;
+}) {
+  const text = `
+  📢 Reservation Update
+  Master: ${data.master}
+  Reserved by: ${data.reservedBy}
+  `.trim();
+
+  return sendTelegramMessage(text);
 }
