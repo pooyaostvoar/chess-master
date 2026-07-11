@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
-import { Calendar, User, BookOpen, BarChart3, Crown } from "lucide-react";
+import { Calendar, User, BookOpen, BarChart3, Crown, Copy, Check, Link2 } from "lucide-react";
 
 interface DashCardProps {
   icon: React.ReactNode;
@@ -39,9 +39,89 @@ const DashCard: React.FC<DashCardProps> = ({
   </button>
 );
 
+interface PublicProfileCardProps {
+  profilePath: string;
+  copied: boolean;
+  onView: () => void;
+  onCopy: (e: React.MouseEvent) => void;
+}
+
+const PublicProfileCard: React.FC<PublicProfileCardProps> = ({
+  profilePath,
+  copied,
+  onView,
+  onCopy,
+}) => (
+  <div
+    role="button"
+    tabIndex={0}
+    onClick={onView}
+    onKeyDown={(e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        onView();
+      }
+    }}
+    className="bg-white border border-[#1F1109]/[0.12] rounded-xl p-5 text-left transition-all cursor-pointer hover:border-[#1F1109]/25 hover:-translate-y-0.5 hover:shadow-md relative"
+  >
+    <button
+      type="button"
+      onClick={onCopy}
+      title={copied ? "Copied!" : "Copy profile link"}
+      className="absolute top-3 right-3 inline-flex items-center gap-1 text-xs font-medium bg-[#B8893D]/20 text-[#6B4F1F] px-2 py-0.5 rounded tracking-wide hover:bg-[#B8893D]/30 transition-colors"
+    >
+      {copied ? (
+        <>
+          <Check className="w-3 h-3" />
+          Copied
+        </>
+      ) : (
+        <>
+          <Copy className="w-3 h-3" />
+          Copy link
+        </>
+      )}
+    </button>
+    <div className="mb-3 text-[#B8893D]">
+      <Link2 className="w-8 h-8" />
+    </div>
+    <div className="text-sm font-medium text-[#1F1109] mb-1">Your Public Profile</div>
+    <div className="text-sm text-[#6B5640] leading-relaxed">
+      View your page at{" "}
+      <span className="font-medium text-[#3D2817]">{profilePath}</span> and share it with others
+    </div>
+  </div>
+);
+
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useUser();
+  const [copied, setCopied] = useState(false);
+
+  const profilePath = user?.username ? `/${encodeURIComponent(user.username)}` : null;
+  const profileUrl = profilePath ? `${window.location.origin}${profilePath}` : null;
+
+  const handleCopyProfileLink = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!profileUrl) return;
+    try {
+      await navigator.clipboard.writeText(profileUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
+  };
+
+  const publicProfileCard =
+    profilePath && profileUrl ? (
+      <PublicProfileCard
+        profilePath={profilePath}
+        copied={copied}
+        onView={() => navigate(profilePath)}
+        onCopy={handleCopyProfileLink}
+      />
+    ) : null;
 
   return (
     <div className="bg-[#FAF5EB] min-h-screen">
@@ -81,10 +161,11 @@ const Dashboard: React.FC = () => {
               />
               <DashCard
                 icon={<User className="w-8 h-8" />}
-                title="My Profile"
+                title="Edit Profile"
                 description="Update your profile, rating, and bio"
                 onClick={() => navigate("/edit-profile")}
               />
+              {publicProfileCard}
               <DashCard
                 icon={<BookOpen className="w-8 h-8" />}
                 title="My Bookings"
@@ -109,10 +190,11 @@ const Dashboard: React.FC = () => {
               />
               <DashCard
                 icon={<User className="w-8 h-8" />}
-                title="My Profile"
+                title="Edit Profile"
                 description="View and edit your profile settings"
                 onClick={() => navigate("/edit-profile")}
               />
+              {publicProfileCard}
               <DashCard
                 icon={<BookOpen className="w-8 h-8" />}
                 title="My Bookings"

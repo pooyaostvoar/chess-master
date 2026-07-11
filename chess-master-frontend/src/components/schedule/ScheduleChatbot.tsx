@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { MessageCircle, Send, X } from "lucide-react";
+import { Send, Sparkles, X } from "lucide-react";
 import type { CreatePeriodicBatchSlotsInput } from "@chess-master/schemas";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
@@ -14,7 +14,7 @@ type ChatMessage = {
 };
 
 const WELCOME_MESSAGE =
-  "Hi! I can help you arrange your teaching schedule. Describe when you want to offer sessions — for example:";
+  "I'm your AI schedule assistant. Describe when you want to offer sessions — for example:";
 
 const EXAMPLE_MESSAGE =
   "Every Monday from 10:00am to 6:00pm for 8 weeks, with 60-minute slots";
@@ -155,31 +155,40 @@ const ScheduleChatbot: React.FC<ScheduleChatbotProps> = ({ onSlotsCreated }) => 
       <button
         type="button"
         onClick={handleOpen}
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#B8893D] text-white shadow-lg transition hover:bg-[#a07735] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8893D] focus-visible:ring-offset-2"
-        aria-label="Open schedule assistant"
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-[#3D2817] px-4 py-3 text-white shadow-lg transition hover:bg-[#2A1A0F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8893D] focus-visible:ring-offset-2"
+        aria-label="Open AI schedule assistant"
       >
-        <MessageCircle className="h-6 w-6" />
+        <Sparkles className="h-5 w-5 shrink-0" />
+        <span className="text-sm font-medium">AI Assistant</span>
       </button>
     );
   }
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex w-[min(100vw-2rem,24rem)] flex-col overflow-hidden rounded-2xl border border-[#1F1109]/[0.12] bg-[#FAF5EB] shadow-xl">
-      <div className="flex items-center justify-between border-b border-[#1F1109]/[0.12] bg-white px-4 py-3">
+      <div className="flex items-start justify-between border-b border-[#1F1109]/[0.12] bg-white px-4 py-3">
         <div>
-          <h3
-            className="text-base font-medium text-[#1F1109]"
-            style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
-          >
-            Schedule assistant
-          </h3>
-          <p className="text-base text-[#5C4631]">Describe your availability</p>
+          <div className="mb-1 flex items-center gap-2">
+            <Sparkles className="h-4 w-4 shrink-0 text-[#B8893D]" aria-hidden />
+            <h3
+              className="text-base font-medium text-[#1F1109]"
+              style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
+            >
+              AI Schedule Assistant
+            </h3>
+            <span className="rounded-full bg-[#B8893D]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#6B4F1F]">
+              AI
+            </span>
+          </div>
+          <p className="text-sm text-[#5C4631] leading-relaxed">
+            Not live support — describe your availability and I&apos;ll add slots to your calendar.
+          </p>
         </div>
         <button
           type="button"
           onClick={handleClose}
-          className="rounded-md p-1 text-[#5C4631] transition hover:bg-[#F4ECDD] hover:text-[#1F1109]"
-          aria-label="Close schedule assistant"
+          className="ml-3 shrink-0 rounded-md p-1 text-[#5C4631] transition hover:bg-[#F4ECDD] hover:text-[#1F1109]"
+          aria-label="Close AI schedule assistant"
         >
           <X className="h-5 w-5" />
         </button>
@@ -189,8 +198,14 @@ const ScheduleChatbot: React.FC<ScheduleChatbotProps> = ({ onSlotsCreated }) => 
         {messages.map((message, index) => (
           <div
             key={index}
-            className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+            className={`flex flex-col ${message.role === "user" ? "items-end" : "items-start"}`}
           >
+            {message.role === "assistant" && (
+              <span className="mb-1 inline-flex items-center gap-1 text-[11px] font-medium uppercase tracking-wide text-[#8B6F4E]">
+                <Sparkles className="h-3 w-3" aria-hidden />
+                AI Assistant
+              </span>
+            )}
             <div
               className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-sm leading-relaxed shadow-sm ${
                 message.role === "user"
@@ -204,8 +219,12 @@ const ScheduleChatbot: React.FC<ScheduleChatbotProps> = ({ onSlotsCreated }) => 
         ))}
 
         {statusMessage && (
-          <div className="flex justify-start">
-            <div className="rounded-2xl border border-[#1F1109]/[0.08] bg-white px-3 py-2 text-base text-[#5C4631]">
+          <div className="flex flex-col items-start">
+            <span className="mb-1 inline-flex items-center gap-1 text-[11px] font-medium uppercase tracking-wide text-[#8B6F4E]">
+              <Sparkles className="h-3 w-3" aria-hidden />
+              AI Assistant
+            </span>
+            <div className="rounded-2xl border border-[#1F1109]/[0.08] bg-white px-3 py-2 text-sm text-[#5C4631]">
               {statusMessage}
             </div>
           </div>
@@ -220,7 +239,7 @@ const ScheduleChatbot: React.FC<ScheduleChatbotProps> = ({ onSlotsCreated }) => 
             value={input}
             onChange={(event) => setInput(event.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder='e.g. "Every Monday from 10:00am to 6:00pm for 8 weeks, with 60-minute slots"'
+            placeholder='Describe your schedule, e.g. "Every Monday 10am–6pm for 8 weeks, 60-minute slots"'
             rows={2}
             disabled={isSubmitting}
             className="min-h-[72px] resize-none border-[#1F1109]/[0.12] bg-[#FAF5EB] focus-visible:ring-[#B8893D]"
@@ -235,6 +254,9 @@ const ScheduleChatbot: React.FC<ScheduleChatbotProps> = ({ onSlotsCreated }) => 
             <Send className="h-4 w-4" />
           </Button>
         </div>
+        <p className="mt-2 text-[11px] leading-relaxed text-[#8B6F4E]">
+          AI-generated responses — double-check slots before sharing your calendar.
+        </p>
       </div>
     </div>
   );
