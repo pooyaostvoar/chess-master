@@ -8,6 +8,7 @@ import {
   OpenAiScheduleParseError,
   parseScheduleFromText,
 } from "../../services/openai";
+import { logRequestError } from "../../utils/log-request-error";
 
 export const router = Router();
 
@@ -43,7 +44,7 @@ router.post("/", isAuthenticated, async (req, res) => {
       });
     }
 
-    console.error("Error parsing schedule text:", err);
+    logRequestError(req, err, "Error parsing schedule text");
     return res.status(500).json({ error: "Internal server error" });
   }
 });

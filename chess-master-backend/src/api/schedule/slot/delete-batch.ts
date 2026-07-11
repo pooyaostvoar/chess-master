@@ -6,6 +6,7 @@ import {
   deleteBatchSlotInputSchema,
   deleteBatchSlotResponseSchema,
 } from "@chess-master/schemas";
+import { logRequestError } from "../../../utils/log-request-error";
 
 export const router = Router();
 
@@ -37,7 +38,7 @@ router.post("/delete-batch", isAuthenticated, async (req, res) => {
     if (err.message === "Slot not found or you are not the master") {
       return res.status(404).json({ error: err.message });
     }
-    console.error("Error in delete-batch:", err);
+    logRequestError(req, err, "Error in delete-batch");
     return res.status(500).json({ error: "Internal server error" });
   }
 });

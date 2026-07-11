@@ -34,6 +34,7 @@ import { router as impersonateRouter } from "./api/admin-impersonate";
 import { chatBotRouter } from "./api/chat-bot/router";
 import { logsRouter } from "./api/logs";
 import { logger } from "./utils/logger";
+import { requestLogger } from "./middleware/request-logger";
 
 export function createApp() {
   const isTesting = process.env.NODE_ENV === "test";
@@ -44,13 +45,15 @@ export function createApp() {
         await AppDataSource.runMigrations();
         // here you can start to work with your database
       })
-      .catch((error) => console.log(error));
+      .catch((error) => logger.error({ err: error }, "Failed to initialize database"));
   }
 
   const app: Express = express();
 
   // Trust proxy for correct client IP (x-forwarded-for) when behind nginx/load balancer
   app.set("trust proxy", 1);
+
+  app.use(requestLogger);
 
   app.use("/payments/webhook", webhookRouter);
   app.use(bodyParser.json({ limit: "10mb" }));

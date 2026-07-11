@@ -8,6 +8,7 @@ import {
   updatePeriodicBatchSlotInputSchema,
   updatePeriodicBatchSlotResponseSchema,
 } from "@chess-master/schemas";
+import { logRequestError } from "../../../utils/log-request-error";
 
 export const router = Router();
 
@@ -50,7 +51,7 @@ router.post(
       ) {
         return res.status(400).json({ error: err.message });
       }
-      console.error("Error in update-periodic-batch-slots:", err);
+      logRequestError(req, err, "Error in update-periodic-batch-slots");
       return res.status(500).json({ error: "Internal server error" });
     }
   }

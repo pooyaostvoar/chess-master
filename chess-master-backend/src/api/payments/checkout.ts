@@ -4,6 +4,7 @@ import { createCheckoutSession } from "../../services/payment";
 import { AppDataSource } from "../../database/datasource";
 import { Payment } from "../../database/entity/payment";
 import { geoblockPaymentMiddleware } from "../../utils/geoblock";
+import { logRequestError } from "../../utils/log-request-error";
 
 export const router = Router();
 
@@ -23,7 +24,7 @@ router.post(
       url: session.url,
     });
   } catch (err) {
-    console.error("Checkout error:", err);
+    logRequestError(req, err, "Checkout session error", { eventId: req.body.eventId });
     res.status(400).json({
       error: (err as Error).message,
     });
@@ -61,7 +62,9 @@ router.get(
         payment,
       });
     } catch (err) {
-      console.error(err);
+      logRequestError(req, err, "Error fetching payment session", {
+        sessionId: req.params.sessionId,
+      });
       res.status(500).json({ error: "Failed to fetch payment" });
     }
   }

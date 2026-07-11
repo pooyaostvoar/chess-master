@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { isAuthenticated } from "../../middleware/passport";
 import { updateUser } from "../../services/user.service";
+import { logRequestError } from "../../utils/log-request-error";
 
 export const router = Router();
 
@@ -79,7 +80,7 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
 
     res.json({ status: "success", user: updatedUser });
   } catch (err: any) {
-    console.error("Error updating user:", err);
+    logRequestError(req, err, "Error updating user", { userId: req.params.id });
     if (err.message === "User not found") {
       return res.status(404).json({ error: err.message });
     }

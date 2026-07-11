@@ -2,6 +2,7 @@ import { Router } from "express";
 import { isAuthenticated } from "../../../middleware/passport";
 import { deleteSlots } from "../../../services/schedule.service";
 import { geoblockPaymentMiddleware } from "../../../utils/geoblock";
+import { logRequestError } from "../../../utils/log-request-error";
 
 export const router = Router();
 
@@ -27,7 +28,7 @@ router.delete("", isAuthenticated, geoblockPaymentMiddleware, async (req, res) =
     if (err.message === "No valid slots found") {
       return res.status(404).json({ error: err.message });
     }
-    console.error("Error deleting slots:", err);
+    logRequestError(req, err, "Error deleting slots");
     return res.status(500).json({ error: "Server error" });
   }
 });

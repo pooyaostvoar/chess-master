@@ -2,6 +2,7 @@ import { Router } from "express";
 import { isAuthenticated } from "../../middleware/passport";
 import { getUserById } from "../../services/user.service";
 import { userSchemaBase } from "@chess-master/schemas";
+import { logRequestError } from "../../utils/log-request-error";
 
 export const router = Router();
 
@@ -16,7 +17,7 @@ router.get("/me", isAuthenticated, async (req, res) => {
     const parsedUser = userSchemaBase.parse(user);
     res.json({ user: parsedUser });
   } catch (err) {
-    console.error(err);
+    logRequestError(req, err, "Error fetching current user");
     res.status(500).json({ error: "Internal server error" });
   }
 });

@@ -2,6 +2,7 @@ import { Router } from "express";
 import { isAuthenticated } from "../../../middleware/passport";
 import { updateSlot, formatSlot } from "../../../services/schedule.service";
 import { geoblockPaymentMiddleware } from "../../../utils/geoblock";
+import { logRequestError } from "../../../utils/log-request-error";
 
 export const router = Router();
 
@@ -20,7 +21,7 @@ router.patch("/:id", isAuthenticated, geoblockPaymentMiddleware, async (req, res
     ) {
       return res.status(400).json({ error: err.message });
     }
-    console.error("Error updating slot:", err);
+    logRequestError(req, err, "Error updating slot");
     res.status(500).json({ error: "Internal server error" });
   }
 });
