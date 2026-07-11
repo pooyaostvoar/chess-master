@@ -2,6 +2,7 @@ import { Router } from "express";
 import { getGameById } from "../../services/game";
 
 import { isAuthenticated } from "../../middleware/passport";
+import { logRequestError } from "../../utils/log-request-error";
 
 export const router = Router();
 
@@ -40,7 +41,7 @@ router.get("/:id", isAuthenticated, async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("Error fetching game:", err);
+    logRequestError(req, err, "Error fetching game", { gameId });
     res.status(500).json({ error: "Internal server error" });
   }
 });

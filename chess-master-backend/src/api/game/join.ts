@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { createGame, getGameById, joinGame } from "../../services/game";
 import { isAuthenticated } from "../../middleware/passport";
+import { logRequestError } from "../../utils/log-request-error";
 
 export const router = Router();
 router.post("/:id/join", isAuthenticated, async (req, res) => {
@@ -23,7 +24,7 @@ router.post("/:id/join", isAuthenticated, async (req, res) => {
       },
     });
   } catch (err: any) {
-    console.error("Error joining game:", err);
+    logRequestError(req, err, "Error joining game", { gameId });
 
     if (err.message === "Game not found") {
       return res.status(404).json({ error: "Game not found" });

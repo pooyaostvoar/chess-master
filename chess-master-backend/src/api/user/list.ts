@@ -2,6 +2,7 @@ import { Router } from "express";
 import { findUsers } from "../../services/user.service";
 import { userListSchema, userQuerySchema } from "@chess-master/schemas";
 import { parseRequest } from "../../middleware/parse-request";
+import { logRequestError } from "../../utils/log-request-error";
 
 export const router = Router();
 
@@ -16,7 +17,7 @@ router.get(
       const parsedUsers = userListSchema.parse(users);
       res.json({ status: "success", users: parsedUsers });
     } catch (err) {
-      console.error(err);
+      logRequestError(req, err, "Error listing users");
       res.status(500).json({ error: "Internal server error" });
     }
   }

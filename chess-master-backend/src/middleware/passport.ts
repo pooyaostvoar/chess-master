@@ -6,6 +6,7 @@ import { Request, Response, NextFunction } from "express";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { getGoogleCleintID, getGoogleClientSecret } from "../utils/secret";
 import { sendWelcomeEmail } from "../services/brevo_email";
+import { logRequestError } from "../utils/log-request-error";
 
 export const passport = require("passport");
 var LocalStrategy = require("passport-local");
@@ -204,7 +205,7 @@ passport.use(
             );
             isMaster = parsed.role === "master";
           } catch (err) {
-            console.error("Failed to parse OAuth state:", err);
+            logRequestError(req, err, "Failed to parse OAuth state");
           }
         }
 

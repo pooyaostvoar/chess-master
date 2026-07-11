@@ -8,6 +8,7 @@ import { SlotStatus } from "../../database/entity/types";
 import { updateSlotStatus } from "../../services/schedule.service";
 import Stripe from "stripe";
 import { ScheduleSlot } from "../../database/entity/schedule-slots";
+import { logRequestError } from "../../utils/log-request-error";
 
 export const router = Router();
 
@@ -34,7 +35,10 @@ router.post(
       });
 
       if (!payment) {
-        console.error("Payment not found:", paymentId);
+        logRequestError(req, null, "Payment not found for webhook", {
+          paymentId,
+          eventType: event.type,
+        });
         return res.json({ received: true });
       }
 
@@ -67,7 +71,10 @@ router.post(
 
           return res.json({ received: true });
         } catch (err) {
-          console.error("amount_capturable_updated error:", err);
+          logRequestError(req, err, "Webhook amount_capturable_updated error", {
+            paymentId,
+            eventType: event.type,
+          });
           return res.status(400).send("Webhook processing failed");
         }
       }
@@ -90,7 +97,10 @@ router.post(
 
           return res.json({ received: true });
         } catch (err) {
-          console.error("payment_intent.succeeded error:", err);
+          logRequestError(req, err, "Webhook payment_intent.succeeded error", {
+            paymentId,
+            eventType: event.type,
+          });
           return res.status(500).send("Webhook processing failed");
         }
       }
@@ -122,7 +132,10 @@ router.post(
 
           return res.json({ received: true });
         } catch (err) {
-          console.error("payment_intent.payment_failed error:", err);
+          logRequestError(req, err, "Webhook payment_intent.payment_failed error", {
+            paymentId,
+            eventType: event.type,
+          });
           return res.status(500).send("Webhook processing failed");
         }
       }
@@ -151,14 +164,17 @@ router.post(
 
           return res.json({ received: true });
         } catch (err) {
-          console.error("charge.refunded error:", err);
+          logRequestError(req, err, "Webhook charge.refunded error", {
+            paymentId,
+            eventType: event.type,
+          });
           return res.status(500).send("Webhook processing failed");
         }
       }
 
       res.json({ received: true });
     } catch (err) {
-      console.error("Webhook error:", err);
+      logRequestError(req, err, "Webhook processing error");
       res.status(400).send("Webhook error");
     }
   }

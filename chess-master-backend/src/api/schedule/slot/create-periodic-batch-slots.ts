@@ -5,6 +5,7 @@ import { ScheduleSlot } from "../../../database/entity/schedule-slots";
 import { PeriodicSlotConfig } from "../../../database/entity/periodic-slot-config";
 import { User } from "../../../database/entity/user";
 import { createPeriodicBatchSlotsInputSchema, Period } from "@chess-master/schemas";
+import { logRequestError } from "../../../utils/log-request-error";
 
 export const router = Router();
 
@@ -126,7 +127,7 @@ router.post("/create-periodic-batch-slots", isAuthenticated, async (req, res) =>
       },
     });
   } catch (err) {
-    console.error("Error creating periodic batch slots:", err);
+    logRequestError(req, err, "Error creating periodic batch slots");
     return res.status(500).json({ error: "Internal server error" });
   }
 });

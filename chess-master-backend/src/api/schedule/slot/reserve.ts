@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { isAuthenticated } from "../../../middleware/passport";
 import { reserveSlot, formatSlot } from "../../../services/schedule.service";
+import { logRequestError } from "../../../utils/log-request-error";
 
 export const router = Router();
 
@@ -25,7 +26,7 @@ router.post("/:id/reserve", isAuthenticated, async (req, res) => {
     ) {
       return res.status(400).json({ error: err.message });
     }
-    console.error("Error reserving slot:", err);
+    logRequestError(req, err, "Error reserving slot");
     res.status(500).json({ error: "Internal server error" });
   }
 });

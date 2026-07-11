@@ -9,6 +9,7 @@ import {
   formatSlot,
   formatMasterScheduleSlot,
 } from "../../../services/schedule.service";
+import { logRequestError } from "../../../utils/log-request-error";
 
 export const router = Router();
 
@@ -35,7 +36,7 @@ router.get("/user/:userId/active", async (req, res) => {
 
     res.json(payload);
   } catch (err) {
-    console.error("Error fetching active slots:", err);
+    logRequestError(req, err, "Error fetching active slots");
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -52,7 +53,7 @@ router.get("/user/:userId", async (req, res) => {
 
     res.json(payload);
   } catch (err) {
-    console.error("Error fetching slots:", err);
+    logRequestError(req, err, "Error fetching user slots");
     res.status(500).json({ error: "Internal server error" });
   }
 });

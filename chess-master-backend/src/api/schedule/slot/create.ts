@@ -2,6 +2,7 @@ import { Router } from "express";
 import { isAuthenticated } from "../../../middleware/passport";
 import { createSlot } from "../../../services/schedule.service";
 import { geoblockPaymentMiddleware } from "../../../utils/geoblock";
+import { logRequestError } from "../../../utils/log-request-error";
 
 export const router = Router();
 
@@ -22,7 +23,7 @@ router.post("", isAuthenticated, async (req, res) => {
     if (err.message === "Cannot create time slots in the past") {
       return res.status(400).json({ error: err.message });
     }
-    console.error("Error creating slot:", err);
+    logRequestError(req, err, "Error creating slot");
     res.status(500).json({ error: "Internal server error" });
   }
 });

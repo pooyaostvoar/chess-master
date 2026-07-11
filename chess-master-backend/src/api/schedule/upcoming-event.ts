@@ -5,6 +5,7 @@ import { ScheduleSlot } from "../../database/entity/schedule-slots";
 import { SlotStatus } from "../../database/entity/types";
 import { MoreThan } from "typeorm";
 import { scheduleSlotSchema } from "@chess-master/schemas";
+import { logRequestError } from "../../utils/log-request-error";
 
 export const router = Router();
 
@@ -26,7 +27,7 @@ router.get("", async (req, res) => {
       events: events.map((event) => scheduleSlotSchema.parse(event)),
     });
   } catch (err) {
-    console.error("Error fetching slots:", err);
+    logRequestError(req, err, "Error fetching upcoming events");
     res.status(500).json({ error: "Internal server error" });
   }
 });

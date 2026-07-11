@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { AppDataSource } from "../../database/datasource";
 import { Message } from "../../database/entity/message";
 import { User } from "../../database/entity/user";
+import { logRequestError } from "../../utils/log-request-error";
 
 export const getUnreadSenders = async (req: Request, res: Response) => {
   try {
@@ -70,7 +71,7 @@ export const getUnreadSenders = async (req: Request, res: Response) => {
 
     return res.json(formattedResult);
   } catch (error) {
-    console.error("Error fetching unread senders:", error);
+    logRequestError(req, error, "Error fetching unread senders");
     return res.status(500).json({ message: "Internal server error" });
   }
 };

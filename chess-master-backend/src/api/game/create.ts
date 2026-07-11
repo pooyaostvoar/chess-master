@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { createGame } from "../../services/game";
 import { isAuthenticated } from "../../middleware/passport";
+import { logRequestError } from "../../utils/log-request-error";
 
 export const router = Router();
 
@@ -23,7 +24,7 @@ router.post("/", isAuthenticated, async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("Error creating game:", err);
+    logRequestError(req, err, "Error creating game");
     res.status(500).json({ error: "Internal server error" });
   }
 });

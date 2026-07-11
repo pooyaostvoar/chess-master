@@ -3,6 +3,8 @@ import { Router } from "express";
 import { AppDataSource } from "../database/datasource";
 import { PushSubscription } from "../database/entity/push-subscription";
 import { isAuthenticated } from "../middleware/passport";
+import { logRequestError } from "../utils/log-request-error";
+import { logger } from "../utils/logger";
 
 const pushRouter = Router();
 
@@ -28,7 +30,7 @@ pushRouter.post("/subscribe", isAuthenticated, async (req, res) => {
       await repo.save(sub);
     } catch (e: any) {
       if (e.code === "23505") {
-        console.log(`Subscription already exists for endpoint ${endpoint}`);
+        logger.info({ endpoint }, "Push subscription already exists");
       } else {
         throw e;
       }
@@ -36,7 +38,7 @@ pushRouter.post("/subscribe", isAuthenticated, async (req, res) => {
 
     res.sendStatus(201);
   } catch (err) {
-    console.error("Error storing subscription:", err);
+    logRequestError(req, err, "Error storing push subscription");
     res.status(500).send("Server error");
   }
 });

@@ -5,6 +5,7 @@ import {
   updateSlotStatus,
   formatSlot,
 } from "../../../services/schedule.service";
+import { logRequestError } from "../../../utils/log-request-error";
 
 export const router = Router();
 
@@ -26,7 +27,7 @@ router.patch("/:id/status", isAuthenticated, async (req, res) => {
         .status(404)
         .json({ error: "Slot not found or you are not the master" });
     }
-    console.error("Error updating slot status:", err);
+    logRequestError(req, err, "Error updating slot status");
     res.status(500).json({ error: "Internal server error" });
   }
 });
