@@ -35,6 +35,8 @@ import { chatBotRouter } from "./api/chat-bot/router";
 import { logsRouter } from "./api/logs";
 import { logger } from "./utils/logger";
 import { requestLogger } from "./middleware/request-logger";
+import { healthRouter, healthHandler } from "./api/health";
+import { startHeartbeatMonitor } from "./services/heartbeat";
 
 export function createApp() {
   const isTesting = process.env.NODE_ENV === "test";
@@ -54,6 +56,9 @@ export function createApp() {
   app.set("trust proxy", 1);
 
   app.use(requestLogger);
+
+  app.use("/health", healthRouter);
+  app.get("/heartbeat", healthHandler);
 
   app.use("/payments/webhook", webhookRouter);
   app.use(bodyParser.json({ limit: "10mb" }));
@@ -114,5 +119,6 @@ if (process.env.NODE_ENV !== "test") {
 
   server.listen(port, () => {
     logger.info({ port }, "Server is running");
+    startHeartbeatMonitor();
   });
 }
