@@ -4,8 +4,10 @@ import { useParams } from "react-router-dom";
 import Chat from "../components/Chat";
 import ChatWrapper from "../components/ChatWrapper";
 import { useUser } from "../contexts/UserContext";
+import { usePageMeta } from "../lib/seo";
 
 const ChatPage: React.FC = () => {
+  usePageMeta({ title: "Messages", robots: "noindex" });
   const { user } = useUser();
   const { otherUserId } = useParams<{ otherUserId: string }>();
   const userId = user?.id;

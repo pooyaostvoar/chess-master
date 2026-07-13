@@ -5,8 +5,10 @@ import { getMyBookings } from "../services/bookings";
 import type { Booking } from "../services/bookings";
 import { SlotStatus, updateSlotStatus } from "../services/schedule";
 import { navigateToUserProfile } from "../utils/userProfileNavigation";
+import { usePageMeta } from "../lib/seo";
 
 const MyBookings: React.FC = () => {
+  usePageMeta({ title: "My bookings", robots: "noindex" });
   const { user } = useUser();
   const navigate = useNavigate();
   const [bookings, setBookings] = useState<Booking[]>([]);

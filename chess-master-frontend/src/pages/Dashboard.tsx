@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import { Calendar, User, BookOpen, BarChart3, Crown, Copy, Check, Link2 } from "lucide-react";
+import { usePageMeta } from "../lib/seo";
 
 interface DashCardProps {
   icon: React.ReactNode;
@@ -94,6 +95,7 @@ const PublicProfileCard: React.FC<PublicProfileCardProps> = ({
 );
 
 const Dashboard: React.FC = () => {
+  usePageMeta({ title: "Dashboard", robots: "noindex" });
   const navigate = useNavigate();
   const { user } = useUser();
   const [copied, setCopied] = useState(false);

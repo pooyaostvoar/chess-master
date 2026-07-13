@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { usePageMeta } from "../lib/seo";
 import { useUser } from "../contexts/UserContext";
 import { getMyBookings } from "../services/bookings";
 import { findUsers } from "../services/auth";
@@ -27,6 +28,12 @@ import {
 } from "../constants/languages";
 
 const Home: React.FC = () => {
+  usePageMeta({
+    title: "Chess With Masters",
+    description:
+      "Book live chess lessons with verified titled masters. Browse coaches by rating, price, and language.",
+    canonicalPath: "/",
+  });
   const navigate = useNavigate();
   const { user, loading: isUserloading } = useUser();
   const [allMasters, setAllMasters] = useState<User[]>([]);

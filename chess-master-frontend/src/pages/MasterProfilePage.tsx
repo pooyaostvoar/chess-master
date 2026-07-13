@@ -6,6 +6,8 @@ import { getPublicUserByUsername } from "../services/api/user.api";
 import FreeTime from "../components/master-profile/free-time/FreeTime";
 import { MasterProfileBody } from "../components/master-profile/body/MasterProfileBody";
 import { TeachingFocuses } from "../components/master-profile/body/TeachingFocuses";
+import { usePageMeta } from "../lib/seo";
+import { getMediaUrl } from "../services/config";
 
 type Status = "loading" | "ready" | "not-found";
 
@@ -32,6 +34,32 @@ export default function MasterProfilePage() {
 
     loadUser();
   }, [username]);
+
+  const displayName = user
+    ? [user.title, user.username].filter(Boolean).join(" ")
+    : username || "Master";
+  const profileImage = user?.profilePictureThumbnailUrl
+    ? getMediaUrl(user.profilePictureThumbnailUrl)
+    : undefined;
+  usePageMeta({
+    title:
+      status === "ready" && user
+        ? `${displayName} — chess master`
+        : status === "not-found"
+          ? "Master not found"
+          : "Master profile",
+    description:
+      status === "ready" && user
+        ? user.bio?.trim()
+          ? user.bio.trim().slice(0, 200)
+          : `Book a session with ${displayName} on Chess With Masters.`
+        : undefined,
+    canonicalPath: username ? `/master-profile/${username}` : undefined,
+    robots: status === "not-found" ? "noindex" : undefined,
+    ogType: "profile",
+    ogImage: profileImage,
+    ogImageAlt: user?.username,
+  });
 
   if (status === "loading") {
     return (

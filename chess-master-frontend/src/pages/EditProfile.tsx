@@ -16,8 +16,10 @@ import { SocialMediaSection } from "../components/profile/SocialMediaSection";
 import { ProfileSectionsSection } from "../components/profile/ProfileSectionsSection";
 import { YoutubeVideosSection } from "../components/profile/YoutubeVideosSection";
 import { uploadProfilePicture } from "../services/api/user.api";
+import { usePageMeta } from "../lib/seo";
 
 const EditProfile: React.FC = () => {
+  usePageMeta({ title: "Edit profile", robots: "noindex" });
   const [formData, setFormData] = useState<any>(null);
 
   const [message, setMessage] = useState("");

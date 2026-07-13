@@ -2,10 +2,17 @@ import React, { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { listBlogPosts } from "../services/api/blog.api";
 import { LatestBlogsSection } from "../components/home/LatestBlogsSection";
+import { usePageMeta } from "../lib/seo";
 
 const PER_PAGE = 12;
 
 const BlogPostsPage: React.FC = () => {
+  usePageMeta({
+    title: "Chess articles and guides",
+    description:
+      "Guides, tips, and insights from titled masters to help you improve your chess.",
+    canonicalPath: "/posts",
+  });
   const [searchPhrase, setSearchPhrase] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [page, setPage] = useState(1);

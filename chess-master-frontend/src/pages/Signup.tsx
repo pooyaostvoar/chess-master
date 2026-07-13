@@ -5,8 +5,10 @@ import { useIsMobile } from "../hooks/useIsMobile";
 import { API_URL } from "../services/config";
 import { Eye, EyeOff } from "lucide-react";
 import { Logo } from "../components/Logo";
+import { usePageMeta } from "../lib/seo";
 
 const Signup: React.FC = () => {
+  usePageMeta({ title: "Sign up", robots: "noindex" });
   const [username, setUsername] = useState("");
   const [isMaster, setIsMaster] = useState(false);
   const [password, setPassword] = useState("");

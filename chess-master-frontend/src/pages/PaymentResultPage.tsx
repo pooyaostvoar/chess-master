@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { getPaymentBySession, Payment } from "../services/api/payments.api";
+import { usePageMeta } from "../lib/seo";
 
 const PaymentResultPage: React.FC = () => {
+  usePageMeta({ title: "Payment result", robots: "noindex" });
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session_id");

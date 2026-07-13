@@ -7,8 +7,10 @@ import {
   Game as GameType,
 } from "../services/api/game.api";
 import { useUser } from "../contexts/UserContext";
+import { usePageMeta } from "../lib/seo";
 
 const JoinGame: React.FC = () => {
+  usePageMeta({ title: "Join game", robots: "noindex" });
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
   const { user } = useUser();

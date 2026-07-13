@@ -1,3 +1,19 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Allow: /
+
+# Authenticated / account-only areas
+Disallow: /login
+Disallow: /signup
+Disallow: /dashboard
+Disallow: /edit-profile
+Disallow: /bookings
+Disallow: /chat
+Disallow: /chat/
+Disallow: /create-game
+Disallow: /join-game/
+Disallow: /success
+Disallow: /update-slot-status/
+Disallow: /events/*/edit
+
+Sitemap: https://chesswithmasters.com/sitemap.xml

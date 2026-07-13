@@ -1,7 +1,14 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { usePageMeta } from "../lib/seo";
 
 const PrivacyPolicy: React.FC = () => {
+  usePageMeta({
+    title: "Privacy Policy",
+    description:
+      "How Chess With Masters collects, uses, and protects your personal data.",
+    canonicalPath: "/privacy-policy",
+  });
   const navigate = useNavigate();
 
   return (
