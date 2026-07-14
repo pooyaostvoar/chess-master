@@ -61,7 +61,8 @@ export default function BlogPostPage() {
         ? `Read "${post.title}" on Chess With Masters — guides and insights from titled coaches.`
         : undefined,
     canonicalPath: slug ? `/posts/${slug}` : undefined,
-    robots: status === "not-found" ? "noindex" : undefined,
+    robots:
+      status === "not-found" || status === "error" ? "noindex" : undefined,
     ogType: status === "ready" ? "article" : "website",
     ogImage: ogImage || undefined,
     ogImageAlt: post?.title,

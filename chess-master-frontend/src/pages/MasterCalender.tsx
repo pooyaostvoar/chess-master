@@ -12,6 +12,9 @@ const MasterScheduleCalendar: React.FC = () => {
 		title: 'Master schedule',
 		description: 'Book an open time slot with a chess master.',
 		canonicalPath: userId ? `/calendar/${userId}` : undefined,
+		// Thin, app-like booking view — keep out of the index; the master's
+		// public profile (/master-profile/:username) is the canonical entry point.
+		robots: 'noindex',
 	});
 
 	// Check if current user is the master owner
