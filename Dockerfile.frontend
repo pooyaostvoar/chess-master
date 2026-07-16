@@ -5,6 +5,17 @@ FROM node:20 AS builder
 
 WORKDIR /app
 
+# System libraries required by the headless Chrome that puppeteer launches
+# during the frontend "postbuild" prerender step (chess-master-frontend/
+# scripts/prerender.js). Without these, prerendering fails with
+# "Failed to launch the browser process".
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 \
+    libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libpango-1.0-0 \
+    libcairo2 libasound2 libatspi2.0-0 libx11-xcb1 libxshmfence1 \
+    fonts-liberation \
+  && rm -rf /var/lib/apt/lists/*
+
 # Enable pnpm
 RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
 
@@ -28,6 +39,11 @@ RUN pnpm -r --filter './packages/**' run build
 
 # Build frontend
 WORKDIR /app/chess-master-frontend
+
+# Ensure puppeteer's Chrome is present for the prerender step. pnpm v9 skips
+# dependency install scripts by default (which is what downloads Chrome), so
+# install it explicitly and idempotently here.
+RUN pnpm exec puppeteer browsers install chrome
 
 # Set API URL for production
 ENV REACT_APP_API_URL=https://chesswithmasters.com/api
