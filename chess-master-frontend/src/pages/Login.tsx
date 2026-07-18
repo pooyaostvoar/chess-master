@@ -7,8 +7,10 @@ import { API_URL } from "../services/config";
 import { Eye, EyeOff } from "lucide-react";
 import { safeRedirectPath } from "../utils/safeRedirectPath";
 import { Logo } from "../components/Logo";
+import { usePageMeta } from "../lib/seo";
 
 const Login: React.FC = () => {
+  usePageMeta({ title: "Log in", robots: "noindex" });
   const location = useLocation();
   const { redirect, error } = useMemo(() => {
     const params = new URLSearchParams(location.search);

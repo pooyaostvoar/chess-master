@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createGame } from "../services/api/game.api";
+import { usePageMeta } from "../lib/seo";
 
 const CreateGame: React.FC = () => {
+  usePageMeta({ title: "Create a game", robots: "noindex" });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

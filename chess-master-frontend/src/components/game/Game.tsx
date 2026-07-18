@@ -10,9 +10,11 @@ import { SOCKET_URL } from "../../services/config";
 import { GameStatus, Game as GameType } from "./types";
 import { MoveNavigator } from "./MoveNavigator";
 import { playMoveSound } from "../../utils/playSounds";
+import { usePageMeta } from "../../lib/seo";
 
 const positions: string[] = [];
 const Game: React.FC = () => {
+  usePageMeta({ title: "Game", robots: "noindex" });
   const socketRef = useRef<Socket | null>(null);
 
   const { id: gameId } = useParams<{ id: string }>();

@@ -5,6 +5,7 @@ import { getFinishedEvents } from "../services/api/schedule.api";
 import { LichessRatingsSection } from "../components/profile/LichessRatingsSection";
 import { useUser } from "../contexts/UserContext";
 import { MEDIA_URL } from "../services/config";
+import { usePageMeta } from "../lib/seo";
 
 const HEADER_COLORS = ["#5C3A1E", "#B8893D", "#7A2E2E", "#3D5C1E", "#2E4A7A"] as const;
 
@@ -56,6 +57,14 @@ const PublicUserProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user: currentUser } = useUser();
   const [user, setUser] = useState<any>(null);
+  usePageMeta({
+    title: user?.username ? `${user.username} — profile` : "Player profile",
+    description: user?.bio
+      ? String(user.bio).trim().slice(0, 200)
+      : "Player profile on Chess With Masters.",
+    canonicalPath: id ? `/users/${id}` : undefined,
+    ogType: "profile",
+  });
   const [loading, setLoading] = useState(true);
   const [recordings, setRecordings] = useState<any[]>([]);
   const [activeVideo, setActiveVideo] = useState<string | null>(null);

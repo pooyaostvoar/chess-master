@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { bookSlot, getSlotById } from "../services/schedule";
 import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
+import { usePageMeta } from "../lib/seo";
 
 const ReserveSlotPage: React.FC = () => {
   const navigate = useNavigate();
@@ -11,6 +12,16 @@ const ReserveSlotPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { user } = useUser();
+  usePageMeta({
+    title: slot?.master?.username
+      ? `Play ${slot.master.username}`
+      : "Reserve a chess session",
+    description:
+      slot?.description ||
+      "Reserve a live chess session with a titled master on Chess With Masters.",
+    canonicalPath: id ? `/events/${id}` : undefined,
+    robots: error ? "noindex" : undefined,
+  });
 
   const formatSlotTime = (startTime: string, endTime: string) => {
     const start = new Date(startTime);

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Search, Globe, ChevronDown } from "lucide-react";
+import { usePageMeta } from "../lib/seo";
 import { findUsers } from "../services/auth";
 import type { User } from "../services/auth";
 import { MasterCard } from "../components/home/MasterCard";
@@ -139,6 +140,12 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
 /* ─── main page ─── */
 
 const Masters: React.FC = () => {
+  usePageMeta({
+    title: "Browse chess masters",
+    description:
+      "Browse verified titled chess masters available for one-on-one sessions. Filter by title, rating, language, and price.",
+    canonicalPath: "/masters",
+  });
   const [masters, setMasters] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

@@ -7,16 +7,23 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { UserProvider } from "./contexts/UserContext";
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
-);
-root.render(
+const container = document.getElementById("root") as HTMLElement;
+const tree = (
   <React.StrictMode>
     <UserProvider>
       <App />
     </UserProvider>
   </React.StrictMode>
 );
+
+// react-snap prerenders each route to static HTML at build time. When that
+// markup is present we hydrate it (so crawlers see real content and the client
+// attaches to it); otherwise we render fresh.
+if (container.hasChildNodes()) {
+  ReactDOM.hydrateRoot(container, tree);
+} else {
+  ReactDOM.createRoot(container).render(tree);
+}
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

@@ -1,8 +1,15 @@
 import React, { useState } from "react";
 import { FinishedEventsSection } from "../components/event/FinishedEventsSection";
 import { Search } from "lucide-react";
+import { usePageMeta } from "../lib/seo";
 
 const FinishedEvents: React.FC = () => {
+  usePageMeta({
+    title: "Recorded chess sessions",
+    description:
+      "Watch recordings of past master sessions on Chess With Masters.",
+    canonicalPath: "/events",
+  });
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
   return (

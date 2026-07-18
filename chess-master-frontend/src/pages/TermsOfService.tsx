@@ -1,6 +1,13 @@
 import React from "react";
+import { usePageMeta } from "../lib/seo";
 
 const TermsOfService: React.FC = () => {
+  usePageMeta({
+    title: "Terms of Service",
+    description:
+      "The terms and conditions governing your use of Chess With Masters.",
+    canonicalPath: "/terms-of-service",
+  });
   return (
     <div className="bg-[#FAF5EB] min-h-screen">
       <div className="bg-[#F4ECDD] border-b border-[#1F1109]/[0.08]">

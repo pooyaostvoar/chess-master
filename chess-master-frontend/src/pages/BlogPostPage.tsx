@@ -5,6 +5,8 @@ import {
   runBlogPostScripts,
   sanitizeBlogHtml,
 } from "../utils/sanitizeBlogHtml";
+import { usePageMeta } from "../lib/seo";
+import { getMediaUrl } from "../services/config";
 
 type PageStatus = "loading" | "ready" | "not-found" | "error";
 
@@ -46,14 +48,25 @@ export default function BlogPostPage() {
     [post]
   );
 
-  useEffect(() => {
-    if (status === "ready" && post) {
-      document.title = `${post.title} | Chess With Masters`;
-      return () => {
-        document.title = "Chess With Masters";
-      };
-    }
-  }, [post, status]);
+  const pageTitle = post?.title
+    ? post.title
+    : status === "not-found"
+      ? "Post not found"
+      : "Article";
+  const ogImage = post?.imageUrl ? getMediaUrl(post.imageUrl) : undefined;
+  usePageMeta({
+    title: pageTitle,
+    description:
+      status === "ready" && post
+        ? `Read "${post.title}" on Chess With Masters — guides and insights from titled coaches.`
+        : undefined,
+    canonicalPath: slug ? `/posts/${slug}` : undefined,
+    robots:
+      status === "not-found" || status === "error" ? "noindex" : undefined,
+    ogType: status === "ready" ? "article" : "website",
+    ogImage: ogImage || undefined,
+    ogImageAlt: post?.title,
+  });
 
   useEffect(() => {
     const container = contentRef.current;

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import { SlotStatus, updateSlotStatus } from "../services/schedule";
+import { usePageMeta } from "../lib/seo";
 
 const ALLOWED_STATUS_STRINGS = new Set<string>(
   Object.values(SlotStatus).filter((v) => typeof v === "string")
@@ -32,6 +33,7 @@ function updatingLabel(status: SlotStatus): string {
 type Phase = "idle" | "updating" | "success" | "error";
 
 const UpdateSlotStatusPage: React.FC = () => {
+  usePageMeta({ title: "Update session status", robots: "noindex" });
   const { slotId: slotIdParam, newStatus: newStatusParam } = useParams<{
     slotId: string;
     newStatus: string;

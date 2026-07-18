@@ -1,7 +1,14 @@
 import { UpcomingEventsTable } from "../components/event/UpcomingEventsTable";
 import { useUpcomingEvents } from "../hooks/useUpcomingEvents";
+import { usePageMeta } from "../lib/seo";
 
 export const UpcomingEventsPage = () => {
+  usePageMeta({
+    title: "Upcoming chess events",
+    description:
+      "Upcoming lessons, games, and events with titled chess masters. Reserve your seat.",
+    canonicalPath: "/upcoming-events",
+  });
   const { events, loading, refetch: loadEvents } = useUpcomingEvents();
   return (
     <div className="bg-[#FAF5EB] min-h-screen">
