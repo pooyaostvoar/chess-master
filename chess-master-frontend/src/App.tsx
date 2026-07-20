@@ -31,6 +31,8 @@ import BlogPostPage from "./pages/BlogPostPage";
 import BlogPostsPage from "./pages/BlogPostsPage";
 import UpdateSlotStatusPage from "./pages/UpdateSlotStatusPage";
 import { RequireAuth } from "./components/RequireAuth";
+import { MasterOnboardingGate } from "./components/MasterOnboardingGate";
+import Onboarding from "./pages/Onboarding";
 
 const App: React.FC = () => {
   const { user } = useUser();
@@ -39,7 +41,8 @@ const App: React.FC = () => {
       {user?.id && <PushPrompt />}
       <ScheduleProvider userId={user?.id?.toString()}>
         <Router>
-          <Routes>
+          <MasterOnboardingGate>
+            <Routes>
             <Route path="/" element={<Layout />}>
               <Route
                 path="/master-profile/:username"
@@ -47,6 +50,14 @@ const App: React.FC = () => {
               />
               <Route path="/" element={<Home />} />
               <Route path="/home" element={<Home />} />
+              <Route
+                path="/onboarding"
+                element={
+                  <RequireAuth>
+                    <Onboarding />
+                  </RequireAuth>
+                }
+              />
               <Route
                 path="/dashboard"
                 element={
@@ -146,6 +157,7 @@ const App: React.FC = () => {
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
           </Routes>
+          </MasterOnboardingGate>
         </Router>
       </ScheduleProvider>
     </>

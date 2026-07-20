@@ -24,19 +24,19 @@ const BookSlotCalendar: React.FC = () => {
 		switch (slot.status) {
 			case 'free':
 				title = 'Available - Click to Book';
-				color = '#27ae60';
+				color = '#6B8F5E';
 				textColor = '#fff';
 				break;
 
 			case 'reserved':
 				title = 'Reserved';
-				color = '#f39c12';
-				textColor = '#fff';
+				color = '#B8893D';
+				textColor = '#1F1109';
 				break;
 
 			case 'booked':
 				title = 'Booked';
-				color = '#e74c3c';
+				color = '#7A2E2E';
 				textColor = '#fff';
 				break;
 		}
@@ -110,7 +110,7 @@ const BookSlotCalendar: React.FC = () => {
 		const slotId = Number(info.event.id);
 
 		// Only allow booking free slots (green color)
-		if (info.event.backgroundColor !== '#27ae60') {
+		if (info.event.backgroundColor !== '#6B8F5E') {
 			return;
 		}
 
@@ -187,7 +187,7 @@ const BookSlotCalendar: React.FC = () => {
 					<div
 						style={{
 							...styles.legendColor,
-							background: '#27ae60',
+							background: '#6B8F5E',
 						}}></div>
 					<span>Available - Click to Book</span>
 				</div>
@@ -195,7 +195,7 @@ const BookSlotCalendar: React.FC = () => {
 					<div
 						style={{
 							...styles.legendColor,
-							background: '#f39c12',
+							background: '#B8893D',
 						}}></div>
 					<span>Reserved</span>
 				</div>
@@ -203,7 +203,7 @@ const BookSlotCalendar: React.FC = () => {
 					<div
 						style={{
 							...styles.legendColor,
-							background: '#e74c3c',
+							background: '#7A2E2E',
 						}}></div>
 					<span>Booked</span>
 				</div>

@@ -10,9 +10,11 @@ import { Info } from "lucide-react";
 
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
+import { cn } from "../../../lib/utils";
+import { createSlotFieldClass } from "./fieldStyles";
 
 const PRICE_INFO =
-  "Suggested from your hourly rate. One-time: rate × the length of the time you selected. Recurring: rate × chunk size — that price applies to each chunk (each slot created in the series).";
+  "Suggested from your hourly rate. Single slot: rate × the length of the time you selected. Recurring: rate × chunk size — that price applies to each chunk (each slot created in the series).";
 
 const TOOLTIP_WIDTH = 288;
 const TOOLTIP_Z = 200;
@@ -116,7 +118,7 @@ const BasicSection: React.FC<BasicSectionProps> = ({
         onChange={(e) => onTitleChange(e.target.value)}
         placeholder="Add title"
         disabled={isSubmitting}
-        className="w-full border-0 border-b border-[#1F1109]/15 bg-transparent px-0 py-2 text-xl text-[#1F1109] placeholder:text-[#6B5640] focus:border-[#B8893D] focus:outline-none focus:ring-0"
+        className="w-full border-0 border-b border-[#1F1109]/[0.14] bg-transparent px-0 py-2 text-xl text-[#1F1109] placeholder:text-[#9C8366] focus:border-[#B8893D] focus:outline-none focus:ring-0"
         style={{ fontFamily: "Georgia, serif" }}
         autoFocus
         aria-label="Title"
@@ -126,7 +128,7 @@ const BasicSection: React.FC<BasicSectionProps> = ({
         <div className="flex shrink-0 items-center gap-1.5">
           <Label
             htmlFor="create-slot-price"
-            className="text-sm text-[#5C4A3A]"
+            className="text-sm font-medium text-[#3D2817]"
           >
             Price
           </Label>
@@ -134,7 +136,7 @@ const BasicSection: React.FC<BasicSectionProps> = ({
             <button
               ref={priceInfoAnchorRef}
               type="button"
-              className="rounded-full p-1 text-[#6B5640] transition-colors hover:bg-[#1F1109]/8 hover:text-[#3D2817] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8893D]/50"
+              className="rounded-full p-1 text-[#8B6F4E] transition-colors hover:bg-[#B8893D]/15 hover:text-[#1F1109] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8893D]/50"
               aria-label="How price is calculated"
               aria-describedby={
                 priceInfoOpen ? "create-slot-price-tooltip" : undefined
@@ -155,7 +157,7 @@ const BasicSection: React.FC<BasicSectionProps> = ({
         </div>
         <div className="relative min-w-[7rem] flex-1 max-w-[220px]">
           <span
-            className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-sm text-[#6B5640]"
+            className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-sm text-[#8B6F4E]"
             aria-hidden
           >
             $
@@ -167,7 +169,7 @@ const BasicSection: React.FC<BasicSectionProps> = ({
             value={priceInput}
             onChange={(e) => onPriceInputChange(e.target.value)}
             disabled={isSubmitting}
-            className="border-[#1F1109]/20 bg-white pl-8"
+            className={cn(createSlotFieldClass, "pl-8")}
             aria-describedby={
               priceInvalid ? "create-slot-price-error" : undefined
             }

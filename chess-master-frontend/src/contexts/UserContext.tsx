@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { getMe } from "../services/auth";
 import type { LichessRatings } from "../services/api/user.api";
+import { MasterOnboardingStep } from "@chess-master/schemas";
 
 export interface User {
   id: number;
@@ -8,6 +9,8 @@ export interface User {
   email: string;
   name?: string | null;
   lastname?: string | null;
+  phoneNumber?: string | null;
+  country?: string | null;
   isMaster: boolean;
   status?: "active" | "disabled";
   /** USD per hour; used when suggesting slot prices on the master calendar. */
@@ -18,8 +21,19 @@ export interface User {
   chesscomUrl?: string | null;
   lichessUrl?: string | null;
   lichessRatings?: LichessRatings | null;
+  languages?: string[] | null;
+  profileSections?: Array<{ title: string; content: string }> | null;
+  teachingFocuses?: string[] | null;
+  twitchUrl?: string | null;
+  youtubeUrl?: string | null;
+  instagramUrl?: string | null;
+  xUrl?: string | null;
+  facebookUrl?: string | null;
+  tiktokUrl?: string | null;
+  youtubeVideos?: string[] | null;
   profilePictureThumbnailUrl?: string | null;
   profilePictureUrl?: string | null;
+  onboardingStatus?: MasterOnboardingStep;
 }
 
 interface UserContextType {

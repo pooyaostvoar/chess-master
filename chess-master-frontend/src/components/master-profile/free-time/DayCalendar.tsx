@@ -45,7 +45,6 @@ export const DayCalendar: React.FC<DayCalendarProps> = ({
             }}
             fixedWeekCount={false}
             showNonCurrentDates={false}
-            // height={450}
             contentHeight="auto"
             dateClick={(info) => {
               const localDate = formatLocalDate(info.date);
@@ -291,8 +290,13 @@ export const DayCalendar: React.FC<DayCalendarProps> = ({
   .free-time-calendar .fc-theme-standard th {
     border: none !important;
   }
+
+  .free-time-calendar .fc-col-header-cell,
+  .free-time-calendar .fc-col-header-cell.fc-day-today {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
 `}</style>
     </div>
-    // </div>
   );
 };

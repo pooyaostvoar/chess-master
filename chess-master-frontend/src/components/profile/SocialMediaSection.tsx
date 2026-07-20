@@ -10,6 +10,7 @@ interface SocialMediaSectionProps {
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => void;
+  compact?: boolean;
 }
 
 const socialInputs: Array<{ name: string; label: string; placeholder: string }> = [
@@ -33,6 +34,7 @@ export const SocialMediaSection: React.FC<SocialMediaSectionProps> = ({
   facebookUrl,
   tiktokUrl,
   onChange,
+  compact = false,
 }) => {
   const values: Record<string, string | null | undefined> = {
     twitchUrl,
@@ -44,14 +46,20 @@ export const SocialMediaSection: React.FC<SocialMediaSectionProps> = ({
   };
 
   return (
-    <div className="space-y-3">
-      <h3 className="text-sm font-medium text-[#1F1109]">Social media links</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <div className={compact ? "space-y-2.5" : "space-y-3"}>
+      {!compact && (
+        <h3 className="text-sm font-medium text-[#1F1109]">Social media links</h3>
+      )}
+      <div className={`grid grid-cols-1 gap-2.5 ${compact ? "" : "sm:grid-cols-2 sm:gap-3"}`}>
         {socialInputs.map(({ name, label, placeholder }) => (
           <div key={name}>
             <label
               htmlFor={name}
-              className="block text-sm font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]"
+              className={
+                compact
+                  ? "block text-xs font-medium text-[#3D2817] mb-1"
+                  : "block text-sm font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]"
+              }
             >
               {label}
             </label>
@@ -62,7 +70,9 @@ export const SocialMediaSection: React.FC<SocialMediaSectionProps> = ({
               value={values[name] ?? ""}
               onChange={onChange}
               placeholder={placeholder}
-              className="w-full rounded-lg border border-[#1F1109]/[0.18] bg-white px-3 py-2 text-sm text-[#1F1109] placeholder:text-[#9C8366] focus:outline-none focus:border-[#B8893D]"
+              className={`w-full rounded-md border border-[#1F1109]/[0.18] bg-white px-3 py-2 text-[#1F1109] placeholder:text-[#9C8366] focus:outline-none focus:border-[#B8893D] ${
+                compact ? "text-xs" : "text-sm"
+              }`}
             />
           </div>
         ))}

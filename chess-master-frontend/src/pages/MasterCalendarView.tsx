@@ -7,7 +7,7 @@ import { mapSlotToEvent, slotIsPeriodicSeriesChunk } from "../utils/slotUtils";
 import ScheduleCalendar, {
   ScheduleCalendarRef,
 } from "../components/ScheduleCalendar";
-import MiniCalendar from "../components/calendar/MiniCalendar";
+import { MonthDayPicker } from "../components/calendar/MonthDayPicker";
 import SlotModal from "../components/SlotModal";
 import { useIsMobile } from "../hooks/useIsMobile";
 import CreateSlotModal from "../components/slots/CreateSlotModal";
@@ -39,12 +39,30 @@ type PendingPeriodicEdit = {
   payload: PeriodicScopeSubmitPayload;
 };
 
-const MasterCalendarView: React.FC = () => {
+interface MasterCalendarViewProps {
+  /** When set (e.g. onboarding), use this instead of the route param. */
+  userId?: string;
+  /** Compact page chrome when embedded in another layout. */
+  embedded?: boolean;
+}
+
+const MasterCalendarView: React.FC<MasterCalendarViewProps> = ({
+  userId: userIdProp,
+  embedded = false,
+}) => {
   const isMobile = useIsMobile();
   const { user } = useUser();
-  const { userId } = useParams<{ userId: string }>();
+  const { userId: userIdParam } = useParams<{ userId: string }>();
+  const userId = userIdProp ?? userIdParam;
   const { events, setEvents, refreshSlots } = useScheduleSlots(userId, {
     isMasterView: true,
+  });
+  const [selectedMiniDate, setSelectedMiniDate] = useState(() => {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
   });
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null);
@@ -216,8 +234,8 @@ const MasterCalendarView: React.FC = () => {
         title: "Draft — confirm below",
         start: draftRange.startStr,
         end: draftRange.endStr,
-        backgroundColor: "#95a5a6",
-        borderColor: "#7f8c8d",
+        backgroundColor: "#9C8366",
+        borderColor: "#8B6F4E",
         editable: false,
         durationEditable: false,
         extendedProps: { isDraft: true },
@@ -225,6 +243,21 @@ const MasterCalendarView: React.FC = () => {
     }
     return list;
   }, [events, draftRange]);
+
+  const availableMiniDates = useMemo(() => {
+    const dates = new Set<string>();
+    for (const event of events) {
+      if (!event?.start) continue;
+      const start =
+        event.start instanceof Date ? event.start : new Date(event.start);
+      if (Number.isNaN(start.getTime())) continue;
+      const y = start.getFullYear();
+      const m = String(start.getMonth() + 1).padStart(2, "0");
+      const d = String(start.getDate()).padStart(2, "0");
+      dates.add(`${y}-${m}-${d}`);
+    }
+    return Array.from(dates);
+  }, [events]);
 
   const handleDateSelect = (date: Date) => {
     if (calendarRef.current && date) {
@@ -462,21 +495,14 @@ const MasterCalendarView: React.FC = () => {
     periodicEditSubmitting;
 
   return (
-    <div className="min-h-screen bg-[#FAF5EB]">
-      <div className="flex gap-6 p-6 max-w-[1800px] mx-auto">
-        {/* Left Sidebar - Mini Calendar */}
-        {isMobile === false && (
-          <div className="w-80 flex-shrink-0">
-            <div className="bg-white rounded-xl border border-[#1F1109]/[0.12] p-4 sticky top-6">
-              <MiniCalendar onDateSelect={handleDateSelect} />
-            </div>
-          </div>
-        )}
-        {/* Right Side - Main Calendar */}
-        <div className="flex-1 min-w-0">
+    <div className={embedded ? "bg-transparent" : "min-h-screen bg-[#FAF5EB]"}>
+      <div
+        className={`max-w-[1800px] mx-auto ${embedded ? "p-0" : "p-6"}`}
+      >
+        {!embedded && (
           <div className="mb-6">
             <div
-              className="text-sm italic text-[#7A2E2E] tracking-[0.04em] mb-2"
+              className="text-sm italic text-[#B8893D] tracking-[0.04em] mb-2"
               style={{ fontFamily: "Georgia, serif" }}
             >
               Your calendar
@@ -488,12 +514,27 @@ const MasterCalendarView: React.FC = () => {
               My Schedule
             </h1>
             <p className="text-base text-[#5C4631]">
-              Click and drag to choose a time window, then confirm one-time or
-              recurring slots
+              Click and drag to choose a time window, then confirm a single slot
+              or a recurring series
             </p>
           </div>
+        )}
 
-          <div className="bg-white rounded-2xl border border-[#1F1109]/[0.12] shadow-sm p-6 calendar-main-container">
+        <div className="flex gap-4 sm:gap-6 rounded-2xl border border-[#1F1109]/[0.12] bg-[#FDF9EE] p-4 sm:p-6 calendar-main-container">
+          {isMobile === false && (
+            <div className="w-72 flex-shrink-0 self-start">
+              <MonthDayPicker
+                availableDates={availableMiniDates}
+                selectedDate={selectedMiniDate}
+                onDateSelect={(dateStr) => {
+                  setSelectedMiniDate(dateStr);
+                  handleDateSelect(new Date(`${dateStr}T12:00:00`));
+                }}
+                cardClassName="rounded-xl bg-[#FDF9EE] p-0"
+              />
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
             <ScheduleCalendar
               ref={calendarRef}
               events={calendarEvents}
