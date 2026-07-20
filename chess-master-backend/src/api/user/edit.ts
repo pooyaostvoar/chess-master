@@ -29,6 +29,7 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
       isMaster,
       chesscomUrl,
       lichessUrl,
+      lichessRatings,
       hourlyRate,
       languages,
       teachingFocuses,
@@ -42,6 +43,7 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
       xUrl,
       facebookUrl,
       tiktokUrl,
+      onboardingStatus,
     } = req.body;
 
     const updatedUser = await updateUser(userId, {
@@ -63,6 +65,7 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
       isMaster,
       chesscomUrl,
       lichessUrl,
+      lichessRatings,
       hourlyRate,
       languages,
       teachingFocuses,
@@ -76,6 +79,7 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
       xUrl,
       facebookUrl,
       tiktokUrl,
+      onboardingStatus,
     });
 
     res.json({ status: "success", user: updatedUser });
@@ -85,6 +89,12 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
       return res.status(404).json({ error: err.message });
     }
     if (err.message === "Invalid or restricted country") {
+      return res.status(400).json({ error: err.message });
+    }
+    if (
+      err.message === "Onboarding status is only available for masters" ||
+      err.message === "Invalid onboarding status"
+    ) {
       return res.status(400).json({ error: err.message });
     }
     res.status(500).json({ error: "Internal server error" });

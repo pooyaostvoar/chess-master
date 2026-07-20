@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { logout } from "../services/auth";
 import { useUser } from "../contexts/UserContext";
 import {
@@ -20,9 +20,6 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { useIsMobile } from "../hooks/useIsMobile";
-import { useMasterOnboarding } from "../hooks/useMasterOnboarding";
-import { OnboardingHint } from "./onboarding/OnboardingHint";
-import AvatarHint from "./onboarding/AvatarHint";
 import { getUnreadSenders } from "../services/api/messages.api";
 import { getMediaUrl } from "../services/config";
 import { Logo } from "./Logo";
@@ -31,15 +28,7 @@ const Layout: React.FC = () => {
   const [unreadCount, setUnreadCount] = React.useState(0);
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const [dropDownIsOpen, setDropDownIsOpen] = React.useState(false);
   const { user, loading, setUser } = useUser();
-
-  const {
-    state,
-    becomeMaster,
-    setNotMaster,
-    loading: onboardingLoading,
-  } = useMasterOnboarding();
 
   const firstLetter = user?.username
     ? user.username.charAt(0).toUpperCase()
@@ -53,20 +42,6 @@ const Layout: React.FC = () => {
       navigate("/home");
     }
   };
-  const location = useLocation();
-
-  const showEditProfileHint =
-    onboardingLoading === false &&
-    state === "MASTER_NO_INFO" &&
-    !dropDownIsOpen &&
-    location.pathname !== "/edit-profile";
-
-  const showAddSlot =
-    onboardingLoading === false &&
-    state === "MASTER_NO_SLOT" &&
-    !dropDownIsOpen &&
-    !location.pathname.includes("/calendar/");
-
   useEffect(() => {
     const fetchUnread = async () => {
       if (!user) {
@@ -143,7 +118,7 @@ const Layout: React.FC = () => {
               {loading ? (
                 <div className="w-8 h-8 border-2 border-[#F4ECDD] border-t-transparent rounded-full animate-spin" />
               ) : user ? (
-                <DropdownMenu onOpenChange={(open) => setDropDownIsOpen(open)}>
+                <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <div className="relative">
                       {unreadCount > 0 && (
@@ -152,13 +127,7 @@ const Layout: React.FC = () => {
                         </span>
                       )}
                       <button
-                        className={`w-11 h-11 rounded-full bg-[#F4ECDD] text-[#1F1109] font-bold text-lg flex items-center justify-center transition-all
-                          ${
-                            showEditProfileHint || showAddSlot
-                              ? "ring-4 ring-[#B8893D] ring-offset-2 ring-offset-[#1F1109] animate-pulse"
-                              : "hover:ring-2 hover:ring-[#B8893D]"
-                          }
-                        `}
+                        className="w-11 h-11 rounded-full bg-[#F4ECDD] text-[#1F1109] font-bold text-lg flex items-center justify-center transition-all hover:ring-2 hover:ring-[#B8893D]"
                       >
                         {user.profilePictureThumbnailUrl ? (
                           <img
@@ -170,16 +139,6 @@ const Layout: React.FC = () => {
                           firstLetter
                         )}
                       </button>
-
-                      {(showEditProfileHint || showAddSlot) && (
-                        <AvatarHint
-                          text={
-                            showEditProfileHint
-                              ? "Edit profile"
-                              : "Add your availability"
-                          }
-                        />
-                      )}
                     </div>
                   </DropdownMenuTrigger>
 
@@ -217,11 +176,7 @@ const Layout: React.FC = () => {
 
                     <DropdownMenuItem
                       onClick={() => navigate("/edit-profile")}
-                      className={`flex items-center gap-2 transition-all text-[#3D2817] focus:bg-[#B8893D]/10 focus:text-[#1F1109] ${
-                        state === "MASTER_NO_INFO"
-                          ? "animate-pulse bg-[#B8893D]/10 text-[#B8893D] font-semibold rounded"
-                          : ""
-                      }`}
+                      className="flex items-center gap-2 text-[#3D2817] focus:bg-[#B8893D]/10 focus:text-[#1F1109]"
                     >
                       <User className="mr-2 h-4 w-4 text-[#8B6F4E]" />
                       Edit Profile
@@ -230,11 +185,7 @@ const Layout: React.FC = () => {
                     {user.isMaster && (
                       <DropdownMenuItem
                         onClick={() => navigate(`/calendar/${user.id}`)}
-                        className={`flex items-center gap-2 transition-all text-[#3D2817] focus:bg-[#B8893D]/10 focus:text-[#1F1109] ${
-                          state === "MASTER_NO_SLOT"
-                            ? "animate-pulse bg-[#B8893D]/10 text-[#B8893D] font-semibold rounded"
-                            : ""
-                        }`}
+                        className="flex items-center gap-2 text-[#3D2817] focus:bg-[#B8893D]/10 focus:text-[#1F1109]"
                       >
                         <Calendar className="mr-2 h-4 w-4 text-[#8B6F4E]" />
                         My Schedule
@@ -277,25 +228,6 @@ const Layout: React.FC = () => {
           </div>
         </div>
       </nav>
-
-      {/* ───────── MASTER QUESTION POPUP ───────── */}
-      {user && state === "UNKNOWN" && (
-        <OnboardingHint
-          title="Are you a titled player?"
-          text="Masters can earn money by playing games with others."
-          actions={[
-            {
-              label: onboardingLoading ? "Setting up..." : "Yes, I'm a master",
-              onClick: becomeMaster,
-            },
-            {
-              label: "No",
-              variant: "outline",
-              onClick: setNotMaster,
-            },
-          ]}
-        />
-      )}
 
       {/* ───────── MAIN CONTENT ───────── */}
       <main className="flex-1">

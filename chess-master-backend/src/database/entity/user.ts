@@ -10,6 +10,7 @@ import {
 import { ScheduleSlot } from "./schedule-slots";
 import { PeriodicSlotConfig } from "./periodic-slot-config";
 import { Payment } from "./payment";
+import { MasterOnboardingStep } from "@chess-master/schemas";
 import { UserStatus } from "./types";
 
 export interface LichessPerfData {
@@ -61,6 +62,9 @@ export class User {
 
   @Column("boolean", { default: false })
   isMaster: boolean;
+
+  @Column("text", { default: MasterOnboardingStep.BasicInfo })
+  onboardingStatus: MasterOnboardingStep;
 
   @Column("text", { default: UserStatus.Active })
   status: UserStatus;

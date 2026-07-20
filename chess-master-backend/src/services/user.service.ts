@@ -1,4 +1,4 @@
-import { isValidCountryCode } from "@chess-master/schemas";
+import { isValidCountryCode, MasterOnboardingStep } from "@chess-master/schemas";
 import { AppDataSource } from "../database/datasource";
 import { User } from "../database/entity/user";
 import type { LichessRatingsMap, ProfileSections } from "../database/entity/user";
@@ -32,6 +32,7 @@ export interface UpdateUserData {
   xUrl?: string | null;
   facebookUrl?: string | null;
   tiktokUrl?: string | null;
+  onboardingStatus?: MasterOnboardingStep;
 }
 
 export interface UserFilters {
@@ -72,6 +73,7 @@ export interface SafeUser {
   xUrl?: string | null;
   facebookUrl?: string | null;
   tiktokUrl?: string | null;
+  onboardingStatus?: MasterOnboardingStep;
 }
 
 /**
@@ -106,6 +108,7 @@ export function formatUser(user: User): SafeUser {
     xUrl: user.xUrl,
     facebookUrl: user.facebookUrl,
     tiktokUrl: user.tiktokUrl,
+    onboardingStatus: user.onboardingStatus,
   };
 }
 
@@ -218,6 +221,15 @@ export async function updateUser(
   }
   if (data.tiktokUrl !== undefined) {
     user.tiktokUrl = data.tiktokUrl;
+  }
+  if (data.onboardingStatus !== undefined) {
+    if (!user.isMaster) {
+      throw new Error("Onboarding status is only available for masters");
+    }
+    if (!Object.values(MasterOnboardingStep).includes(data.onboardingStatus)) {
+      throw new Error("Invalid onboarding status");
+    }
+    user.onboardingStatus = data.onboardingStatus;
   }
 
   await userRepo.save(user);

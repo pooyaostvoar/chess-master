@@ -39,10 +39,21 @@ type PendingPeriodicEdit = {
   payload: PeriodicScopeSubmitPayload;
 };
 
-const MasterCalendarView: React.FC = () => {
+interface MasterCalendarViewProps {
+  /** When set (e.g. onboarding), use this instead of the route param. */
+  userId?: string;
+  /** Compact page chrome when embedded in another layout. */
+  embedded?: boolean;
+}
+
+const MasterCalendarView: React.FC<MasterCalendarViewProps> = ({
+  userId: userIdProp,
+  embedded = false,
+}) => {
   const isMobile = useIsMobile();
   const { user } = useUser();
-  const { userId } = useParams<{ userId: string }>();
+  const { userId: userIdParam } = useParams<{ userId: string }>();
+  const userId = userIdProp ?? userIdParam;
   const { events, setEvents, refreshSlots } = useScheduleSlots(userId, {
     isMasterView: true,
   });
@@ -462,8 +473,12 @@ const MasterCalendarView: React.FC = () => {
     periodicEditSubmitting;
 
   return (
-    <div className="min-h-screen bg-[#FAF5EB]">
-      <div className="flex gap-6 p-6 max-w-[1800px] mx-auto">
+    <div className={embedded ? "bg-transparent" : "min-h-screen bg-[#FAF5EB]"}>
+      <div
+        className={`flex gap-6 max-w-[1800px] mx-auto ${
+          embedded ? "p-0" : "p-6"
+        }`}
+      >
         {/* Left Sidebar - Mini Calendar */}
         {isMobile === false && (
           <div className="w-80 flex-shrink-0">
@@ -474,26 +489,28 @@ const MasterCalendarView: React.FC = () => {
         )}
         {/* Right Side - Main Calendar */}
         <div className="flex-1 min-w-0">
-          <div className="mb-6">
-            <div
-              className="text-sm italic text-[#7A2E2E] tracking-[0.04em] mb-2"
-              style={{ fontFamily: "Georgia, serif" }}
-            >
-              Your calendar
+          {!embedded && (
+            <div className="mb-6">
+              <div
+                className="text-sm italic text-[#7A2E2E] tracking-[0.04em] mb-2"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
+                Your calendar
+              </div>
+              <h1
+                className="text-2xl sm:text-3xl font-medium text-[#1F1109] leading-[1.1] tracking-[-0.01em] mb-1"
+                style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
+              >
+                My Schedule
+              </h1>
+              <p className="text-base text-[#5C4631]">
+                Click and drag to choose a time window, then confirm one-time or
+                recurring slots
+              </p>
             </div>
-            <h1
-              className="text-2xl sm:text-3xl font-medium text-[#1F1109] leading-[1.1] tracking-[-0.01em] mb-1"
-              style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
-            >
-              My Schedule
-            </h1>
-            <p className="text-base text-[#5C4631]">
-              Click and drag to choose a time window, then confirm one-time or
-              recurring slots
-            </p>
-          </div>
+          )}
 
-          <div className="bg-white rounded-2xl border border-[#1F1109]/[0.12] shadow-sm p-6 calendar-main-container">
+          <div className="bg-white rounded-2xl border border-[#1F1109]/[0.12] shadow-sm p-4 sm:p-6 calendar-main-container">
             <ScheduleCalendar
               ref={calendarRef}
               events={calendarEvents}

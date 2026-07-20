@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { isValidCountryCode } from "./countries";
+import { MasterOnboardingStep } from "./onboarding";
 
 export const lichessPerfSchema = z.object({
   rating: z.number().int(),
@@ -94,6 +95,14 @@ export const userSchemaBase = z.object({
 });
 
 export type BaseUser = z.infer<typeof userSchemaBase>;
+
+export const getMeUserSchema = userSchemaBase.extend({
+  onboardingStatus: z
+    .nativeEnum(MasterOnboardingStep)
+    .default(MasterOnboardingStep.BasicInfo),
+});
+
+export type GetMeUser = z.infer<typeof getMeUserSchema>;
 
 export const userListSchema = z.array(userSchemaBase);
 

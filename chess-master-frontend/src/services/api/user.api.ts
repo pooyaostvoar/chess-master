@@ -1,4 +1,5 @@
 import { apiClient, handleApiError } from "./client";
+import { MasterOnboardingStep } from "@chess-master/schemas";
 
 export interface LichessPerf {
   rating: number;
@@ -38,6 +39,7 @@ export interface UpdateUserData {
   xUrl?: string | null;
   facebookUrl?: string | null;
   tiktokUrl?: string | null;
+  onboardingStatus?: MasterOnboardingStep;
 }
 
 export interface User {
@@ -69,6 +71,7 @@ export interface User {
   xUrl?: string | null;
   facebookUrl?: string | null;
   tiktokUrl?: string | null;
+  onboardingStatus?: MasterOnboardingStep;
 }
 
 /**

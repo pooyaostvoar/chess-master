@@ -4,6 +4,7 @@ import { getYoutubeVideoId } from "../../utils/youtube";
 interface YoutubeVideosSectionProps {
   youtubeVideos: string[];
   onChange: (youtubeVideos: string[]) => void;
+  compact?: boolean;
 }
 
 function isDuplicateVideo(videos: string[], url: string): boolean {
@@ -18,6 +19,7 @@ function isDuplicateVideo(videos: string[], url: string): boolean {
 export const YoutubeVideosSection: React.FC<YoutubeVideosSectionProps> = ({
   youtubeVideos,
   onChange,
+  compact = false,
 }) => {
   const [input, setInput] = useState("");
   const [hint, setHint] = useState("");
@@ -50,17 +52,20 @@ export const YoutubeVideosSection: React.FC<YoutubeVideosSectionProps> = ({
     }
   };
 
-  const inputClass =
-    "w-full bg-white border border-[#1F1109]/[0.18] rounded-lg px-3.5 py-[11px] text-sm text-[#1F1109] outline-none transition-colors focus:border-[#B8893D] focus:bg-[#FDF9EE] placeholder:text-[#9C8366]";
+  const inputClass = compact
+    ? "w-full bg-white border border-[#1F1109]/[0.18] rounded-md px-3 py-2 text-xs text-[#1F1109] outline-none transition-colors focus:border-[#B8893D] focus:bg-[#FDF9EE] placeholder:text-[#9C8366]"
+    : "w-full bg-white border border-[#1F1109]/[0.18] rounded-lg px-3.5 py-[11px] text-sm text-[#1F1109] outline-none transition-colors focus:border-[#B8893D] focus:bg-[#FDF9EE] placeholder:text-[#9C8366]";
 
   return (
-    <div className="space-y-3">
-      <div>
-        <h3 className="text-sm font-medium text-[#1F1109]">YouTube videos</h3>
-        <p className="text-sm text-[#6B5640] mt-1">
-          Add YouTube links to show on your public master profile.
-        </p>
-      </div>
+    <div className={compact ? "space-y-2.5" : "space-y-3"}>
+      {!compact && (
+        <div>
+          <h3 className="text-sm font-medium text-[#1F1109]">YouTube videos</h3>
+          <p className="text-sm text-[#6B5640] mt-1">
+            Add YouTube links to show on your public master profile.
+          </p>
+        </div>
+      )}
 
       <div className="space-y-2">
         {videos.map((video, index) => (
@@ -74,7 +79,9 @@ export const YoutubeVideosSection: React.FC<YoutubeVideosSectionProps> = ({
             <button
               type="button"
               onClick={() => removeVideo(index)}
-              className="shrink-0 text-sm font-medium text-[#7A2E2E] hover:underline px-1"
+              className={`shrink-0 font-medium text-[#7A2E2E] hover:underline px-1 ${
+                compact ? "text-xs" : "text-sm"
+              }`}
             >
               Remove
             </button>
@@ -96,7 +103,9 @@ export const YoutubeVideosSection: React.FC<YoutubeVideosSectionProps> = ({
           <button
             type="button"
             onClick={() => addVideo(input)}
-            className="shrink-0 rounded-full border border-[#B8893D]/40 px-4 py-2.5 text-xs font-medium text-[#8B6F1F] hover:bg-[#B8893D]/10 transition-colors whitespace-nowrap"
+            className={`shrink-0 rounded-full border border-[#B8893D]/40 font-medium text-[#8B6F1F] hover:bg-[#B8893D]/10 transition-colors whitespace-nowrap ${
+              compact ? "px-3 py-2 text-[11px]" : "px-4 py-2.5 text-xs"
+            }`}
           >
             Add
           </button>

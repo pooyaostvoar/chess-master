@@ -5,11 +5,13 @@ interface TeachingFocusesSectionProps {
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => void;
+  compact?: boolean;
 }
 
 export const TeachingFocusesSection: React.FC<TeachingFocusesSectionProps> = ({
   teachingFocuses,
   onChange,
+  compact = false,
 }) => {
   const [input, setInput] = useState("");
 
@@ -39,13 +41,25 @@ export const TeachingFocusesSection: React.FC<TeachingFocusesSectionProps> = ({
   };
 
   return (
-    <div className="space-y-3">
-      <h3 className="text-sm font-medium text-[#1F1109]">Teaching focuses</h3>
+    <div className={compact ? "space-y-1" : "space-y-3"}>
+      {!compact && (
+        <h3 className="text-sm font-medium text-[#1F1109]">Teaching focuses</h3>
+      )}
       <div>
-        <label className="block text-sm font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]">
+        <label
+          className={
+            compact
+              ? "block text-xs font-medium text-[#3D2817] mb-1"
+              : "block text-sm font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]"
+          }
+        >
           Topics and skills you teach
         </label>
-        <div className="flex items-center gap-1.5 flex-wrap bg-white border border-[#1F1109]/[0.18] rounded-lg px-2.5 py-2 focus-within:border-[#B8893D] transition-colors">
+        <div
+          className={`flex items-center gap-1.5 flex-wrap bg-white border border-[#1F1109]/[0.18] focus-within:border-[#B8893D] transition-colors ${
+            compact ? "rounded-md px-2 py-1.5" : "rounded-lg px-2.5 py-2"
+          }`}
+        >
           {teachingFocuses.map((focus) => (
             <span
               key={focus}
@@ -70,7 +84,9 @@ export const TeachingFocusesSection: React.FC<TeachingFocusesSectionProps> = ({
                 ? "Type a focus area and press comma"
                 : ""
             }
-            className="flex-1 border-none outline-none p-1 text-sm text-[#1F1109] min-w-[120px] bg-transparent placeholder:text-[#9C8366]"
+            className={`flex-1 border-none outline-none p-1 min-w-[120px] bg-transparent placeholder:text-[#9C8366] ${
+              compact ? "text-xs text-[#1F1109]" : "text-sm text-[#1F1109]"
+            }`}
           />
         </div>
       </div>
