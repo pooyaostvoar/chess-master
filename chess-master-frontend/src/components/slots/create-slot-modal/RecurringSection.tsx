@@ -3,13 +3,15 @@ import { Info } from "lucide-react";
 
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
+import { cn } from "../../../lib/utils";
 import type { SlotPeriod } from "./types";
 import { HoverTooltipPortal } from "./HoverTooltipPortal";
+import { createSlotFieldClass, createSlotSelectClass } from "./fieldStyles";
 
 const CHUNK_HELP =
-  "Each slot in the range lasts this long (default 60).";
+  "Each slot in the range lasts this long (default 60 minutes).";
 const OCCURRENCES_HELP =
-  "Each occurrence repeats the same time window (split into slots by duration).";
+  "How many times to repeat this time window (split into slots by duration).";
 
 function FieldInfoIcon({
   tooltipId,
@@ -36,7 +38,7 @@ function FieldInfoIcon({
       <button
         ref={ref}
         type="button"
-        className="rounded-full p-0.5 text-[#6B5640] transition-colors hover:bg-[#1F1109]/8 hover:text-[#3D2817] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8893D]/50"
+        className="rounded-full p-0.5 text-[#8B6F4E] transition-colors hover:bg-[#B8893D]/15 hover:text-[#1F1109] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8893D]/50"
         aria-label={ariaLabel}
         aria-describedby={infoOpen ? tooltipId : undefined}
         disabled={disabled}
@@ -84,115 +86,122 @@ const RecurringSection: React.FC<RecurringSectionProps> = ({
   repeatCount,
   onRepeatCountChange,
 }) => (
-    <div className="space-y-3">
-      <p id="recurring-price-hint" className="sr-only">
-        When recurring is selected, the price field applies to each chunk in the
-        series.
-      </p>
+  <div className="space-y-3">
+    <p id="recurring-price-hint" className="sr-only">
+      When recurring is selected, the price field applies to each chunk in the
+      series.
+    </p>
 
+    <div className="space-y-1.5">
+      <Label
+        htmlFor="slot-type"
+        className="text-xs font-medium text-[#3D2817]"
+      >
+        Availability type
+      </Label>
       <select
         id="slot-type"
         value={recurring ? "recurring" : "one-time"}
         onChange={(e) => onRecurringChange(e.target.value === "recurring")}
         disabled={isSubmitting}
-        aria-label="Availability type"
         aria-describedby="recurring-price-hint"
-        className="h-8 w-44 max-w-full rounded-md border border-[#1F1109]/12 bg-[#fdfaf5] px-2 py-0 text-base text-[#3D2817] shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8893D]/35 disabled:opacity-60"
+        className={cn(createSlotSelectClass, "max-w-xs")}
       >
-        <option value="one-time">One-time (single slot)</option>
+        <option value="one-time">Single slot</option>
         <option value="recurring">Recurring</option>
       </select>
+    </div>
 
-      {recurring && (
-        <div className="flex min-w-0 flex-nowrap items-end gap-3 overflow-x-auto rounded-lg border border-[#1F1109]/10 bg-white/60 px-3 py-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <div className="flex min-w-0 shrink-0 flex-col gap-1">
+    {recurring && (
+      <div className="flex min-w-0 flex-nowrap items-end gap-3 overflow-x-auto rounded-xl border border-[#1F1109]/[0.1] bg-[#F4ECDD]/50 px-3 py-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex min-w-0 shrink-0 flex-col gap-1">
+          <Label
+            htmlFor="slot-period"
+            className="text-xs font-medium text-[#3D2817]"
+          >
+            Repeat
+          </Label>
+          <select
+            id="slot-period"
+            value={period}
+            onChange={(e) => onPeriodChange(e.target.value as SlotPeriod)}
+            disabled={isSubmitting}
+            className={cn(createSlotSelectClass, "w-[6.5rem]")}
+          >
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+
+        <div className="flex min-w-0 shrink-0 flex-col gap-1">
+          <div className="flex h-5 items-center gap-0.5">
             <Label
-              htmlFor="slot-period"
-              className="text-sm font-normal text-[#5C4A3A]"
+              htmlFor="slot-chunk-minutes"
+              className="text-xs font-medium text-[#3D2817]"
             >
-              Repeat
+              Duration
             </Label>
-            <select
-              id="slot-period"
-              value={period}
-              onChange={(e) => onPeriodChange(e.target.value as SlotPeriod)}
+            <FieldInfoIcon
+              tooltipId="slot-chunk-help"
+              tooltipText={CHUNK_HELP}
               disabled={isSubmitting}
-              className="flex h-10 w-[6rem] rounded-md border border-[#1F1109]/15 bg-[#fdfaf5] px-2 py-2 text-base text-[#3D2817] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8893D]/35 disabled:opacity-60"
+              modalOpen={modalOpen}
+              ariaLabel="About slot duration"
+            />
+          </div>
+          <div className="relative">
+            <span
+              className="pointer-events-none absolute right-2 top-1/2 z-10 -translate-y-1/2 text-xs text-[#8B6F4E]"
+              aria-hidden
             >
-              <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
-            </select>
-          </div>
-
-          <div className="flex min-w-0 shrink-0 flex-col gap-1">
-            <div className="flex h-5 items-center gap-0.5">
-              <Label
-                htmlFor="slot-chunk-minutes"
-                className="text-sm font-normal text-[#5C4A3A]"
-              >
-                Chunk
-              </Label>
-              <FieldInfoIcon
-                tooltipId="slot-chunk-help"
-                tooltipText={CHUNK_HELP}
-                disabled={isSubmitting}
-                modalOpen={modalOpen}
-                ariaLabel="About chunk size"
-              />
-            </div>
-            <div className="relative">
-              <span
-                className="pointer-events-none absolute right-2 top-1/2 z-10 -translate-y-1/2 text-sm text-[#6B5640]"
-                aria-hidden
-              >
-                min
-              </span>
-              <Input
-                id="slot-chunk-minutes"
-                type="number"
-                min={1}
-                step={1}
-                value={chunkSizeMinutes}
-                onChange={(e) =>
-                  onChunkSizeMinutesChange(Number(e.target.value))
-                }
-                disabled={isSubmitting}
-                className="h-10 w-[5rem] border-[#1F1109]/20 bg-white pl-2 pr-9"
-              />
-            </div>
-          </div>
-
-          <div className="flex min-w-0 shrink-0 flex-col gap-1">
-            <div className="flex h-5 items-center gap-0.5">
-              <Label
-                htmlFor="slot-repeat-count"
-                className="text-sm font-normal text-[#5C4A3A]"
-              >
-                Count
-              </Label>
-              <FieldInfoIcon
-                tooltipId="slot-repeat-help"
-                tooltipText={OCCURRENCES_HELP}
-                disabled={isSubmitting}
-                modalOpen={modalOpen}
-                ariaLabel="About number of occurrences"
-              />
-            </div>
+              min
+            </span>
             <Input
-              id="slot-repeat-count"
+              id="slot-chunk-minutes"
               type="number"
               min={1}
               step={1}
-              value={repeatCount}
-              onChange={(e) => onRepeatCountChange(Number(e.target.value))}
+              value={chunkSizeMinutes}
+              onChange={(e) =>
+                onChunkSizeMinutesChange(Number(e.target.value))
+              }
               disabled={isSubmitting}
-              className="h-10 w-[4.5rem] border-[#1F1109]/20 bg-white px-2"
+              className={cn(createSlotFieldClass, "h-10 w-[5rem] pl-2 pr-9")}
             />
           </div>
         </div>
-      )}
-    </div>
-  );
+
+        <div className="flex min-w-0 shrink-0 flex-col gap-1">
+          <div className="flex h-5 items-center gap-0.5">
+            <Label
+              htmlFor="slot-repeat-count"
+              className="text-xs font-medium text-[#3D2817]"
+            >
+              Count
+            </Label>
+            <FieldInfoIcon
+              tooltipId="slot-repeat-help"
+              tooltipText={OCCURRENCES_HELP}
+              disabled={isSubmitting}
+              modalOpen={modalOpen}
+              ariaLabel="About number of occurrences"
+            />
+          </div>
+          <Input
+            id="slot-repeat-count"
+            type="number"
+            min={1}
+            step={1}
+            value={repeatCount}
+            onChange={(e) => onRepeatCountChange(Number(e.target.value))}
+            disabled={isSubmitting}
+            className={cn(createSlotFieldClass, "h-10 w-[4.5rem] px-2")}
+          />
+        </div>
+      </div>
+    )}
+  </div>
+);
 
 export default RecurringSection;

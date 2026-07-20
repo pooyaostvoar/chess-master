@@ -1,0 +1,204 @@
+/* ===== DAY LAYOUT ===== */
+.month-day-picker .fc-daygrid-body-natural .fc-daygrid-day,
+.month-day-picker .fc-daygrid-body-natural td,
+.month-day-picker .fc-daygrid-body-natural tr {
+	height: auto !important;
+}
+
+.month-day-picker .fc-daygrid-body table {
+	border-collapse: separate !important;
+	border-spacing: 2px 2px;
+}
+
+.month-day-picker .fc-daygrid-day {
+	height: 48px !important;
+}
+
+.month-day-picker .fc-daygrid-day-frame.fc-scrollgrid-sync-inner {
+	min-height: 0 !important;
+	height: 48px !important;
+	padding: 2px !important;
+}
+
+.month-day-picker .fc-daygrid-day-frame {
+	padding: 2px !important;
+}
+
+.month-day-picker .fc-daygrid-day-top {
+	min-height: 0 !important;
+	justify-content: center;
+}
+
+.month-day-picker .fc-daygrid-day-events {
+	display: none !important;
+}
+
+.month-day-picker .fc-daygrid-day-bottom {
+	margin-top: 0 !important;
+}
+
+.month-day-picker .fc-daygrid-day-number {
+	width: 100%;
+	padding: 0 !important;
+	text-decoration: none !important;
+}
+
+.month-day-picker .mdp-day-number {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 44px !important;
+	min-height: 44px !important;
+	width: 100%;
+	border-radius: 12px;
+	font-size: 0.9rem;
+	font-weight: 600;
+	transition: all 150ms ease;
+}
+
+.month-day-picker .mdp-day-unavailable .mdp-day-number {
+	background: white;
+	color: rgb(203 213 225);
+}
+
+.month-day-picker .mdp-day-default .mdp-day-number {
+	background: white;
+	color: rgb(15 23 42);
+	cursor: pointer;
+}
+
+.month-day-picker .mdp-day-default .mdp-day-number:hover {
+	background: rgb(241 245 249);
+}
+
+.month-day-picker .mdp-day-available .mdp-day-number {
+	background: rgb(255 251 235);
+	border: 1px solid rgb(253 230 138);
+	color: rgb(15 23 42);
+	cursor: pointer;
+}
+
+.month-day-picker .mdp-day-available .mdp-day-number:hover {
+	background: rgb(254 243 199);
+	border-color: rgb(252 211 77);
+}
+
+.month-day-picker .mdp-day-selected .mdp-day-number {
+	background: rgb(15 23 42);
+	color: white;
+	border: 1px solid rgb(15 23 42);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.month-day-picker .fc-day-today {
+	background: transparent !important;
+}
+
+.month-day-picker .fc-bg-event {
+	opacity: 0 !important;
+}
+
+/* ===== CALENDAR BASE ===== */
+.month-day-picker .fc {
+	--fc-border-color: transparent;
+	--fc-page-bg-color: transparent;
+	--fc-neutral-bg-color: transparent;
+	--fc-today-bg-color: transparent;
+	font-family: inherit;
+}
+
+.month-day-picker .fc .fc-header-toolbar {
+	display: flex !important;
+	flex-direction: row !important;
+	flex-wrap: nowrap !important;
+	align-items: center !important;
+	justify-content: space-between !important;
+	gap: 8px !important;
+}
+
+.month-day-picker .fc .fc-toolbar-chunk {
+	display: flex !important;
+	align-items: center !important;
+	flex: 0 1 auto !important;
+	min-width: 0 !important;
+}
+
+.month-day-picker .fc .fc-toolbar-title {
+	margin: 0 !important;
+	font-size: 1.05rem !important;
+	line-height: 1.2 !important;
+	white-space: nowrap !important;
+	font-weight: 600;
+	color: rgb(15 23 42);
+}
+
+.month-day-picker .fc .fc-button {
+	background: white !important;
+	border: 1px solid rgb(226 232 240) !important;
+	color: rgb(71 85 105) !important;
+	border-radius: 9999px !important;
+	width: 32px !important;
+	height: 32px !important;
+	padding: 0 !important;
+	flex: 0 0 auto !important;
+	box-shadow: none !important;
+}
+
+.month-day-picker .fc .fc-button:hover {
+	background: rgb(241 245 249) !important;
+}
+
+.month-day-picker .fc .fc-button:disabled {
+	opacity: 0.5 !important;
+}
+
+.month-day-picker .fc-col-header-cell,
+.month-day-picker .fc-col-header-cell.fc-day-today {
+	background: transparent !important;
+	background-color: transparent !important;
+}
+
+.month-day-picker .fc-col-header-cell-cushion {
+	padding: 0.3rem 0;
+	font-size: 0.7rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: rgb(148 163 184);
+}
+
+.month-day-picker .fc-scrollgrid,
+.month-day-picker .fc-theme-standard td,
+.month-day-picker .fc-theme-standard th {
+	border: none !important;
+}
+
+/* When nested in the schedule panel, match the cream surface */
+.calendar-main-container .month-day-picker .mdp-day-default .mdp-day-number,
+.calendar-main-container .month-day-picker .mdp-day-unavailable .mdp-day-number {
+	background: #fdf9ee;
+}
+
+.calendar-main-container .month-day-picker .mdp-day-default .mdp-day-number:hover {
+	background: #f4ecdd;
+}
+
+.calendar-main-container .month-day-picker .fc .fc-button {
+	background: #fdf9ee !important;
+	border-color: rgba(31, 17, 9, 0.14) !important;
+	color: #5c4631 !important;
+}
+
+.calendar-main-container .month-day-picker .fc .fc-button:hover {
+	background: #f4ecdd !important;
+}
+
+.calendar-main-container .month-day-picker .fc .fc-toolbar-title {
+	color: #1f1109;
+}
+
+.calendar-main-container .month-day-picker .fc .fc-header-toolbar {
+	margin-bottom: 1.25rem;
+	padding-bottom: 0.875rem;
+	border-bottom: 1px solid rgba(31, 17, 9, 0.1);
+}

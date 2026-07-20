@@ -55,7 +55,7 @@ export const AvailabilityForm: React.FC = () => {
         </h2>
         <p className="mt-1 text-xs text-[#6B5A42]">
           Click and drag on the calendar to choose a time window, then confirm
-          one-time or recurring slots — same as your schedule page.
+          a single slot or a recurring series — same as your schedule page.
         </p>
       </div>
 

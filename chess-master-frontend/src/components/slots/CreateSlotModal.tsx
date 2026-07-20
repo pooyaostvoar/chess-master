@@ -140,8 +140,17 @@ const CreateSlotModal: React.FC<CreateSlotModalProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[480px] max-h-[90vh] overflow-y-auto border-[#1F1109]/[0.12] bg-[#FAF5EB] pt-6">
-        <DialogHeader className="sr-only">
-          <DialogTitle>New availability</DialogTitle>
+        <DialogHeader>
+          <DialogTitle
+            className="text-lg font-medium text-[#1F1109]"
+            style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
+          >
+            New availability
+          </DialogTitle>
+          <p className="text-sm text-[#6B5640]">
+            Set a title and price, then create a single slot or a recurring
+            series.
+          </p>
         </DialogHeader>
 
         <div className="space-y-5 pb-1">
@@ -177,13 +186,13 @@ const CreateSlotModal: React.FC<CreateSlotModalProps> = ({
           />
         </div>
 
-        <DialogFooter className="gap-2 sm:gap-0">
+        <DialogFooter className="gap-2 sm:gap-2">
           <Button
             type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isSubmitting}
-            className="border-[#1F1109]/20"
+            className="rounded-full border-[#1F1109]/[0.18] bg-[#FDF9EE] text-[#3D2817] hover:bg-[#F4ECDD] hover:text-[#1F1109]"
           >
             Cancel
           </Button>
@@ -193,7 +202,7 @@ const CreateSlotModal: React.FC<CreateSlotModalProps> = ({
             disabled={
               isSubmitting || repeatInvalid || chunkInvalid || priceInvalid
             }
-            className="bg-[#B8893D] text-[#1F1109] hover:bg-[#A37728]"
+            className="rounded-full bg-[#B8893D] text-[#1F1109] hover:bg-[#A67B30]"
           >
             {isSubmitting ? "Creating…" : "Create slots"}
           </Button>

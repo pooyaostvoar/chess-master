@@ -10,6 +10,7 @@ import MasterInfoHeader from "../components/MasterInfoHeader";
 import SlotLegend from "../components/SlotLegend";
 import { useIsMobile } from "../hooks/useIsMobile";
 import BookingModal from "../components/BookingModal";
+import { slotStatusCalendarColor } from "../utils/slotUtils";
 
 const BookCalendarView: React.FC = () => {
   const isMobile = useIsMobile();
@@ -75,7 +76,7 @@ const BookCalendarView: React.FC = () => {
       );
       return;
     }
-    if (info.event.backgroundColor !== "#27ae60") {
+    if (info.event.backgroundColor !== slotStatusCalendarColor("free")) {
       return;
     }
 
@@ -88,7 +89,7 @@ const BookCalendarView: React.FC = () => {
         {/* Left Sidebar - Mini Calendar */}
         {isMobile === false && (
           <div className="w-80 flex-shrink-0">
-            <div className="bg-white rounded-xl border border-[#1F1109]/[0.12] p-4 sticky top-6">
+            <div className="bg-[#FDF9EE] rounded-xl border border-[#1F1109]/[0.12] p-4 sticky top-6">
               <MiniCalendar onDateSelect={handleDateSelect} />
             </div>
           </div>
@@ -98,7 +99,7 @@ const BookCalendarView: React.FC = () => {
         <div className="flex-1 min-w-0">
           {masterInfo && <MasterInfoHeader masterInfo={masterInfo} />}
 
-          <div className="bg-white rounded-2xl border border-[#1F1109]/[0.12] shadow-sm p-6 calendar-main-container mt-6">
+          <div className="rounded-2xl border border-[#1F1109]/[0.12] bg-[#FDF9EE] p-6 calendar-main-container mt-6">
             <ScheduleCalendar
               ref={calendarRef}
               events={events}

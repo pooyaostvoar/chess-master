@@ -89,60 +89,64 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({
 	};
 
 	return (
-		<div className='w-full'>
+		<div className="w-full">
 			{/* Month Navigation */}
-			<div className='flex items-center justify-between mb-4'>
+			<div className="flex items-center justify-between mb-4">
 				<Button
-					variant='ghost'
-					size='icon'
+					variant="ghost"
+					size="icon"
 					onClick={handlePrevMonth}
-					className='h-8 w-8'>
-					<ChevronLeft className='h-4 w-4' />
+					className="h-8 w-8 text-[#5C4631] hover:bg-[#B8893D]/15 hover:text-[#1F1109]"
+				>
+					<ChevronLeft className="h-4 w-4" />
 				</Button>
-				<div className='text-sm font-semibold text-foreground'>
+				<div
+					className="text-sm font-medium text-[#1F1109]"
+					style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
+				>
 					{formatMonthYear(currentMonth)}
 				</div>
 				<Button
-					variant='ghost'
-					size='icon'
+					variant="ghost"
+					size="icon"
 					onClick={handleNextMonth}
-					className='h-8 w-8'>
-					<ChevronRight className='h-4 w-4' />
+					className="h-8 w-8 text-[#5C4631] hover:bg-[#B8893D]/15 hover:text-[#1F1109]"
+				>
+					<ChevronRight className="h-4 w-4" />
 				</Button>
 			</div>
 
 			{/* Mini Calendar */}
-			<div className='mini-calendar-container'>
+			<div className="mini-calendar-container">
 				<FullCalendar
 					ref={calendarRef}
 					plugins={[dayGridPlugin, interactionPlugin]}
-					initialView='dayGridMonth'
+					initialView="dayGridMonth"
 					dateClick={handleDateClick}
 					headerToolbar={false}
 					footerToolbar={false}
-					height='auto'
+					height="auto"
 					aspectRatio={1}
 					firstDay={1}
 					dayMaxEvents={false}
-					moreLinkClick='popover'
-					dayHeaderFormat={{ weekday: 'short' }}
+					moreLinkClick="popover"
+					dayHeaderFormat={{ weekday: "short" }}
 					dayCellClassNames={(info: any) => {
-						const classes = ['mini-calendar-day'];
+						const classes = ["mini-calendar-day"];
 						if (selectedDate) {
 							const cellDate = new Date(info.date);
 							const selected = new Date(selectedDate);
-							// Compare dates (ignore time)
 							if (
 								cellDate.getFullYear() === selected.getFullYear() &&
 								cellDate.getMonth() === selected.getMonth() &&
 								cellDate.getDate() === selected.getDate()
 							) {
-								classes.push('mini-calendar-selected');
+								classes.push("mini-calendar-selected");
 							}
 						}
 						return classes;
 					}}
-					dayHeaderClassNames='mini-calendar-header'
+					dayHeaderClassNames="mini-calendar-header"
 					selectable={false}
 					selectMirror={false}
 					unselectAuto={false}
@@ -151,9 +155,10 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({
 
 			{/* Today Button */}
 			<Button
-				variant='outline'
+				variant="outline"
 				onClick={handleToday}
-				className='w-full mt-4 text-sm'>
+				className="w-full mt-4 text-sm rounded-full border-[#1F1109]/[0.14] bg-[#FDF9EE] text-[#3D2817] hover:bg-[#B8893D]/15 hover:border-[#B8893D]/40 hover:text-[#1F1109]"
+			>
 				Today
 			</Button>
 		</div>

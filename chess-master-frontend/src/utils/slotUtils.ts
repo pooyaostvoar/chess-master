@@ -2,15 +2,15 @@
 export function slotStatusCalendarColor(status: string | undefined): string {
   switch (status) {
     case "free":
-      return "#27ae60";
+      return "#6B8F5E";
     case "reserved":
-      return "#f39c12";
+      return "#B8893D";
     case "paid":
-      return "#6AADDE";
+      return "#8B6F4E";
     case "booked":
-      return "#e74c3c";
+      return "#7A2E2E";
     default:
-      return "#777";
+      return "#9C8366";
   }
 }
 
@@ -67,7 +67,7 @@ export const mapSlotToEvent = (
     end: slot.endTime,
     backgroundColor: color,
     borderColor: color,
-    textColor: "#fff",
+    textColor: slot.status === "reserved" ? "#1F1109" : "#fff",
     extendedProps: {
       fullSlot: slot, // Store full slot data for modal
     },
