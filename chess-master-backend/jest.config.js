@@ -4,6 +4,8 @@ const { compilerOptions } = require("./tsconfig.test.json");
 const baseConfig = {
   preset: "ts-jest/presets/default-esm",
   testEnvironment: "node",
+  // Must run before app imports so OTEL/pino see NODE_ENV=test
+  setupFiles: ["./tests/env.js"],
   transform: {
     "^.+\\.ts$": [
       "ts-jest",

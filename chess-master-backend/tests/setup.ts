@@ -9,8 +9,6 @@ export let unauthAgent: TestAgent;
 export let authAgent: TestAgent;
 
 beforeAll(async () => {
-  process.env.NODE_ENV = "test";
-  process.env.REDIS_URL = "redis://:redis-pass@localhost:6378";
   app = createApp();
 });
 

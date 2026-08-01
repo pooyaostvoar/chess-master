@@ -1,11 +1,3 @@
-import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
-import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
-import { resourceFromAttributes } from "@opentelemetry/resources";
-import { NodeSDK } from "@opentelemetry/sdk-node";
-import {
-  ATTR_DEPLOYMENT_ENVIRONMENT_NAME,
-  ATTR_SERVICE_NAME,
-} from "@opentelemetry/semantic-conventions";
 import { getTempoCredentials } from "./utils/secret";
 
 function getServiceName() {
@@ -17,7 +9,9 @@ function getServiceName() {
 }
 
 function startInstrumentation() {
-  if (process.env.NODE_ENV === "test") {
+  // Avoid loading OTEL auto-instrumentations under Jest — they patch
+  // diagnostics_channel and break pino's tracingChannel usage.
+  if (process.env.NODE_ENV === "test" || process.env.JEST_WORKER_ID != null) {
     return null;
   }
 
@@ -25,6 +19,20 @@ function startInstrumentation() {
   if (!tempo) {
     return null;
   }
+
+  // Lazy-require so test imports never load these packages.
+  const {
+    getNodeAutoInstrumentations,
+  } = require("@opentelemetry/auto-instrumentations-node");
+  const {
+    OTLPTraceExporter,
+  } = require("@opentelemetry/exporter-trace-otlp-http");
+  const { resourceFromAttributes } = require("@opentelemetry/resources");
+  const { NodeSDK } = require("@opentelemetry/sdk-node");
+  const {
+    ATTR_DEPLOYMENT_ENVIRONMENT_NAME,
+    ATTR_SERVICE_NAME,
+  } = require("@opentelemetry/semantic-conventions");
 
   const traceExporter = new OTLPTraceExporter({
     url: `${tempo.endpoint}/v1/traces`,

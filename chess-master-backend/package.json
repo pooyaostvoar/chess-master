@@ -11,7 +11,8 @@
     "migration:run": "pnpm run typeorm -d src/database/datasource.ts migration:run",
     "migration:revert": "pnpm run typeorm -d src/database/datasource.ts migration:revert",
     "migration:create": "pnpm run typeorm migration:create",
-    "admin:create": "ts-node --project tsconfig.json -r tsconfig-paths/register src/scripts/create-dev-admin.ts"
+    "admin:create": "ts-node --project tsconfig.json -r tsconfig-paths/register src/scripts/create-dev-admin.ts",
+    "masters:seed-schedules": "ts-node --project tsconfig.json -r tsconfig-paths/register src/scripts/create-active-masters-schedules.ts"
   },
   "author": "",
   "license": "ISC",
