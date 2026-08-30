@@ -35,6 +35,30 @@ export function getGoogleClientSecret() {
   return secretCache;
 }
 
+let microsoftClientIdCache: string | undefined;
+export function getMicrosoftClientId() {
+  if (microsoftClientIdCache) {
+    return microsoftClientIdCache;
+  }
+  microsoftClientIdCache =
+    readSecret("/run/secrets/microsoft_client_id") ??
+    process.env.MICROSOFT_CLIENT_ID ??
+    "microsoft-client-id-not-set";
+  return microsoftClientIdCache;
+}
+
+let microsoftClientSecretCache: string | undefined;
+export function getMicrosoftClientSecret() {
+  if (microsoftClientSecretCache) {
+    return microsoftClientSecretCache;
+  }
+  microsoftClientSecretCache =
+    readSecret("/run/secrets/microsoft_client_secret") ??
+    process.env.MICROSOFT_CLIENT_SECRET ??
+    "microsoft-client-secret-not-set";
+  return microsoftClientSecretCache;
+}
+
 let openAiApiKeyCache: string | undefined;
 
 export function getOpenAiApiKey(): string | undefined {

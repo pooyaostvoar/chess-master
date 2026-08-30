@@ -154,6 +154,9 @@ export class User {
   googleRefreshToken: string | null;
 
   @Column("text", { nullable: true, unique: true })
+  microsoftId: string | null;
+
+  @Column("text", { nullable: true, unique: true })
   lichessId: string | null;
 
   @Column("text", { nullable: true })
