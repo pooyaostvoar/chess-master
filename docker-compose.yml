@@ -43,6 +43,8 @@ services:
       - email_notification_url
       - google_client_id
       - google_client_secret
+      - microsoft_client_id
+      - microsoft_client_secret
       - session_secret
       - telegram_token
       - telegram_chat_id
@@ -124,6 +126,10 @@ secrets:
     file: ./secrets/google_client_id.txt
   google_client_secret:
     file: ./secrets/google_client_secret.txt
+  microsoft_client_id:
+    file: ./secrets/microsoft_client_id
+  microsoft_client_secret:
+    file: ./secrets/microsoft_client_secret
   session_secret:
     file: ./secrets/session_secret.txt
   telegram_token:

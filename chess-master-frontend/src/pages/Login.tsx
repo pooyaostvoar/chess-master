@@ -41,6 +41,17 @@ const Login: React.FC = () => {
     if (error === "lichess_auth_failed") {
       setMessage("Lichess sign-in failed. Please try again.");
     }
+    if (error === "hotmail_email_required") {
+      setMessage("Your Microsoft account needs an email address before it can be used here.");
+      return;
+    }
+    if (error === "hotmail_account_disabled") {
+      setMessage("This account has been disabled.");
+      return;
+    }
+    if (error === "hotmail_auth_failed") {
+      setMessage("Microsoft sign-in failed. Please try again.");
+    }
   }, [error]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -74,6 +85,10 @@ const Login: React.FC = () => {
 
   const handleLichessLogin = () => {
     window.location.href = `${API_URL}/auth/lichess?mode=login${oauthRedirectQuery}`;
+  };
+
+  const handleHotmailLogin = () => {
+    window.location.href = `${API_URL}/auth/hotmail${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""}`;
   };
 
   return (
@@ -185,6 +200,21 @@ const Login: React.FC = () => {
                   </g>
                 </svg>
                 Continue with Lichess
+              </button>
+
+              <button
+                type="button"
+                onClick={handleHotmailLogin}
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-2.5 bg-white border border-[#1F1109]/[0.18] rounded-lg px-3.5 py-2.5 text-sm font-medium text-[#1F1109] hover:border-[#1F1109]/[0.32] hover:bg-[#FDF9EE] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                <svg width="14" height="14" viewBox="0 0 23 23" aria-hidden>
+                  <path fill="#f25022" d="M1 1h10v10H1z" />
+                  <path fill="#00a4ef" d="M12 1h10v10H12z" />
+                  <path fill="#7fba00" d="M1 12h10v10H1z" />
+                  <path fill="#ffb900" d="M12 12h10v10H12z" />
+                </svg>
+                Continue with Microsoft
               </button>
             </div>
 
