@@ -6,9 +6,13 @@ interface ProfileStatsProps {
   user: BaseUser;
 }
 
+function classicRating(user: BaseUser): number | null | undefined {
+  return user.lichessRatings?.classical?.rating ?? user.rating;
+}
+
 export function hasProfileStats(user: BaseUser): boolean {
   return [
-    user.rating,
+    classicRating(user),
     user.lichessRatings?.rapid?.rating,
     user.lichessRatings?.blitz?.rating,
     user.lichessRatings?.bullet?.rating,
@@ -21,7 +25,7 @@ export const ProfileStats: React.FC<ProfileStatsProps> = ({ user }) => {
     value: string | number | null | undefined;
     icon: LucideIcon;
   }[] = [
-    { label: "Classic", value: user.rating, icon: Trophy },
+    { label: "Classic", value: classicRating(user), icon: Trophy },
     { label: "Rapid", value: user.lichessRatings?.rapid?.rating, icon: Timer },
     { label: "Blitz", value: user.lichessRatings?.blitz?.rating, icon: Zap },
     {

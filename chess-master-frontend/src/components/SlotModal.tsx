@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
-import { CheckCircle2, XCircle, Trash2, Circle, Pencil } from "lucide-react";
+import { CheckCircle2, XCircle, Trash2, Circle, Pencil, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   slotIsPeriodicSeriesChunk,
@@ -150,6 +150,25 @@ function SlotModalEventSummary({
   );
 }
 
+const headerIconClass = (variant: "default" | "danger") =>
+  cn(
+    "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8893D]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF5EB]",
+    variant === "danger"
+      ? "text-[#8B4343] hover:bg-[#7A2E2E]/12"
+      : "text-[#5C4A3A] hover:bg-[#1F1109]/10"
+  );
+
+function HeaderIconTooltip({ label }: { label: string }) {
+  return (
+    <span
+      role="tooltip"
+      className="pointer-events-none absolute left-1/2 top-full z-[60] mt-1.5 -translate-x-1/2 whitespace-nowrap rounded-md bg-[#32261C] px-2 py-1 text-xs font-medium text-[#FAF5EB] opacity-0 shadow-md transition-opacity duration-150 group-hover:opacity-100"
+    >
+      {label}
+    </span>
+  );
+}
+
 function HeaderIconButton({
   label,
   onClick,
@@ -167,21 +186,36 @@ function HeaderIconButton({
         type="button"
         onClick={onClick}
         aria-label={label}
-        className={cn(
-          "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B8893D]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#FAF5EB]",
-          variant === "danger"
-            ? "text-[#8B4343] hover:bg-[#7A2E2E]/12"
-            : "text-[#5C4A3A] hover:bg-[#1F1109]/10"
-        )}
+        className={headerIconClass(variant)}
       >
         {children}
       </button>
-      <span
-        role="tooltip"
-        className="pointer-events-none absolute left-1/2 top-full z-[60] mt-1.5 -translate-x-1/2 whitespace-nowrap rounded-md bg-[#32261C] px-2 py-1 text-xs font-medium text-[#FAF5EB] opacity-0 shadow-md transition-opacity duration-150 group-hover:opacity-100"
+      <HeaderIconTooltip label={label} />
+    </div>
+  );
+}
+
+function HeaderIconLink({
+  label,
+  href,
+  children,
+}: {
+  label: string;
+  href: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="group relative flex">
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={label}
+        className={headerIconClass("default")}
       >
-        {label}
-      </span>
+        {children}
+      </a>
+      <HeaderIconTooltip label={label} />
     </div>
   );
 }
@@ -322,6 +356,12 @@ const SlotModal: React.FC<SlotModalProps> = ({
                   >
                     <Pencil className="h-[18px] w-[18px]" strokeWidth={2} />
                   </HeaderIconButton>
+                  <HeaderIconLink
+                    label="Open event page"
+                    href={`/events/${slotId}`}
+                  >
+                    <ExternalLink className="h-[18px] w-[18px]" strokeWidth={2} />
+                  </HeaderIconLink>
                   <HeaderIconButton
                     label="Delete"
                     variant="danger"

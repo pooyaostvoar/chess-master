@@ -31,7 +31,10 @@ function buildRatingFields(
   lichessRatings?: LichessRatings | null
 ): RatingFields {
   return {
-    classic: rating?.toString() ?? "",
+    classic:
+      lichessRatings?.classical?.rating?.toString() ??
+      rating?.toString() ??
+      "",
     rapid: lichessRatings?.rapid?.rating?.toString() ?? "",
     blitz: lichessRatings?.blitz?.rating?.toString() ?? "",
     bullet: lichessRatings?.bullet?.rating?.toString() ?? "",
@@ -52,9 +55,11 @@ function buildSavePayload(
   const rapid = parseRating(ratings.rapid);
   const blitz = parseRating(ratings.blitz);
   const bullet = parseRating(ratings.bullet);
+  const classic = parseRating(ratings.classic);
 
   const lichessRatings: LichessRatings = { ...existing };
   for (const [key, value] of [
+    ["classical", classic],
     ["rapid", rapid],
     ["blitz", blitz],
     ["bullet", bullet],
@@ -67,7 +72,7 @@ function buildSavePayload(
   }
 
   return {
-    rating: parseRating(ratings.classic),
+    rating: classic,
     lichessRatings: Object.keys(lichessRatings).length > 0 ? lichessRatings : null,
   };
 }
