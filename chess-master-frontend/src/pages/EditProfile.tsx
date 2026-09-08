@@ -43,8 +43,22 @@ const EditProfile: React.FC = () => {
           )}`
         );
       } else {
+        const lichessRatings = response.user.lichessRatings ?? null;
+        const classicRating =
+          lichessRatings?.classical?.rating ?? response.user.rating ?? null;
         const userData = {
           ...response.user,
+          rating: classicRating,
+          lichessRatings:
+            classicRating == null
+              ? lichessRatings
+              : {
+                  ...(lichessRatings ?? {}),
+                  classical: {
+                    ...(lichessRatings?.classical ?? {}),
+                    rating: classicRating,
+                  },
+                },
           teachingFocuses: response.user.teachingFocuses ?? [],
           youtubeVideos: response.user.youtubeVideos ?? [],
           profileSections: response.user.profileSections ?? [],
@@ -171,7 +185,7 @@ const EditProfile: React.FC = () => {
         name: formData.name,
         lastname: formData.lastname,
         title: formData.title,
-        rating: formData.rating,
+        rating: formData.lichessRatings?.classical?.rating ?? null,
         bio: formData.bio,
         profileSections: formData.isMaster
           ? (formData.profileSections ?? [])
@@ -184,6 +198,7 @@ const EditProfile: React.FC = () => {
         isMaster: formData.isMaster,
         chesscomUrl: formData.chesscomUrl,
         lichessUrl: formData.lichessUrl,
+        lichessRatings: formData.lichessRatings ?? null,
         hourlyRate: formData.hourlyRate,
         languages: formData.languages,
         teachingFocuses: formData.teachingFocuses,
@@ -216,6 +231,7 @@ const EditProfile: React.FC = () => {
           profileSections: data.user.profileSections ?? [],
           teachingFocuses: data.user.teachingFocuses ?? [],
           languages: data.user.languages ?? [],
+          lichessRatings: data.user.lichessRatings ?? null,
         }));
       } else {
         setMessage("Something went wrong");
@@ -279,7 +295,6 @@ const EditProfile: React.FC = () => {
 
             <ChessProfileSection
               title={formData.title}
-              rating={formData.rating}
               bio={formData.bio}
               onChange={handleChange}
             />
@@ -357,6 +372,14 @@ const EditProfile: React.FC = () => {
             <LichessRatingsSection
               lichessRatings={formData.lichessRatings}
               lichessUrl={formData.lichessUrl}
+              editable
+              onChange={(lichessRatings) =>
+                setFormData((prev: typeof formData) => ({
+                  ...prev,
+                  lichessRatings,
+                  rating: lichessRatings?.classical?.rating ?? null,
+                }))
+              }
             />
 
             {formData.isMaster && (

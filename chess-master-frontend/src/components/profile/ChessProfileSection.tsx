@@ -2,7 +2,6 @@ import React from "react";
 
 interface ChessProfileSectionProps {
   title: string | null;
-  rating: number | null;
   bio: string | null;
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -11,7 +10,6 @@ interface ChessProfileSectionProps {
 
 export const ChessProfileSection: React.FC<ChessProfileSectionProps> = ({
   title,
-  rating,
   bio,
   onChange,
 }) => {
@@ -43,10 +41,6 @@ export const ChessProfileSection: React.FC<ChessProfileSectionProps> = ({
             <option value="WNM">WNM - Woman National Master</option>
             <option value="NM">NM - National Master</option>
           </select>
-        </div>
-        <div>
-          <label htmlFor="rating" className="block text-sm font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]">Rating (optional)</label>
-          <input id="rating" type="number" name="rating" value={rating || ""} onChange={onChange} placeholder="e.g., 2000" className={inputClass} />
         </div>
         <div>
           <label htmlFor="bio" className="block text-sm font-medium text-[#3D2817] mb-1.5 tracking-[0.02em]">Bio (optional)</label>
