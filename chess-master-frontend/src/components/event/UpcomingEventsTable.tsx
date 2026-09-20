@@ -1,29 +1,14 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { UpcomingEventsSection } from "./UpcomingEventsSection";
-
-interface Event {
-  id: string;
-  title?: string;
-  master: any;
-  startTime: string;
-  endTime: string;
-  price?: number;
-}
-
-interface Props {
-  events: Event[];
-  loadEvents: () => void;
-  loading: boolean;
-}
+import {
+  startOfLocalDay,
+  useUpcomingEvents,
+} from "../../hooks/useUpcomingEvents";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-export const UpcomingEventsTable: React.FC<Props> = ({
-  events,
-  loadEvents,
-  loading,
-}) => {
+export const UpcomingEventsTable: React.FC = () => {
   const [currentWeekStart, setCurrentWeekStart] = useState(() => {
     const now = new Date();
     const start = new Date(now);
@@ -34,28 +19,21 @@ export const UpcomingEventsTable: React.FC<Props> = ({
 
   const [activeDayIndex, setActiveDayIndex] = useState(new Date().getDay());
 
+  const selectedDate = useMemo(() => {
+    const dayDate = new Date(currentWeekStart);
+    dayDate.setDate(currentWeekStart.getDate() + activeDayIndex);
+    return startOfLocalDay(dayDate);
+  }, [currentWeekStart, activeDayIndex]);
+
+  const { events, loading, refetch: loadEvents } = useUpcomingEvents({
+    date: selectedDate,
+  });
+
   const goWeek = (direction: 1 | -1) => {
     const newStart = new Date(currentWeekStart);
     newStart.setDate(currentWeekStart.getDate() + 7 * direction);
     setCurrentWeekStart(newStart);
     setActiveDayIndex(newStart.getDay());
-  };
-
-  const getEventsForDay = (dayIndex: number) => {
-    const dayDate = new Date(currentWeekStart);
-    dayDate.setDate(currentWeekStart.getDate() + dayIndex);
-    dayDate.setHours(0, 0, 0, 0);
-    const nextDay = new Date(dayDate);
-    nextDay.setDate(dayDate.getDate() + 1);
-    return events
-      .filter((e) => {
-        const start = new Date(e.startTime);
-        return start >= dayDate && start < nextDay;
-      })
-      .sort(
-        (a, b) =>
-          new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
-      );
   };
 
   const formatWeekRange = (start: Date) => {
@@ -65,8 +43,7 @@ export const UpcomingEventsTable: React.FC<Props> = ({
     return `${start.toLocaleDateString(undefined, options)} – ${end.toLocaleDateString(undefined, options)}`;
   };
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = startOfLocalDay(new Date());
 
   return (
     <div className="space-y-6">
@@ -120,11 +97,11 @@ export const UpcomingEventsTable: React.FC<Props> = ({
 
       {/* Events for Active Day */}
       <UpcomingEventsSection
-        events={getEventsForDay(activeDayIndex)}
+        events={events}
         loading={loading}
         loadEvents={loadEvents}
       />
-      {getEventsForDay(activeDayIndex).length === 0 && !loading && (
+      {events.length === 0 && !loading && (
         <p className="text-sm text-[#6B5640] text-center py-4 italic">
           No events this day.
         </p>

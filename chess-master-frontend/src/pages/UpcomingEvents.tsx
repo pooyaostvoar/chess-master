@@ -1,5 +1,4 @@
 import { UpcomingEventsTable } from "../components/event/UpcomingEventsTable";
-import { useUpcomingEvents } from "../hooks/useUpcomingEvents";
 import { usePageMeta } from "../lib/seo";
 
 export const UpcomingEventsPage = () => {
@@ -9,7 +8,6 @@ export const UpcomingEventsPage = () => {
       "Upcoming lessons, games, and events with titled chess masters. Reserve your seat.",
     canonicalPath: "/upcoming-events",
   });
-  const { events, loading, refetch: loadEvents } = useUpcomingEvents();
   return (
     <div className="bg-[#FAF5EB] min-h-screen">
       <div className="bg-[#F4ECDD] border-b border-[#1F1109]/[0.08]">
@@ -29,11 +27,7 @@ export const UpcomingEventsPage = () => {
         </div>
       </div>
       <div className="max-w-5xl mx-auto px-5 sm:px-8 py-8">
-        <UpcomingEventsTable
-          events={events}
-          loadEvents={loadEvents}
-          loading={loading}
-        />
+        <UpcomingEventsTable />
       </div>
     </div>
   );

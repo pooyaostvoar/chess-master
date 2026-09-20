@@ -186,3 +186,28 @@ export const updatePeriodicBatchSlotResponseSchema = z.object({
 export type UpdatePeriodicBatchSlotResponse = z.infer<
   typeof updatePeriodicBatchSlotResponseSchema
 >;
+
+/** GET /schedule/upcoming-events */
+export const upcomingEventsQuerySchema = z.object({
+  from: z.coerce.date().optional(),
+  to: z.coerce.date().optional(),
+  limit: z.coerce.number().int().positive().optional(),
+});
+
+export type UpcomingEventsQuery = z.infer<typeof upcomingEventsQuerySchema>;
+
+export const upcomingEventMasterSchema = userSchemaBase.pick({
+  id: true,
+  username: true,
+  title: true,
+  profilePictureThumbnailUrl: true,
+  languages: true,
+});
+
+export const upcomingEventSchema = scheduleSlotSchema
+  .omit({ reservedBy: true, periodicSlotConfig: true })
+  .extend({
+    master: upcomingEventMasterSchema,
+  });
+
+export type UpcomingEvent = z.infer<typeof upcomingEventSchema>;
