@@ -51,7 +51,7 @@ const Home: React.FC = () => {
     events,
     loading: loadingUpcomingEvents,
     refetch: loadEvents,
-  } = useUpcomingEvents(3);
+  } = useUpcomingEvents({ limit: 3 });
 
   const loadBookings = async () => {
     setBookingsLoading(true);

@@ -259,11 +259,19 @@ export const getFinishedEvents = async () => {
   }
 };
 
-export const getUpcomingEvents = async (limit?: number | null) => {
+export const getUpcomingEvents = async (options?: {
+  limit?: number | null;
+  from?: string;
+  to?: string;
+}) => {
   try {
-    const response = await apiClient.get(
-      `/schedule/upcoming-events${limit ? `?limit=${limit}` : ""}`
-    );
+    const response = await apiClient.get(`/schedule/upcoming-events`, {
+      params: {
+        ...(options?.limit ? { limit: options.limit } : {}),
+        ...(options?.from ? { from: options.from } : {}),
+        ...(options?.to ? { to: options.to } : {}),
+      },
+    });
 
     return response.data.events;
   } catch (error: any) {
