@@ -1,4 +1,37 @@
 export const GA_MEASUREMENT_ID = "G-NCQC7PT2L5";
+export const CONSENT_STORAGE_KEY = "cwm_analytics_consent";
+export const OPEN_CONSENT_EVENT = "cwm-open-consent";
+
+export type AnalyticsConsent = "granted" | "denied";
+
+export function readAnalyticsConsent(): AnalyticsConsent | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const value = localStorage.getItem(CONSENT_STORAGE_KEY);
+    if (value === "granted" || value === "denied") return value;
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+export function applyAnalyticsConsent(choice: AnalyticsConsent): void {
+  try {
+    localStorage.setItem(CONSENT_STORAGE_KEY, choice);
+  } catch {
+    // Storage can be blocked; the in-page choice still updates Consent Mode.
+  }
+  window.gtag?.("consent", "update", {
+    analytics_storage: choice,
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
+  });
+}
+
+export function openConsentSettings(): void {
+  window.dispatchEvent(new Event(OPEN_CONSENT_EVENT));
+}
 
 type EventParams = Record<string, string | number | boolean | undefined>;
 
@@ -27,11 +60,15 @@ function cleanParams(params: EventParams): Record<string, string | number | bool
   return cleaned;
 }
 
-export function trackEvent(name: string, params: EventParams = {}): void {
+export function trackEvent(
+  name: string,
+  params: EventParams = {},
+  options?: { force?: boolean }
+): void {
   if (typeof window === "undefined") return;
   const payload = cleanParams(params);
   const dedupeKey = `${name}:${JSON.stringify(payload)}`;
-  if (!shouldSend(dedupeKey)) return;
+  if (!options?.force && !shouldSend(dedupeKey)) return;
 
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ event: name, ...payload });
@@ -51,12 +88,20 @@ function contentGroup(path: string): string | undefined {
   return undefined;
 }
 
-export function trackPageView(path: string, title?: string): void {
+export function trackPageView(
+  path: string,
+  title?: string,
+  options?: { force?: boolean }
+): void {
   const group = contentGroup(path);
-  trackEvent("page_view", {
-    page_path: path,
-    page_title: title || (typeof document !== "undefined" ? document.title : undefined),
-    page_location: typeof window !== "undefined" ? window.location.href : undefined,
-    content_group: group,
-  });
+  trackEvent(
+    "page_view",
+    {
+      page_path: path,
+      page_title: title || (typeof document !== "undefined" ? document.title : undefined),
+      page_location: typeof window !== "undefined" ? window.location.href : undefined,
+      content_group: group,
+    },
+    options
+  );
 }

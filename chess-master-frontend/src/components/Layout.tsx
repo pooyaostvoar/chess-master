@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
+import { openConsentSettings } from "../lib/analytics";
 import { logout } from "../services/auth";
 import { useUser } from "../contexts/UserContext";
 import {
@@ -306,6 +307,13 @@ const Layout: React.FC = () => {
               </span>
               <div className="flex items-center gap-4 text-xs">
                 <a href="/privacy-policy" className="text-[#F4ECDD]/60 hover:text-[#F4ECDD]/80 transition-colors">Privacy</a>
+                <button
+                  type="button"
+                  onClick={openConsentSettings}
+                  className="text-[#F4ECDD]/60 hover:text-[#F4ECDD]/80 transition-colors"
+                >
+                  Cookies
+                </button>
                 <a href="/terms-of-service" className="text-[#F4ECDD]/60 hover:text-[#F4ECDD]/80 transition-colors">Terms</a>
               </div>
             </div>

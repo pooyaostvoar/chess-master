@@ -33,6 +33,7 @@ import UpdateSlotStatusPage from "./pages/UpdateSlotStatusPage";
 import { RequireAuth } from "./components/RequireAuth";
 import { MasterOnboardingGate } from "./components/MasterOnboardingGate";
 import { AnalyticsRouteTracker } from "./components/AnalyticsRouteTracker";
+import { ConsentBanner } from "./components/ConsentBanner";
 import Onboarding from "./pages/Onboarding";
 
 const App: React.FC = () => {
@@ -43,6 +44,7 @@ const App: React.FC = () => {
       <ScheduleProvider userId={user?.id?.toString()}>
         <Router>
           <AnalyticsRouteTracker />
+          <ConsentBanner />
           <MasterOnboardingGate>
             <Routes>
             <Route path="/" element={<Layout />}>
