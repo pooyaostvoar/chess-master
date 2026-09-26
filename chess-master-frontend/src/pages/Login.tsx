@@ -7,6 +7,7 @@ import { API_URL } from "../services/config";
 import { Eye, EyeOff } from "lucide-react";
 import { safeRedirectPath } from "../utils/safeRedirectPath";
 import { Logo } from "../components/Logo";
+import { trackEvent } from "../lib/analytics";
 import { usePageMeta } from "../lib/seo";
 
 const Login: React.FC = () => {
@@ -63,6 +64,7 @@ const Login: React.FC = () => {
       const data = await login(username, password);
       if (data.user) {
         setUser(data.user);
+        trackEvent("login", { method: "password" });
         navigate(redirect ?? "/home");
       } else {
         setMessage("Invalid username or password");

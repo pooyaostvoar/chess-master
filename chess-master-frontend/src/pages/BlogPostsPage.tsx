@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { listBlogPosts } from "../services/api/blog.api";
 import { LatestBlogsSection } from "../components/home/LatestBlogsSection";
+import { trackEvent } from "../lib/analytics";
 import { usePageMeta } from "../lib/seo";
 
 const PER_PAGE = 12;
@@ -40,6 +41,16 @@ const BlogPostsPage: React.FC = () => {
       .catch(() => setPosts({ items: [], total: 0, page: 1, pageSize: PER_PAGE }))
       .finally(() => setLoading(false));
   }, [page, debouncedQuery]);
+
+  useEffect(() => {
+    if (loading || !posts) return;
+    trackEvent("view_blog_list", {
+      page,
+      result_count: posts.total,
+      search_term: debouncedQuery || undefined,
+      page_path: "/posts",
+    });
+  }, [loading, posts, page, debouncedQuery]);
 
   const totalPages = posts
     ? Math.max(1, Math.ceil(posts.total / PER_PAGE))

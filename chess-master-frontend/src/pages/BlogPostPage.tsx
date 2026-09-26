@@ -5,6 +5,7 @@ import {
   runBlogPostScripts,
   sanitizeBlogHtml,
 } from "../utils/sanitizeBlogHtml";
+import { trackEvent } from "../lib/analytics";
 import { usePageMeta } from "../lib/seo";
 import { getMediaUrl } from "../services/config";
 
@@ -40,6 +41,16 @@ export default function BlogPostPage() {
         setErrorMessage("Could not load this post. Please try again later.");
       });
   }, [slug]);
+
+  useEffect(() => {
+    if (status !== "ready" || !post) return;
+    trackEvent("view_blog_post", {
+      post_id: post.id,
+      post_slug: post.slug,
+      post_title: post.title,
+      page_path: `/posts/${post.slug}`,
+    });
+  }, [status, post]);
 
   const contentRef = useRef<HTMLDivElement>(null);
   const scriptsInitializedFor = useRef<string | null>(null);

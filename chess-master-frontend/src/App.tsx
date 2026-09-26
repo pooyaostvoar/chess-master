@@ -32,6 +32,7 @@ import BlogPostsPage from "./pages/BlogPostsPage";
 import UpdateSlotStatusPage from "./pages/UpdateSlotStatusPage";
 import { RequireAuth } from "./components/RequireAuth";
 import { MasterOnboardingGate } from "./components/MasterOnboardingGate";
+import { AnalyticsRouteTracker } from "./components/AnalyticsRouteTracker";
 import Onboarding from "./pages/Onboarding";
 
 const App: React.FC = () => {
@@ -41,6 +42,7 @@ const App: React.FC = () => {
       {user?.id && <PushPrompt />}
       <ScheduleProvider userId={user?.id?.toString()}>
         <Router>
+          <AnalyticsRouteTracker />
           <MasterOnboardingGate>
             <Routes>
             <Route path="/" element={<Layout />}>

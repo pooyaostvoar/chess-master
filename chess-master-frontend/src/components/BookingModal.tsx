@@ -7,6 +7,7 @@ import {
   DialogTitle,
 } from "./ui/dialog";
 import { CalendarCheck, XCircle } from "lucide-react";
+import { trackEvent } from "../lib/analytics";
 import { checkoutSlot } from "../services/payment";
 import { useUser } from "../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
@@ -46,6 +47,7 @@ const BookingModal: React.FC<BookingModalProps> = ({
     try {
       setLoading(true);
       setMessage(null);
+      trackEvent("begin_checkout", { slot_id: slotId });
       await checkoutSlot(slotId);
     } catch (err: any) {
       setLoading(false);
