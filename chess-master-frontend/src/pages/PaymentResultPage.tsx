@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { getPaymentBySession, Payment } from "../services/api/payments.api";
+import { trackEvent } from "../lib/analytics";
 import { usePageMeta } from "../lib/seo";
 
 const PaymentResultPage: React.FC = () => {
@@ -30,6 +31,21 @@ const PaymentResultPage: React.FC = () => {
     };
     load();
   }, [sessionId]);
+
+  useEffect(() => {
+    if (!payment) return;
+    const paid =
+      payment.status === "paid" ||
+      payment.slot.status === "paid" ||
+      payment.slot.status === "booked";
+    if (!paid) return;
+    trackEvent("purchase", {
+      transaction_id: payment.stripeSessionId,
+      value: payment.amountCents / 100,
+      currency: payment.currency,
+      slot_id: payment.slot.id,
+    });
+  }, [payment]);
 
   let icon: React.ReactNode;
   let title = "";

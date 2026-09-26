@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import type { BlogPostSummary } from "../../services/api/blog.api";
+import { trackEvent } from "../../lib/analytics";
 import { getMediaUrl } from "../../services/config";
 
 const HEADER_COLORS = ["#5C3A1E", "#B8893D", "#7A2E2E"] as const;
@@ -77,6 +78,14 @@ export const BlogCard: React.FC<BlogCardProps> = ({ post }) => {
   return (
     <Link
       to={`/posts/${post.slug}`}
+      onClick={() =>
+        trackEvent("select_blog_post", {
+          post_id: post.id,
+          post_slug: post.slug,
+          post_title: post.title,
+          content_type: "blog_post",
+        })
+      }
       className="group bg-white border border-[#1F1109]/[0.12] rounded-xl overflow-hidden transition-all duration-200 hover:border-[#1F1109]/25 hover:-translate-y-0.5"
     >
       <div

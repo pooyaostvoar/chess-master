@@ -5,6 +5,7 @@ import { useIsMobile } from "../hooks/useIsMobile";
 import { API_URL } from "../services/config";
 import { Eye, EyeOff } from "lucide-react";
 import { Logo } from "../components/Logo";
+import { trackEvent } from "../lib/analytics";
 import { usePageMeta } from "../lib/seo";
 
 const Signup: React.FC = () => {
@@ -63,6 +64,10 @@ const Signup: React.FC = () => {
       const data = await signup(username, password, isMaster);
       if (data.status === "success") {
         setMessage("Account created successfully! Redirecting...");
+        trackEvent("sign_up", {
+          method: "password",
+          account_type: isMaster ? "master" : "player",
+        });
         setTimeout(() => navigate("/login"), 1500);
       } else {
         setMessage("Something went wrong. Please try again.");
