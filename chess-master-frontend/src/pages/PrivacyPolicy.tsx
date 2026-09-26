@@ -87,7 +87,13 @@ const PrivacyPolicy: React.FC = () => {
           </section>
 
           <section className="space-y-2">
-            <h3 className="text-sm font-medium text-[#1F1109]">8. Contact Information</h3>
+            <h3 className="text-sm font-medium text-[#1F1109]">8. Cookies and analytics</h3>
+            <p>We use Google Analytics to measure how the site is used, including which pages and articles are opened. Analytics cookies are off until you accept them in the consent banner. You can change that choice later with the Cookies link in the footer.</p>
+            <p>Rejecting analytics does not affect signing in, booking a lesson, or payments. Those use cookies that are required for the site to work.</p>
+          </section>
+
+          <section className="space-y-2">
+            <h3 className="text-sm font-medium text-[#1F1109]">9. Contact Information</h3>
             <p>If you have questions about this Privacy Policy or our data practices, please contact us at:</p>
             <p className="font-medium text-[#B8893D]">support@chesswithmasters.com</p>
           </section>
