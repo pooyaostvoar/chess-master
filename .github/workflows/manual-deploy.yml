@@ -61,6 +61,6 @@ jobs:
             docker pull "$IMAGE:$TAG"
             docker tag "$IMAGE:$TAG" "$IMAGE:latest"
 
-            docker compose up -d "$SERVICE"
+            docker compose up -d --force-recreate "$SERVICE"
 
             docker image prune -f

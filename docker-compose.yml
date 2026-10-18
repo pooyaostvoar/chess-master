@@ -3,6 +3,7 @@ version: "3.9"
 services:
   frontend:
     image: pooyaos/chess-frontend:latest
+    pull_policy: always
     ports:
       - "3000:80" # Nginx serves on 80 inside container
     depends_on:
@@ -12,6 +13,7 @@ services:
   
   backoffice:
     image: pooyaos/chess-backoffice:latest
+    pull_policy: always
     ports:
       - "3001:80"
     depends_on:
@@ -21,6 +23,7 @@ services:
 
   backend:
     image: pooyaos/chess-backend:latest
+    pull_policy: always
     ports:
       - "3004:3004"
     environment:
