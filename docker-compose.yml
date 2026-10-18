@@ -4,6 +4,7 @@ services:
   frontend:
     image: pooyaos/chess-frontend:latest
     pull_policy: always
+    restart: unless-stopped
     ports:
       - "3000:80" # Nginx serves on 80 inside container
     depends_on:
@@ -14,6 +15,7 @@ services:
   backoffice:
     image: pooyaos/chess-backoffice:latest
     pull_policy: always
+    restart: unless-stopped
     ports:
       - "3001:80"
     depends_on:
@@ -24,6 +26,7 @@ services:
   backend:
     image: pooyaos/chess-backend:latest
     pull_policy: always
+    restart: unless-stopped
     ports:
       - "3004:3004"
     environment:
@@ -68,6 +71,7 @@ services:
 
   db:
     image: postgres:15-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_USER_FILE: /run/secrets/postgres_user
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
@@ -82,6 +86,7 @@ services:
 
   redis:
     image: redis
+    restart: unless-stopped
     ports:
       - "6378:6379"
     secrets:
@@ -98,6 +103,7 @@ services:
 
   minio:
     image: minio/minio:latest
+    restart: unless-stopped
     container_name: chess_minio_dev
     entrypoint: >
       /bin/sh -c "
