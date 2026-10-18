@@ -6,6 +6,7 @@ import { getPublicUserByUsername } from "../services/api/user.api";
 import FreeTime from "../components/master-profile/free-time/FreeTime";
 import { MasterProfileBody } from "../components/master-profile/body/MasterProfileBody";
 import { TeachingFocuses } from "../components/master-profile/body/TeachingFocuses";
+import { MasterComments } from "../components/master-profile/comments/MasterComments";
 import { usePageMeta } from "../lib/seo";
 import { getMediaUrl } from "../services/config";
 
@@ -92,6 +93,8 @@ export default function MasterProfilePage() {
             <MasterProfileBody user={user} />
           </div>
         </div>
+
+        <MasterComments masterId={user.id} />
       </div>
     </div>
   );
