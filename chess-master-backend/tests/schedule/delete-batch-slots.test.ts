@@ -46,9 +46,10 @@ describe("POST /schedule/slot/delete-batch", () => {
   });
 
   it("deletes only the slot when it has no periodic config", async () => {
+    const start = new Date(Date.now() + 3_600_000);
     const createRes = await authAgent.post("/schedule/slot").send({
-      startTime: "2026-10-01T12:00:00.000Z",
-      endTime: "2026-10-01T13:00:00.000Z",
+      startTime: start.toISOString(),
+      endTime: new Date(start.getTime() + 3_600_000).toISOString(),
     });
     expect(createRes.status).toBe(200);
     const slotId = createRes.body.slot.id;
