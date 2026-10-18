@@ -10,6 +10,7 @@ import { Message } from "./entity/message";
 import { PushSubscription } from "./entity/push-subscription";
 import { Payment } from "./entity/payment";
 import { BlogPost } from "./entity/blog-post";
+import { Comment } from "./entity/comment";
 
 const defaultConfig: DataSourceOptions = {
   type: "postgres",
@@ -38,6 +39,7 @@ const defaultConfig: DataSourceOptions = {
     PushSubscription,
     Payment,
     BlogPost,
+    Comment,
   ],
 };
 

@@ -233,6 +233,73 @@ export const AdminBlogPostsApi = {
     }),
 };
 
+export type AdminComment = {
+  id: number;
+  text: string;
+  masterId: number;
+  userId: number;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: number;
+    username: string;
+    title: string | null;
+    profilePictureThumbnailUrl: string | null;
+  };
+  master: {
+    id: number;
+    username: string;
+    title: string | null;
+  };
+};
+
+export type AdminCommentListResponse = {
+  items: AdminComment[];
+  total: number;
+  page: number;
+  pageSize: number;
+};
+
+export const AdminCommentsApi = {
+  list: (params: { page: number; pageSize: number; q?: string }) => {
+    const search = new URLSearchParams();
+    search.set("page", String(params.page));
+    search.set("pageSize", String(params.pageSize));
+    if (params.q) search.set("q", params.q);
+    return request<AdminCommentListResponse>(
+      `/admin/comments?${search.toString()}`
+    );
+  },
+  delete: (id: number) =>
+    request<{ message: string }>(`/admin/comments/${id}`, {
+      method: "DELETE",
+    }),
+  create: (
+    comments: Array<{
+      masterId: number;
+      text: string;
+      userId?: number;
+      username?: string;
+    }>
+  ) =>
+    request<{ items: AdminComment[] }>("/admin/comments", {
+      method: "POST",
+      body: JSON.stringify({ comments }),
+    }),
+  update: (
+    comments: Array<{
+      id: number;
+      text: string;
+      userId?: number;
+      masterId?: number;
+    }>
+  ) =>
+    request<{ items: AdminComment[] }>("/admin/comments", {
+      method: "PATCH",
+      body: JSON.stringify({ comments }),
+    }),
+};
+
 export const AdminImagesApi = {
   upload: async (file: File) => {
     const formData = new FormData();

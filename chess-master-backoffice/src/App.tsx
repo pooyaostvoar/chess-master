@@ -8,6 +8,7 @@ import { UserDetailPage } from "./pages/UserDetailPage";
 import { SlotsPage } from "./pages/SlotsPage";
 import { BlogPostsPage } from "./pages/BlogPostsPage";
 import { BlogPostDetailPage } from "./pages/BlogPostDetailPage";
+import { CommentsPage } from "./pages/CommentsPage";
 
 export default function App() {
   const [admin, setAdmin] = useState<Admin | null>(null);
@@ -66,6 +67,8 @@ export default function App() {
       ? selectedBlogPostId === "new"
         ? "New Blog Post"
         : "Edit Blog Post"
+      : activePage === "comments"
+      ? "Comments"
       : "";
 
   return (
@@ -110,6 +113,7 @@ export default function App() {
           }}
         />
       ) : null}
+      {activePage === "comments" ? <CommentsPage /> : null}
       {activePage === "blogPostDetail" ? (
         <BlogPostDetailPage
           postId={selectedBlogPostId === "new" ? null : selectedBlogPostId}

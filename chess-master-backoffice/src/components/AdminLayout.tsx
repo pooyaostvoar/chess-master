@@ -24,6 +24,7 @@ const navItems: NavItem[] = [
   { key: "users", label: "Users" },
   { key: "slots", label: "Events" },
   { key: "blogPosts", label: "Blog" },
+  { key: "comments", label: "Comments" },
 ];
 
 export function AdminLayout({
