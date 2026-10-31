@@ -14,6 +14,7 @@ export interface UpdateUserData {
   bio?: string | null;
   profileSections?: ProfileSections | null;
   isMaster?: boolean;
+  isPrivate?: boolean;
   status?: UserStatus;
   profilePictureThumbnailUrl?: string | null;
   chesscomUrl?: string | null;
@@ -56,6 +57,7 @@ export interface SafeUser {
   bio: string | null;
   profileSections: ProfileSections | null;
   isMaster: boolean;
+  isPrivate: boolean;
   status: UserStatus;
   profilePictureThumbnailUrl: string | null;
   chesscomUrl: string | null;
@@ -91,6 +93,7 @@ export function formatUser(user: User): SafeUser {
     bio: user.bio,
     profileSections: user.profileSections,
     isMaster: user.isMaster,
+    isPrivate: user.isPrivate,
     status: user.status,
     profilePictureThumbnailUrl: user.profilePictureThumbnailUrl,
     chesscomUrl: user.chesscomUrl,
@@ -122,6 +125,17 @@ export function formatUserMinimal(user: User) {
     email: user.email,
     profilePictureThumbnailUrl: user.profilePictureThumbnailUrl,
   };
+}
+
+/**
+ * A private profile is visible only to that user. Public lists omit private users entirely.
+ */
+export function canViewUser(
+  user: Pick<User, "id" | "isPrivate">,
+  viewerId?: number | null
+): boolean {
+  if (!user.isPrivate) return true;
+  return viewerId != null && viewerId === user.id;
 }
 
 /**
@@ -166,6 +180,7 @@ export async function updateUser(
   if (data.bio !== undefined) user.bio = data.bio;
   if (data.profileSections !== undefined) user.profileSections = data.profileSections;
   if (data.isMaster !== undefined) user.isMaster = data.isMaster;
+  if (data.isPrivate !== undefined) user.isPrivate = data.isPrivate;
   if (data.status !== undefined) user.status = data.status;
   if (data.profilePictureThumbnailUrl !== undefined)
     user.profilePictureThumbnailUrl = data.profilePictureThumbnailUrl;
@@ -249,6 +264,7 @@ export async function findUsers(filters: UserFilters): Promise<User[]> {
   let qb = repo.createQueryBuilder("user");
 
   qb = qb.andWhere("user.status = :status", { status: UserStatus.Active });
+  qb = qb.andWhere("user.isPrivate = false");
 
   if (filters.username) {
     qb = qb.andWhere("user.username ILIKE :username", {

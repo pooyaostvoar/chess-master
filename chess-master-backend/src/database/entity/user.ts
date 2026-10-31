@@ -69,6 +69,9 @@ export class User {
   @Column("text", { default: UserStatus.Active })
   status: UserStatus;
 
+  @Column("boolean", { default: false })
+  isPrivate: boolean = false;
+
   @Column("text", { nullable: true })
   title: string | null;
 

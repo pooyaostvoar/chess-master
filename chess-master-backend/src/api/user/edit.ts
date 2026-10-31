@@ -27,6 +27,7 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
       bio,
       profileSections,
       isMaster,
+      isPrivate,
       chesscomUrl,
       lichessUrl,
       lichessRatings,
@@ -63,6 +64,7 @@ router.patch("/:id", isAuthenticated, async (req, res) => {
             .filter((section) => section.title && section.content)
         : profileSections,
       isMaster,
+      isPrivate: typeof isPrivate === "boolean" ? isPrivate : undefined,
       chesscomUrl,
       lichessUrl,
       lichessRatings,

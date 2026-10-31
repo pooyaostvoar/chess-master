@@ -35,6 +35,7 @@ router.get(
         ])
         .where("slot.status = :status", { status: SlotStatus.Free })
         .andWhere("slot.startTime > :now", { now: new Date() })
+        .andWhere("master.isPrivate = false")
         .orderBy("slot.startTime", "ASC");
 
       if (from) {

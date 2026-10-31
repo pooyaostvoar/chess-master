@@ -1,6 +1,4 @@
-import { AppDataSource } from "../../src/database/datasource";
-import { User } from "../../src/database/entity/user";
-import { authAgent } from "../setup";
+import { authAgent, unauthAgent } from "../setup";
 
 describe("PATCH /users/:id", () => {
   it("should update the authenticated user's profile", async () => {
@@ -21,6 +19,16 @@ describe("PATCH /users/:id", () => {
     expect(user.title).toBe("CM");
     expect(user.rating).toBe(2200);
     expect(user.isMaster).toBe(true);
+  });
+
+  it("should let the user mark their profile private", async () => {
+    const res = await authAgent.patch("/users/1").send({ isPrivate: true });
+
+    expect(res.status).toBe(200);
+    expect(res.body.user.isPrivate).toBe(true);
+
+    const hidden = await unauthAgent.get("/users/1");
+    expect(hidden.status).toBe(404);
   });
 
   it("should forbid editing another user", async () => {

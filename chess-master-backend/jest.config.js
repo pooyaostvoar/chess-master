@@ -33,6 +33,8 @@ module.exports = {
     {
       ...baseConfig,
       displayName: "integration",
+      // Each test creates a database and runs migrations; 5s is too tight under load.
+      testTimeout: 20000,
       setupFilesAfterEnv: ["./tests/setup.ts"],
       testMatch: ["**/*.test.ts", "**/*.int.test.ts"],
       testPathIgnorePatterns: ["/node_modules/", "/tests/unit/"],

@@ -131,6 +131,40 @@ describe("GET /users", () => {
     expect(Array.isArray(res.body.users)).toBe(true);
   });
 
+  it("should omit private users from the list", async () => {
+    const repo = AppDataSource.getRepository(User);
+    await repo.save(
+      repo.create({
+        email: "private@test.com",
+        username: "privateuser",
+        isPrivate: true,
+        isMaster: true,
+        title: "IM",
+        rating: 2400,
+      })
+    );
+
+    const res = await unauthAgent.get("/users");
+
+    expect(res.status).toBe(200);
+    expect(res.body.users.map((user: { username: string }) => user.username)).not.toContain(
+      "privateuser"
+    );
+    expect(res.body.users).toHaveLength(4);
+  });
+
+  it("should omit the caller from the list when their profile is private", async () => {
+    const repo = AppDataSource.getRepository(User);
+    await repo.update({ username: "seeduser" }, { isPrivate: true });
+
+    const res = await authAgent.get("/users");
+
+    expect(res.status).toBe(200);
+    expect(res.body.users.map((user: { username: string }) => user.username)).not.toContain(
+      "seeduser"
+    );
+  });
+
   it("should return empty list when no users match filters", async () => {
     const res = await unauthAgent.get("/users").query({
       username: "definitely_not_existing_user",

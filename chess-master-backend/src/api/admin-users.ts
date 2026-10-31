@@ -134,6 +134,7 @@ adminUsersRouter.patch("/:id", async (req, res, next) => {
       chesscomUrl,
       lichessUrl,
       status,
+      isPrivate,
     } = req.body || {};
 
     if (username !== undefined) user.username = username;
@@ -160,6 +161,9 @@ adminUsersRouter.patch("/:id", async (req, res, next) => {
       }
       user.status = status;
     }
+    if (typeof isPrivate === "boolean") {
+      user.isPrivate = isPrivate;
+    }
 
     const updated = await repo.save(user);
     res.json(trimUser(updated));
@@ -174,6 +178,7 @@ function trimUser(user: User) {
     username: user.username,
     email: user.email,
     isMaster: user.isMaster,
+    isPrivate: user.isPrivate,
     status: user.status,
     title: user.title,
     rating: user.rating,

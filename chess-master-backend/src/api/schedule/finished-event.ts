@@ -17,6 +17,7 @@ router.get("", async (req, res) => {
     const events = await repo.find({
       where: {
         youtubeId: Not(IsNull()),
+        master: { isPrivate: false },
       },
       relations: { master: true },
       order: { endTime: "DESC" },

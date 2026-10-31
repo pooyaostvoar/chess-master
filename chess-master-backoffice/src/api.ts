@@ -16,6 +16,7 @@ export type AdminUser = {
   username: string;
   email: string;
   isMaster: boolean;
+  isPrivate: boolean;
   status: string;
   title: string | null;
   rating: number | null;

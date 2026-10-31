@@ -60,6 +60,7 @@ export const getUnreadSenders = async (req: Request, res: Response) => {
     const users = await userRepo
       .createQueryBuilder("user")
       .where("user.id IN (:...ids)", { ids: allUserIds })
+      .andWhere("user.isPrivate = false")
       .getMany();
 
     const formattedResult = users.map((user) => ({

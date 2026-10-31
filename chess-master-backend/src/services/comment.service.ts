@@ -5,6 +5,7 @@ import { Comment } from "../database/entity/comment";
 import { ScheduleSlot } from "../database/entity/schedule-slots";
 import { User } from "../database/entity/user";
 import { SlotStatus, UserStatus } from "../database/entity/types";
+import { canViewUser } from "./user.service";
 
 async function findComment(id: number) {
   const comment = await AppDataSource.getRepository(Comment).findOne({
@@ -17,14 +18,29 @@ async function findComment(id: number) {
   return comment;
 }
 
-export async function listCommentsForMaster(masterId: number) {
+export async function listCommentsForMaster(masterId: number, viewerId?: number) {
+  const master = await AppDataSource.getRepository(User).findOne({
+    where: { id: masterId },
+    select: { id: true, isMaster: true, status: true, isPrivate: true },
+  });
+  if (
+    !master ||
+    !master.isMaster ||
+    master.status !== UserStatus.Active ||
+    !canViewUser(master, viewerId)
+  ) {
+    throw new Error("MASTER_NOT_FOUND");
+  }
+
   const comments = await AppDataSource.getRepository(Comment).find({
     where: { master: { id: masterId } },
     relations: { user: true, master: true },
     order: { createdAt: "DESC", id: "DESC" },
   });
 
-  return commentSchema.array().parse(comments);
+  return commentSchema.array().parse(
+    comments.filter((comment) => canViewUser(comment.user, viewerId))
+  );
 }
 
 export async function createCommentForUser(params: {

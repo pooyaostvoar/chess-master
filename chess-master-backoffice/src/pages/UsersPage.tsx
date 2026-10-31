@@ -14,6 +14,11 @@ const STATUS_OPTIONS = [
   { value: "disabled", label: "Disabled" },
 ] as const;
 
+const PRIVACY_OPTIONS = [
+  { value: "public", label: "Public" },
+  { value: "private", label: "Private" },
+] as const;
+
 export function UsersPage({ onSelectUser }: Props) {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
@@ -58,6 +63,29 @@ export function UsersPage({ onSelectUser }: Props) {
     },
   });
 
+  const privacyMutation = useMutation({
+    mutationFn: ({
+      userId,
+      isPrivate,
+    }: {
+      userId: number;
+      isPrivate: boolean;
+    }) => AdminUsersApi.update(userId, { isPrivate }),
+    onMutate: ({ userId }) => {
+      setUpdatingUserId(userId);
+    },
+    onSuccess: () => {
+      message.success("User privacy updated");
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+    },
+    onError: (err: Error) => {
+      message.error(err.message || "Failed to update user privacy");
+    },
+    onSettled: () => {
+      setUpdatingUserId(null);
+    },
+  });
+
   const columns = useMemo(
     () => [
       {
@@ -96,11 +124,36 @@ export function UsersPage({ onSelectUser }: Props) {
               loading={updatingUserId === record.id}
               disabled={updatingUserId === record.id}
               options={[...STATUS_OPTIONS]}
-              onChange={(nextStatus) => {
+              onChange={(nextStatus: "active" | "disabled") => {
                 if (nextStatus === val) return;
                 statusMutation.mutate({
                   userId: record.id,
                   nextStatus,
+                });
+              }}
+            />
+          </div>
+        ),
+      },
+      {
+        title: "Privacy",
+        dataIndex: "isPrivate",
+        key: "isPrivate",
+        render: (val: boolean, record: AdminUser) => (
+          <div onClick={(e) => e.stopPropagation()}>
+            <Select
+              size="small"
+              style={{ width: 120 }}
+              value={val ? "private" : "public"}
+              loading={updatingUserId === record.id}
+              disabled={updatingUserId === record.id}
+              options={[...PRIVACY_OPTIONS]}
+              onChange={(nextPrivacy) => {
+                const isPrivate = nextPrivacy === "private";
+                if (isPrivate === Boolean(val)) return;
+                privacyMutation.mutate({
+                  userId: record.id,
+                  isPrivate,
                 });
               }}
             />
@@ -120,7 +173,7 @@ export function UsersPage({ onSelectUser }: Props) {
         render: (val: string | null) => val || "—",
       },
     ],
-    [statusMutation, updatingUserId]
+    [statusMutation, privacyMutation, updatingUserId]
   );
 
   return (
