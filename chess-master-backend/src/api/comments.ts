@@ -70,7 +70,8 @@ commentsRouter.get(
   async (req, res, next) => {
     try {
       const { masterId } = req.query as unknown as { masterId: number };
-      const items = await listCommentsForMaster(masterId);
+      const viewerId = req.user instanceof User ? req.user.id : undefined;
+      const items = await listCommentsForMaster(masterId, viewerId);
       res.json(commentListSchema.parse({ items }));
     } catch (err) {
       next(err);

@@ -33,6 +33,8 @@ export const userSchemaBase = z.object({
 
   isMaster: z.boolean().default(false),
 
+  isPrivate: z.boolean().default(false),
+
   status: z.enum(["active", "disabled"]).default("active"),
 
   title: z.string().nullish(),

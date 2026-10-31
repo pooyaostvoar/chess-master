@@ -23,6 +23,7 @@ export interface UpdateUserData {
   bio?: string | null;
   profileSections?: ProfileSections | null;
   isMaster?: boolean;
+  isPrivate?: boolean;
   chesscomUrl?: string | null;
   lichessUrl?: string | null;
   lichessRatings?: LichessRatings | null;
@@ -53,6 +54,7 @@ export interface User {
   bio?: string | null;
   profileSections?: ProfileSections | null;
   isMaster: boolean;
+  isPrivate?: boolean;
   status?: "active" | "disabled";
   profilePictureUrl?: string | null;
   profilePictureThumbnailUrl?: string | null;

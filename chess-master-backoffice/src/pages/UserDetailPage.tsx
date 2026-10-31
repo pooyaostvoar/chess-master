@@ -57,6 +57,7 @@ export function UserDetailPage({ userId, onBack }: Props) {
     chesscomUrl: data.chesscomUrl ?? "",
     lichessUrl: data.lichessUrl ?? "",
     isMaster: Boolean(data.isMaster),
+    isPrivate: Boolean(data.isPrivate),
     status: data.status ?? "active",
   });
 
@@ -213,6 +214,21 @@ export function UserDetailPage({ userId, onBack }: Props) {
                     ]}
                   />
                 </Form.Item>
+                <Form.Item
+                  label="Privacy"
+                  name="isPrivate"
+                  getValueProps={(value: boolean) => ({
+                    value: value ? "private" : "public",
+                  })}
+                  normalize={(value: string) => value === "private"}
+                >
+                  <Select
+                    options={[
+                      { value: "public", label: "Public" },
+                      { value: "private", label: "Private" },
+                    ]}
+                  />
+                </Form.Item>
                 <Divider />
                 <Form.Item label="Title" name="title">
                   <Input />
@@ -318,6 +334,16 @@ export function UserDetailPage({ userId, onBack }: Props) {
                         <Tag color="red">Disabled</Tag>
                       ) : (
                         <Tag color="green">Active</Tag>
+                      )
+                    }
+                  />
+                  <Statistic
+                    title="Privacy"
+                    valueRender={() =>
+                      user.isPrivate ? (
+                        <Tag color="gold">Private</Tag>
+                      ) : (
+                        <Tag color="green">Public</Tag>
                       )
                     }
                   />

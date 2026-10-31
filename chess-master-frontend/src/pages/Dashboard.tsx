@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
+import { updateUser } from "../services/auth";
 import { Calendar, User, BookOpen, BarChart3, Crown, Copy, Check, Link2 } from "lucide-react";
 import { usePageMeta } from "../lib/seo";
 
@@ -43,15 +44,23 @@ const DashCard: React.FC<DashCardProps> = ({
 interface PublicProfileCardProps {
   profilePath: string;
   copied: boolean;
+  isPrivate: boolean;
+  savingPrivacy: boolean;
+  privacyError: string;
   onView: () => void;
   onCopy: (e: React.MouseEvent) => void;
+  onPrivacyChange: (isPrivate: boolean) => void;
 }
 
 const PublicProfileCard: React.FC<PublicProfileCardProps> = ({
   profilePath,
   copied,
+  isPrivate,
+  savingPrivacy,
+  privacyError,
   onView,
   onCopy,
+  onPrivacyChange,
 }) => (
   <div
     role="button"
@@ -86,19 +95,53 @@ const PublicProfileCard: React.FC<PublicProfileCardProps> = ({
     <div className="mb-3 text-[#B8893D]">
       <Link2 className="w-8 h-8" />
     </div>
-    <div className="text-sm font-medium text-[#1F1109] mb-1">Your Public Profile</div>
-    <div className="text-sm text-[#6B5640] leading-relaxed">
-      View your page at{" "}
-      <span className="font-medium text-[#3D2817]">{profilePath}</span> and share it with others
+    <div className="text-sm font-medium text-[#1F1109] mb-1">
+      {isPrivate ? "Your Private Profile" : "Your Public Profile"}
     </div>
+    <div className="text-sm text-[#6B5640] leading-relaxed">
+      {isPrivate ? (
+        "Only you can open this page."
+      ) : (
+        <>
+          View your page at{" "}
+          <span className="font-medium text-[#3D2817]">{profilePath}</span> and share it with
+          others
+        </>
+      )}
+    </div>
+    <label
+      className="mt-4 block text-xs font-medium text-[#3D2817] tracking-[0.02em]"
+      onClick={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
+      onKeyDown={(e) => e.stopPropagation()}
+    >
+      Page visibility
+      <select
+        value={isPrivate ? "private" : "public"}
+        disabled={savingPrivacy}
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+        onChange={(e) => onPrivacyChange(e.target.value === "private")}
+        className="mt-1.5 w-full bg-white border border-[#1F1109]/[0.18] rounded-lg px-3 py-2 text-sm text-[#1F1109] outline-none transition-colors focus:border-[#B8893D] disabled:opacity-60"
+      >
+        <option value="public">Public</option>
+        <option value="private">Private</option>
+      </select>
+    </label>
+    {privacyError ? (
+      <p className="mt-2 text-xs text-[#7A2E2E]">{privacyError}</p>
+    ) : null}
   </div>
 );
 
 const Dashboard: React.FC = () => {
   usePageMeta({ title: "Dashboard", robots: "noindex" });
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const [copied, setCopied] = useState(false);
+  const [savingPrivacy, setSavingPrivacy] = useState(false);
+  const [privacyError, setPrivacyError] = useState("");
 
   const profilePath = user?.username ? `/${encodeURIComponent(user.username)}` : null;
   const profileUrl = profilePath ? `${window.location.origin}${profilePath}` : null;
@@ -115,13 +158,31 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handlePrivacyChange = async (isPrivate: boolean) => {
+    if (!user || isPrivate === Boolean(user.isPrivate)) return;
+    setSavingPrivacy(true);
+    setPrivacyError("");
+    try {
+      const data = await updateUser(user.id, { isPrivate });
+      setUser({ ...user, isPrivate: Boolean(data.user.isPrivate) });
+    } catch (err) {
+      setPrivacyError(err instanceof Error ? err.message : "Could not update page visibility");
+    } finally {
+      setSavingPrivacy(false);
+    }
+  };
+
   const publicProfileCard =
     profilePath && profileUrl ? (
       <PublicProfileCard
         profilePath={profilePath}
         copied={copied}
+        isPrivate={Boolean(user?.isPrivate)}
+        savingPrivacy={savingPrivacy}
+        privacyError={privacyError}
         onView={() => navigate(profilePath)}
         onCopy={handleCopyProfileLink}
+        onPrivacyChange={handlePrivacyChange}
       />
     ) : null;
 

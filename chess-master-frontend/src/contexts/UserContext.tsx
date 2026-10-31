@@ -12,6 +12,7 @@ export interface User {
   phoneNumber?: string | null;
   country?: string | null;
   isMaster: boolean;
+  isPrivate?: boolean;
   status?: "active" | "disabled";
   /** USD per hour; used when suggesting slot prices on the master calendar. */
   hourlyRate?: number | null;
