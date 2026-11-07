@@ -10,13 +10,13 @@ const ChatWrapper: React.FC<ChatWrapperProps> = ({ children }) => {
   const { user } = useUser();
 
   return (
-    <div className="flex h-[70vh] overflow-hidden border border-[#1F1109]/[0.12] rounded-xl my-4 mx-auto max-w-5xl shadow-sm bg-white">
+    <div className="flex h-full min-h-0 overflow-hidden rounded-xl border border-[#1F1109]/[0.12] bg-white shadow-sm">
       {user && (
-        <div className="w-16 md:w-64 border-r border-[#1F1109]/[0.08] flex-shrink-0 h-full overflow-hidden transition-all duration-300">
+        <div className="h-full w-14 shrink-0 overflow-hidden border-r border-[#1F1109]/[0.08] sm:w-16 md:w-64">
           <UnreadSendersList userId={user.id} />
         </div>
       )}
-      <div className="flex-1 flex flex-col min-w-0">{children}</div>
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">{children}</div>
     </div>
   );
 };
