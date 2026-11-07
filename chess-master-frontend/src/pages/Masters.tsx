@@ -15,6 +15,19 @@ import {
 
 const PER_PAGE = 9;
 
+function pageList(current: number, total: number): Array<number | "gap"> {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const pages = [1, total, current - 1, current, current + 1]
+    .filter((p, i, all) => p >= 1 && p <= total && all.indexOf(p) === i)
+    .sort((a, b) => a - b);
+  const list: Array<number | "gap"> = [];
+  pages.forEach((p, i) => {
+    if (i > 0 && p - pages[i - 1] > 1) list.push("gap");
+    list.push(p);
+  });
+  return list;
+}
+
 const TITLE_ORDER = ["GM", "WGM", "IM", "WIM", "FM", "WFM", "CM", "NM"] as const;
 
 const RATING_OPTIONS = [
@@ -44,6 +57,11 @@ interface FilterDropdownProps {
   searchable?: boolean;
   searchPool?: string[];
   allLabel?: string;
+  /** Shorter chip label used on small screens when nothing is selected. */
+  shortLabel?: string;
+  /** Share the row equally on small screens. */
+  grow?: boolean;
+  align?: "start" | "center" | "end";
 }
 
 const FilterDropdown: React.FC<FilterDropdownProps> = ({
@@ -56,6 +74,9 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   searchable,
   searchPool,
   allLabel,
+  shortLabel,
+  grow = false,
+  align = "end",
 }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -77,25 +98,37 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
       : selected.label
     : label;
 
+  const alignClass =
+    align === "start" ? "left-0" : align === "center" ? "left-1/2 -translate-x-1/2" : "right-0";
+
   return (
-    <div className="relative" ref={ref}>
+    <div className={`relative min-w-0 ${grow ? "shrink sm:shrink-0" : ""}`} ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className={`inline-flex items-center gap-[5px] px-3 py-1.5 border-none rounded-full text-sm font-medium text-[#3D2817] whitespace-nowrap cursor-pointer select-none transition-colors ${
+        className={`inline-flex max-w-full min-w-0 items-center gap-1 border-none rounded-full px-1.5 py-1.5 text-xs font-medium text-[#3D2817] cursor-pointer select-none transition-colors sm:gap-[5px] sm:px-3 sm:text-sm ${
           value ? "bg-[#B8893D]/[0.32] text-[#1F1109]" : "bg-[#B8893D]/[0.12] hover:bg-[#B8893D]/[0.22]"
         }`}
       >
         {icon}
-        <span>{displayLabel}</span>
+        <span className="truncate">
+          {shortLabel && !value ? (
+            <>
+              <span className="sm:hidden">{shortLabel}</span>
+              <span className="hidden sm:inline">{displayLabel}</span>
+            </>
+          ) : (
+            displayLabel
+          )}
+        </span>
         <ChevronDown
-          className={`w-2 h-2 text-[#6B4F1F] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`h-2 w-2 shrink-0 text-[#6B4F1F] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
           strokeWidth={2.5}
         />
       </button>
 
       <div
-        className={`absolute top-[calc(100%+6px)] right-0 min-w-[180px] max-w-[240px] max-h-80 bg-white border border-[#1F1109]/[0.18] rounded-[10px] overflow-y-auto z-50 transition-all duration-150 ${
-          open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-1 pointer-events-none"
+        className={`absolute top-[calc(100%+6px)] z-50 max-h-64 w-max min-w-[160px] max-w-[min(240px,calc(100vw-2.5rem))] overflow-y-auto rounded-[10px] border border-[#1F1109]/[0.18] bg-white shadow-lg sm:max-h-80 sm:min-w-[180px] ${alignClass} ${
+          open ? "block" : "hidden"
         }`}
       >
         {searchable && searchPool ? (
@@ -274,7 +307,7 @@ const Masters: React.FC = () => {
 
   return (
     <div className="bg-[#FAF5EB] min-h-screen">
-      <div className="max-w-5xl mx-auto px-5 sm:px-8 py-12">
+      <div className="max-w-5xl mx-auto px-4 sm:px-8 py-12">
         {/* Header */}
         <div className="text-center mb-8">
           <div
@@ -295,49 +328,62 @@ const Masters: React.FC = () => {
         </div>
 
         {/* Search + filter bar */}
-        <div className="bg-white border border-[#1F1109]/[0.14] rounded-xl px-3 py-2.5 flex items-center gap-2 mb-4 flex-wrap">
-          <div className="flex items-center gap-2 flex-1 min-w-[180px] px-2">
-            <Search className="w-[13px] h-[13px] text-[#8B6F4E] flex-shrink-0" strokeWidth={2} />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by name or country"
-              className="flex-1 border-none outline-none text-sm text-[#1F1109] bg-transparent font-[inherit] min-w-0 placeholder:text-[#8B6F4E]/60"
-            />
+        <div className="mb-4 rounded-xl border border-[#1F1109]/[0.14] bg-white px-3 py-2.5">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+            <div className="flex min-w-0 flex-1 items-center gap-2 px-2">
+              <Search className="w-[13px] h-[13px] shrink-0 text-[#8B6F4E]" strokeWidth={2} />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by name or country"
+                className="min-w-0 flex-1 border-none bg-transparent font-[inherit] text-sm text-[#1F1109] outline-none placeholder:text-[#8B6F4E]/60"
+              />
+            </div>
+
+            <div className="hidden h-[22px] w-px bg-[#1F1109]/[0.12] sm:block" />
+
+            <div className="flex min-w-0 flex-nowrap items-center gap-1 sm:contents sm:gap-1.5">
+              <FilterDropdown
+                grow
+                align="start"
+                shortLabel="Language"
+                label="All languages"
+                value={language}
+                options={languageOptions}
+                onChange={setLanguage}
+                icon={<Globe className="h-[11px] w-[11px] shrink-0 text-[#6B4F1F]" strokeWidth={2} />}
+                searchable
+                searchPool={languagePool}
+                allLabel="All languages"
+              />
+
+              <FilterDropdown
+                grow
+                align="center"
+                shortLabel="Title"
+                label="Any title"
+                value={title}
+                options={titleOptions}
+                onChange={setTitle}
+              />
+
+              <FilterDropdown
+                grow
+                align="end"
+                shortLabel="Rating"
+                label="Rating: any"
+                value={ratingMin}
+                options={RATING_OPTIONS}
+                onChange={setRatingMin}
+                formatLabel={(l) => `Rating: ${l}`}
+              />
+            </div>
           </div>
-
-          <div className="w-px h-[22px] bg-[#1F1109]/[0.12]" />
-
-          <FilterDropdown
-            label="All languages"
-            value={language}
-            options={languageOptions}
-            onChange={setLanguage}
-            icon={<Globe className="w-[11px] h-[11px] text-[#6B4F1F]" strokeWidth={2} />}
-            searchable
-            searchPool={languagePool}
-            allLabel="All languages"
-          />
-
-          <FilterDropdown
-            label="Any title"
-            value={title}
-            options={titleOptions}
-            onChange={setTitle}
-          />
-
-          <FilterDropdown
-            label="Rating: any"
-            value={ratingMin}
-            options={RATING_OPTIONS}
-            onChange={setRatingMin}
-            formatLabel={(l) => `Rating: ${l}`}
-          />
         </div>
 
         {/* Result count + sort */}
-        <div className="flex justify-between items-center mb-4">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
           <div className="text-sm text-[#6B5640]">
             <span className="text-[#1F1109] font-medium">
               {filtered.length} master{filtered.length !== 1 ? "s" : ""}
@@ -394,7 +440,7 @@ const Masters: React.FC = () => {
 
         {/* Pagination */}
         {filtered.length > 0 && totalPages > 1 && (
-          <div className="flex justify-center items-center gap-1.5 mt-7">
+          <div className="mt-7 flex max-w-full flex-wrap items-center justify-center gap-1.5">
             <button
               onClick={() => goToPage(currentPage - 1)}
               disabled={currentPage === 1}
@@ -403,19 +449,25 @@ const Masters: React.FC = () => {
               ‹
             </button>
 
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-              <button
-                key={p}
-                onClick={() => goToPage(p)}
-                className={`inline-flex items-center justify-center min-w-[28px] h-7 px-2.5 rounded-full text-xs transition-colors ${
-                  p === currentPage
-                    ? "bg-[#3D2817] text-[#F4ECDD] font-medium cursor-default"
-                    : "text-[#5C4631] hover:bg-[#1F1109]/[0.06]"
-                }`}
-              >
-                {p}
-              </button>
-            ))}
+            {pageList(currentPage, totalPages).map((p, i) =>
+              p === "gap" ? (
+                <span key={`gap-${i}`} className="px-1 text-xs text-[#5C4631]">
+                  …
+                </span>
+              ) : (
+                <button
+                  key={p}
+                  onClick={() => goToPage(p)}
+                  className={`inline-flex items-center justify-center min-w-[28px] h-7 px-2.5 rounded-full text-xs transition-colors ${
+                    p === currentPage
+                      ? "bg-[#3D2817] text-[#F4ECDD] font-medium cursor-default"
+                      : "text-[#5C4631] hover:bg-[#1F1109]/[0.06]"
+                  }`}
+                >
+                  {p}
+                </button>
+              )
+            )}
 
             <button
               onClick={() => goToPage(currentPage + 1)}

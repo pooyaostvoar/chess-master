@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getUnreadSenders, UnreadSender } from "../services/api/messages.api";
 import { useNavigate } from "react-router-dom";
+import { getMediaUrl } from "../services/config";
 
 interface UnreadSendersListProps {
   userId: number;
@@ -31,28 +32,31 @@ const UnreadSendersList: React.FC<UnreadSendersListProps> = ({ userId }) => {
   }
 
   return (
-    <div className="bg-white md:p-4 p-2 w-full h-full overflow-y-auto">
-      <h3 className="font-semibold text-lg mb-4 hidden md:block">
-        Unread Messages
+    <div className="h-full w-full overflow-y-auto bg-[#FAF5EB] p-1.5 md:p-4">
+      <h3
+        className="mb-4 hidden text-sm font-medium text-[#1F1109] md:block"
+        style={{ fontFamily: "Georgia, serif" }}
+      >
+        Unread
       </h3>
       <ul className="space-y-2">
         {senders.map((sender) => (
           <li
             key={sender.userId}
-            className="flex md:justify-between justify-center items-center p-2 hover:bg-gray-100 cursor-pointer rounded transition-colors relative"
+            className="relative flex cursor-pointer items-center justify-center rounded-lg p-1.5 transition-colors hover:bg-[#F4ECDD] md:justify-between md:p-2"
             onClick={() => navigate(`/chat/${sender.userId}`)}
             title={sender.username}
           >
             <div className="flex items-center md:space-x-2">
-              <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-300 flex items-center justify-center relative">
+              <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-[#1F1109] md:h-10 md:w-10">
                 {sender.profilePictureThumbnailUrl ? (
                   <img
-                    src={sender.profilePictureThumbnailUrl}
+                    src={getMediaUrl(sender.profilePictureThumbnailUrl)}
                     alt={sender.username}
-                    className="w-full h-full object-cover"
+                    className="absolute inset-0 h-full w-full object-cover"
                   />
                 ) : (
-                  <span className="text-sm font-bold text-white">
+                  <span className="absolute inset-0 flex items-center justify-center text-sm font-medium text-[#F4ECDD]">
                     {sender.username.charAt(0).toUpperCase()}
                   </span>
                 )}
@@ -65,7 +69,7 @@ const UnreadSendersList: React.FC<UnreadSendersListProps> = ({ userId }) => {
               </span>
             </div>
             {sender.unreadCount > 0 && (
-              <span className="bg-red-500 text-white rounded-full px-2 text-sm font-bold hidden md:block">
+              <span className="hidden rounded-full bg-[#7A2E2E] px-2 text-sm font-medium text-white md:block">
                 {sender.unreadCount}
               </span>
             )}
