@@ -9,6 +9,8 @@ import { TeachingFocuses } from "../components/master-profile/body/TeachingFocus
 import { MasterComments } from "../components/master-profile/comments/MasterComments";
 import { usePageMeta } from "../lib/seo";
 import { getMediaUrl } from "../services/config";
+import { PageEditButton, ProfileEditProvider } from "../components/master-profile/edit/ProfileEdit";
+import { ProfileSectionModals } from "../components/master-profile/edit/SectionEditors";
 
 type Status = "loading" | "ready" | "not-found";
 
@@ -75,28 +77,32 @@ export default function MasterProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF5EB] text-[#1F1109]">
-      <div className="max-w-6xl mx-auto px-3 sm:px-8 py-6 sm:py-10 space-y-6">
-        <MasterProfileHeader user={user} />
+    <ProfileEditProvider user={user} onChange={setUser}>
+      <div className="min-h-screen bg-[#FAF5EB] text-[#1F1109]">
+        <div className="max-w-6xl mx-auto px-3 sm:px-8 py-6 sm:py-10 space-y-6">
+          <PageEditButton />
+          <ProfileSectionModals user={user} />
+          <MasterProfileHeader user={user} />
 
-        <TeachingFocuses user={user} />
+          <TeachingFocuses user={user} />
 
-        <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr] lg:items-stretch">
-          <section
-            id="free-time"
-            className="flex min-h-0 min-w-0 flex-col rounded-xl bg-white border border-[#1F1109]/[0.12] p-5 md:p-6"
-          >
-            <FreeTime userId={user.id} username={user.username} />
-          </section>
+          <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr] lg:items-stretch">
+            <section
+              id="free-time"
+              className="flex min-h-0 min-w-0 flex-col rounded-xl bg-white border border-[#1F1109]/[0.12] p-5 md:p-6"
+            >
+              <FreeTime userId={user.id} username={user.username} />
+            </section>
 
-          <div className="min-h-0 min-w-0">
-            <MasterProfileBody user={user} />
+            <div className="min-h-0 min-w-0">
+              <MasterProfileBody user={user} />
+            </div>
           </div>
-        </div>
 
-        <MasterComments masterId={user.id} />
+          <MasterComments masterId={user.id} />
+        </div>
       </div>
-    </div>
+    </ProfileEditProvider>
   );
 }
 
