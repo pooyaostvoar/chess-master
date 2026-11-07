@@ -9,6 +9,7 @@ import { ChevronLeft, ChevronRight, ExternalLink, Youtube } from "lucide-react";
 import { BaseUser } from "@chess-master/schemas";
 import { useIsMobile } from "../../../hooks/useIsMobile";
 import { getYoutubeEmbedUrl } from "../../../utils/youtube";
+import { EditPencil, useProfileEdit } from "../edit/ProfileEdit";
 
 interface YoutubeVideosProps {
   user: BaseUser;
@@ -26,6 +27,7 @@ const SERIF = { fontFamily: "Georgia, serif" } as const;
 
 export const YoutubeVideos: React.FC<YoutubeVideosProps> = ({ user }) => {
   const isMobile = useIsMobile();
+  const { pageEditing } = useProfileEdit();
   const [activeIndex, setActiveIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
 
@@ -75,7 +77,29 @@ export const YoutubeVideos: React.FC<YoutubeVideosProps> = ({ user }) => {
   };
 
   if (!activeVideo) {
-    return null;
+    if (!pageEditing) return null;
+    return (
+      <div className={PANEL_CLASS}>
+        <div className="flex items-center justify-center gap-2">
+          <span
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#B8893D]/15 text-[#B8893D] ring-1 ring-[#B8893D]/20"
+            aria-hidden
+          >
+            <Youtube className="h-4 w-4" strokeWidth={2} />
+          </span>
+          <h3
+            className="text-[15px] md:text-base font-medium text-[#1F1109]"
+            style={SERIF}
+          >
+            Videos
+          </h3>
+          <EditPencil id="videos" label="Edit YouTube videos" withText />
+        </div>
+        <p className="mt-4 text-center text-sm leading-6 text-[#6B5640]">
+          Add a YouTube video to show on your profile.
+        </p>
+      </div>
+    );
   }
 
   const canGoPrevious = activeIndex > 0;
@@ -112,6 +136,7 @@ export const YoutubeVideos: React.FC<YoutubeVideosProps> = ({ user }) => {
             >
               Videos
             </h3>
+            <EditPencil id="videos" label="Edit YouTube videos" withText />
           </div>
           {hasMultipleVideos && (
             <p className="text-xs font-medium tracking-wide text-[#6B5640]">

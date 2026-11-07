@@ -7,6 +7,7 @@ import { hasProfileStats, ProfileStats } from "./ProfileStats";
 import { BaseUser } from "@chess-master/schemas";
 import { getMediaUrl } from "../../../services/config";
 import { useNavigate } from "react-router-dom";
+import { EditPencil, useProfileEdit } from "../edit/ProfileEdit";
 
 interface MasterProfileHeaderProps {
   user: BaseUser;
@@ -78,8 +79,20 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
   user,
 }) => {
   const navigate = useNavigate();
+  const { pageEditing } = useProfileEdit();
   const profileImage =
     user.profilePictureUrl || user.profilePictureThumbnailUrl;
+  const hasLanguages = (user.languages?.length ?? 0) > 0;
+  const hasLinks = Boolean(
+    user.lichessUrl ||
+      user.chesscomUrl ||
+      user.instagramUrl ||
+      user.youtubeUrl ||
+      user.xUrl ||
+      user.twitchUrl ||
+      user.facebookUrl ||
+      user.tiktokUrl
+  );
 
   const fullName = [user.name, user.lastname].filter(Boolean).join(" ").trim();
   const personLabel = fullName || user.email || user.username;
@@ -90,6 +103,22 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
     : null;
 
   const piece = TITLE_TO_PIECE[user.title || ""] || "pawn";
+
+  const ratingsBlock = (className: string) => {
+    if (!hasProfileStats(user) && !pageEditing) return null;
+    return (
+      <div className={`flex items-start gap-2 ${className}`}>
+        <div className="min-w-0 flex-1">
+          {hasProfileStats(user) ? (
+            <ProfileStats user={user} />
+          ) : (
+            <p className="text-sm text-[#F4ECDD]/65">Add ratings</p>
+          )}
+        </div>
+        <EditPencil id="ratings" label="Edit ratings" tone="dark" withText />
+      </div>
+    );
+  };
 
   const actionButtons = (
     <>
@@ -194,15 +223,23 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
 
           {/* META */}
           <div className="min-w-0 flex-1">
-            <h1
-              className="text-2xl tracking-tight sm:text-4xl leading-[1.1]"
-              style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
-            >
-              {user.title && <span className="font-medium">{user.title} </span>}
-              <span className="font-normal text-[#F4ECDD]/85 break-all">
-                {personLabel}
-              </span>
-            </h1>
+            <div className="flex items-start gap-2">
+              <h1
+                className="min-w-0 flex-1 text-2xl tracking-tight sm:text-4xl leading-[1.1]"
+                style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
+              >
+                {user.title && <span className="font-medium">{user.title} </span>}
+                <span className="font-normal text-[#F4ECDD]/85 break-all">
+                  {personLabel}
+                </span>
+              </h1>
+              <EditPencil
+                id="identity"
+                label="Edit name, title, country, and price"
+                tone="dark"
+                withText
+              />
+            </div>
             {/* {user.username && (
               <div className="mt-2">
                 <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-white/15 text-white backdrop-blur">
@@ -242,23 +279,28 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
               </div>
             )}
 
-            {(user.languages?.length ?? 0) > 0 && (
-              <div className="mt-3">
-                <LanguageRow user={user} />
+            {(hasLanguages || pageEditing) && (
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                {hasLanguages ? (
+                  <LanguageRow user={user} />
+                ) : (
+                  <span className="text-sm text-[#F4ECDD]/65">Add languages</span>
+                )}
+                <EditPencil id="languages" label="Edit languages" tone="dark" withText />
               </div>
             )}
 
-            <div className="mt-4">
+            <div className="mt-4 flex flex-wrap items-center gap-2">
               <SocialMediaRow user={user} />
+              {pageEditing && !hasLinks && (
+                <span className="text-sm text-[#F4ECDD]/65">Add links</span>
+              )}
+              <EditPencil id="links" label="Edit profile links" tone="dark" withText />
             </div>
           </div>
         </div>
 
-        {hasProfileStats(user) && (
-          <div className="w-full lg:hidden">
-            <ProfileStats user={user} />
-          </div>
-        )}
+        {ratingsBlock("w-full lg:hidden")}
 
         <div className="flex w-full flex-row gap-2 lg:hidden [&>button]:flex-1">
           {actionButtons}
@@ -266,7 +308,7 @@ export const MasterProfileHeader: React.FC<MasterProfileHeaderProps> = ({
 
         {/* Stats + actions (desktop) */}
         <div className="hidden w-52 shrink-0 flex-col gap-2 lg:flex">
-          {hasProfileStats(user) && <ProfileStats user={user} />}
+          {ratingsBlock("w-full")}
 
           <div className="flex flex-col items-stretch">
             {actionButtons}

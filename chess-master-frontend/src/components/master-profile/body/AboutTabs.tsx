@@ -9,6 +9,7 @@ import React, {
 import { ChevronLeft, ChevronRight, UserCircle } from "lucide-react";
 import { BaseUser } from "@chess-master/schemas";
 import { useIsMobile } from "../../../hooks/useIsMobile";
+import { EditPencil } from "../edit/ProfileEdit";
 
 interface AboutTabsProps {
   user: BaseUser;
@@ -128,6 +129,7 @@ export const AboutTabs: React.FC<AboutTabsProps> = ({ user }) => {
           >
             About
           </h3>
+          <EditPencil id="about" label="Edit about sections" withText />
         </div>
         <div className={`mt-4 ${CONTENT_CARD_CLASS} text-center`}>
           <p className="text-sm leading-6 text-[#6B5640]">
@@ -172,6 +174,7 @@ export const AboutTabs: React.FC<AboutTabsProps> = ({ user }) => {
             >
               {activeSection.title}
             </h3>
+            <EditPencil id="about" label="Edit about sections" withText />
           </div>
           {hasMultipleSections && (
             <p className="text-xs font-medium tracking-wide text-[#6B5640]">
