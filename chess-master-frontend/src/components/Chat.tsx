@@ -21,12 +21,14 @@ const Chat: React.FC<ChatProps> = ({ otherUserId, userId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const socketRef = useRef<Socket | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
   const { user: otherUser, loading } = usePublicUser(otherUserId);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const container = messagesContainerRef.current;
+    if (!container) return;
+    container.scrollTop = container.scrollHeight;
   }, [messages]);
 
   useEffect(() => {
@@ -67,27 +69,30 @@ const Chat: React.FC<ChatProps> = ({ otherUserId, userId }) => {
 
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-col bg-[#FAF5EB]">
-      <header className="flex shrink-0 items-center gap-3 border-b border-[#1F1109]/10 bg-[#F4ECDD] px-3 py-2.5 sm:px-4">
+      <header className="flex shrink-0 items-center gap-2 border-b border-[#1F1109]/10 bg-[#F4ECDD] px-2.5 py-1.5 sm:gap-3 sm:px-4 sm:py-2.5">
         {avatar ? (
           <img
             src={avatar}
             alt=""
-            className="h-9 w-9 shrink-0 rounded-full object-cover ring-2 ring-[#B8893D]/30"
+            className="h-7 w-7 shrink-0 rounded-full object-cover ring-2 ring-[#B8893D]/30 sm:h-9 sm:w-9"
           />
         ) : (
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#1F1109] text-sm font-medium text-[#F4ECDD]">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#1F1109] text-xs font-medium text-[#F4ECDD] sm:h-9 sm:w-9 sm:text-sm">
             {(otherUser?.username || "?").charAt(0).toUpperCase()}
           </div>
         )}
         <h2
-          className="min-w-0 truncate text-base font-medium text-[#1F1109] sm:text-lg"
+          className="min-w-0 truncate text-sm font-medium text-[#1F1109] sm:text-lg"
           style={{ fontFamily: "Georgia, serif" }}
         >
           {displayName}
         </h2>
       </header>
 
-      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-3 py-4 sm:px-4">
+      <div
+        ref={messagesContainerRef}
+        className="min-h-0 flex-1 space-y-3 overflow-y-auto px-3 py-4 sm:px-4"
+      >
         {messages.length === 0 && (
           <p className="pt-8 text-center text-sm text-[#6B5640]">
             Send a message to start the conversation.
@@ -122,11 +127,10 @@ const Chat: React.FC<ChatProps> = ({ otherUserId, userId }) => {
             </div>
           );
         })}
-        <div ref={messagesEndRef} />
       </div>
 
       <form
-        className="shrink-0 border-t border-[#1F1109]/10 bg-[#F4ECDD] p-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] sm:p-3"
+        className="shrink-0 border-t border-[#1F1109]/10 bg-[#F4ECDD] p-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] sm:p-3"
         onSubmit={(event) => {
           event.preventDefault();
           sendMessage();
@@ -135,17 +139,17 @@ const Chat: React.FC<ChatProps> = ({ otherUserId, userId }) => {
         <div className="flex min-w-0 items-center gap-2">
           <input
             type="text"
-            className="min-w-0 flex-1 rounded-full border border-[#1F1109]/15 bg-white px-3.5 py-2.5 text-sm text-[#1F1109] outline-none placeholder:text-[#9C8366] focus:border-[#B8893D]"
+            className="min-w-0 flex-1 rounded-full border border-[#1F1109]/15 bg-white px-3 py-1.5 text-sm text-[#1F1109] outline-none placeholder:text-[#9C8366] focus:border-[#B8893D] sm:px-3.5 sm:py-2.5"
             placeholder="Type a message..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
           />
           <button
             type="submit"
-            className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-full bg-[#B8893D] px-3.5 text-sm font-medium text-[#1F1109] transition hover:bg-[#A37728] sm:px-4"
+            className="inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-full bg-[#B8893D] px-2.5 text-xs font-medium text-[#1F1109] transition hover:bg-[#A37728] sm:h-10 sm:px-4 sm:text-sm"
             aria-label="Send message"
           >
-            <Send className="h-4 w-4" strokeWidth={2} />
+            <Send className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={2} />
             <span className="hidden min-[380px]:inline">Send</span>
           </button>
         </div>

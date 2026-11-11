@@ -37,7 +37,7 @@ const UnreadSendersList: React.FC<UnreadSendersListProps> = ({ userId }) => {
         className="mb-4 hidden text-sm font-medium text-[#1F1109] md:block"
         style={{ fontFamily: "Georgia, serif" }}
       >
-        Unread
+        Chats
       </h3>
       <ul className="space-y-2">
         {senders.map((sender) => (

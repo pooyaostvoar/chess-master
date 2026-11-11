@@ -16,17 +16,11 @@ const ChatPage: React.FC = () => {
   }
 
   return (
-    <div className="flex h-[calc(100svh-6.5rem)] flex-col bg-[#FAF5EB] md:block md:h-auto md:min-h-[calc(100svh-6.5rem)]">
+    <div className="flex h-[calc(100svh-6.5rem)] min-h-0 flex-col bg-[#FAF5EB]">
       <div className="shrink-0 border-b border-[#1F1109]/[0.08] bg-[#F4ECDD]">
-        <div className="mx-auto max-w-5xl px-4 py-3 sm:px-8 sm:py-10">
-          <div
-            className="mb-0.5 text-xs italic tracking-[0.04em] text-[#7A2E2E] sm:mb-2 sm:text-sm"
-            style={{ fontFamily: "Georgia, serif" }}
-          >
-            Conversations
-          </div>
+        <div className="mx-auto max-w-5xl px-3 py-1.5 sm:px-8 sm:py-3">
           <h1
-            className="text-xl font-medium leading-[1.1] tracking-[-0.01em] text-[#1F1109] sm:text-3xl"
+            className="text-base font-medium leading-tight tracking-[-0.01em] text-[#1F1109] sm:text-2xl"
             style={{ fontFamily: "Georgia, 'Playfair Display', serif" }}
           >
             Messages
@@ -34,7 +28,7 @@ const ChatPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="mx-auto min-h-0 w-full max-w-5xl flex-1 px-3 py-3 sm:px-8 sm:py-6 md:h-[70vh] md:flex-none">
+      <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col px-3 pb-3 sm:px-8 sm:pb-5">
         <ChatWrapper>
           {otherUserId ? (
             <Chat userId={userId} otherUserId={Number(otherUserId)} />
