@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePageMeta } from "../lib/seo";
 import { useUser } from "../contexts/UserContext";
@@ -26,6 +26,9 @@ import {
   masterSpeaksLanguage,
   toCanonicalLanguage,
 } from "../constants/languages";
+import { useDebouncedSearchDraft } from "../hooks/useDebouncedSearchDraft";
+import { useUrlQuery } from "../hooks/useUrlQuery";
+import { homeQueryParsers, serializeMastersQuery } from "../lib/urlQuery";
 
 const Home: React.FC = () => {
   usePageMeta({
@@ -43,9 +46,20 @@ const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [bookingsLoading, setBookingsLoading] = useState(false);
 
-  // Search & filter state for non-logged-in hero
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedLang, setSelectedLang] = useState("All languages");
+  const [query, setQuery] = useUrlQuery(homeQueryParsers);
+  const queryRef = useRef(query);
+  queryRef.current = query;
+  const commitSearch = useCallback((value: string) => {
+    const q = value.trim();
+    if (queryRef.current.q === q) return;
+    void setQuery({ q });
+  }, [setQuery]);
+  const [searchDraft, setSearchDraft] = useDebouncedSearchDraft(
+    query.q,
+    commitSearch
+  );
+  const selectedLang = query.language || "All languages";
+  const searchQuery = searchDraft;
 
   const {
     events,
@@ -138,7 +152,17 @@ const Home: React.FC = () => {
   }, [allMasters]);
 
   // Client-side filtering for the non-logged-in view
-  const isSearchActive = searchQuery.trim() !== "" || selectedLang !== "All languages";
+  const isSearchActive =
+    searchQuery.trim() !== "" || selectedLang !== "All languages";
+
+  const openMasters = () => {
+    navigate(
+      serializeMastersQuery("/masters", {
+        q: searchQuery.trim(),
+        language: query.language,
+      })
+    );
+  };
 
   const filteredMasters = useMemo(() => {
     let results = allMasters;
@@ -248,9 +272,13 @@ const Home: React.FC = () => {
         <div className="bg-[#FAF5EB]">
           <HeroSection
             searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
+            onSearchChange={setSearchDraft}
             selectedLang={selectedLang}
-            onLangChange={setSelectedLang}
+            onLangChange={(lang) =>
+              void setQuery({
+                language: lang === "All languages" ? "" : lang,
+              })
+            }
             languages={languageOptions}
           />
 
@@ -271,7 +299,7 @@ const Home: React.FC = () => {
                 </p>
               </div>
               <button
-                onClick={() => navigate("/masters")}
+                onClick={openMasters}
                 className="text-sm text-[#B8893D] font-medium hover:underline"
               >
                 View all →
@@ -291,7 +319,7 @@ const Home: React.FC = () => {
             {isSearchActive && filteredMasters.length > 6 && (
               <div className="text-center mt-4">
                 <button
-                  onClick={() => navigate("/masters")}
+                  onClick={openMasters}
                   className="text-sm text-[#B8893D] font-medium hover:underline"
                 >
                   View all {filteredMasters.length} results →

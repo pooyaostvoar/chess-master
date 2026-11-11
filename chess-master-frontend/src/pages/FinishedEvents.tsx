@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useCallback, useRef } from "react";
 import { FinishedEventsSection } from "../components/event/FinishedEventsSection";
 import { Search } from "lucide-react";
 import { usePageMeta } from "../lib/seo";
+import { useDebouncedSearchDraft } from "../hooks/useDebouncedSearchDraft";
+import { useUrlQuery } from "../hooks/useUrlQuery";
+import { archiveQueryParsers } from "../lib/urlQuery";
 
 const FinishedEvents: React.FC = () => {
   usePageMeta({
@@ -10,7 +13,18 @@ const FinishedEvents: React.FC = () => {
       "Watch recordings of past master sessions on Chess With Masters.",
     canonicalPath: "/events",
   });
-  const [searchPhrase, setSearchPhrase] = useState<string>("");
+  const [query, setQuery] = useUrlQuery(archiveQueryParsers);
+  const queryRef = useRef(query);
+  queryRef.current = query;
+  const commitSearch = useCallback((value: string) => {
+    const q = value.trim();
+    if (queryRef.current.q === q) return;
+    void setQuery({ q });
+  }, [setQuery]);
+  const [searchDraft, setSearchDraft] = useDebouncedSearchDraft(
+    query.q,
+    commitSearch
+  );
 
   return (
     <div className="bg-[#FAF5EB] min-h-screen">
@@ -41,13 +55,16 @@ const FinishedEvents: React.FC = () => {
             <input
               type="text"
               placeholder="Search by title or master name..."
-              value={searchPhrase}
-              onChange={(e) => setSearchPhrase(e.target.value)}
+              value={searchDraft}
+              onChange={(e) => setSearchDraft(e.target.value)}
               className="w-full bg-white border border-[#1F1109]/[0.14] rounded-lg pl-9 pr-3.5 py-2.5 text-xs text-[#1F1109] outline-none focus:border-[#B8893D] transition-colors placeholder:text-[#8B6F4E]/60"
             />
           </div>
         </div>
-        <FinishedEventsSection limit={null} searchPhrase={searchPhrase || null} />
+        <FinishedEventsSection
+          limit={null}
+          searchPhrase={searchDraft.trim() || null}
+        />
       </div>
     </div>
   );

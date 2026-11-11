@@ -94,7 +94,7 @@ importers:
         version: 1.4.5-lts.2
       openai:
         specifier: ^6.42.0
-        version: 6.42.0(ws@8.18.3)(zod@3.24.2)
+        version: 6.42.0(ws@8.21.0)(zod@3.24.2)
       operations:
         specifier: ^0.1.2
         version: 0.1.2
@@ -18972,9 +18972,9 @@ snapshots:
       is-docker: 2.2.1
       is-wsl: 2.2.0
 
-  openai@6.42.0(ws@8.18.3)(zod@3.24.2):
+  openai@6.42.0(ws@8.21.0)(zod@3.24.2):
     optionalDependencies:
-      ws: 8.18.3
+      ws: 8.21.0
       zod: 3.24.2
 
   operations@0.1.2:

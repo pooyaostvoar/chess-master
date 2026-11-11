@@ -1,32 +1,21 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Search, Globe, ChevronDown } from "lucide-react";
 import { usePageMeta } from "../lib/seo";
 import { findUsers } from "../services/auth";
 import type { User } from "../services/auth";
 import { MasterCard } from "../components/home/MasterCard";
+import { Pagination } from "../components/Pagination";
 import { LanguageFilterOptions } from "../components/shared/LanguageFilterOptions";
 import {
   languageMatchesQuery,
   masterSpeaksLanguage,
   toCanonicalLanguage,
 } from "../constants/languages";
+import { useDebouncedSearchDraft } from "../hooks/useDebouncedSearchDraft";
+import { useUrlQuery } from "../hooks/useUrlQuery";
+import { MASTER_PAGE_SIZE, mastersQueryParsers } from "../lib/urlQuery";
 
 /* ─── constants ─── */
-
-const PER_PAGE = 9;
-
-function pageList(current: number, total: number): Array<number | "gap"> {
-  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
-  const pages = [1, total, current - 1, current, current + 1]
-    .filter((p, i, all) => p >= 1 && p <= total && all.indexOf(p) === i)
-    .sort((a, b) => a - b);
-  const list: Array<number | "gap"> = [];
-  pages.forEach((p, i) => {
-    if (i > 0 && p - pages[i - 1] > 1) list.push("gap");
-    list.push(p);
-  });
-  return list;
-}
 
 const TITLE_ORDER = ["GM", "WGM", "IM", "WIM", "FM", "WFM", "CM", "NM"] as const;
 
@@ -182,16 +171,20 @@ const Masters: React.FC = () => {
   const [masters, setMasters] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [query, setQuery] = useUrlQuery(mastersQueryParsers);
+  const queryRef = useRef(query);
+  queryRef.current = query;
+  const commitSearch = useCallback((value: string) => {
+    const q = value.trim();
+    if (queryRef.current.q === q) return;
+    void setQuery({ q, page: 1 });
+  }, [setQuery]);
+  const [searchDraft, setSearchDraft] = useDebouncedSearchDraft(
+    query.q,
+    commitSearch
+  );
 
-  // filters
-  const [searchTerm, setSearchTerm] = useState("");
-  const [language, setLanguage] = useState("");
-  const [title, setTitle] = useState("");
-  const [ratingMin, setRatingMin] = useState("");
-  const [sortBy, setSortBy] = useState("rating");
-  const [page, setPage] = useState(1);
-
-  const gridRef = useRef<HTMLDivElement>(null);
+  const search = searchDraft.trim();
 
   useEffect(() => {
     findUsers({ isMaster: true })
@@ -237,8 +230,8 @@ const Masters: React.FC = () => {
   const filtered = useMemo(() => {
     let results = masters;
 
-    if (searchTerm) {
-      const s = searchTerm.toLowerCase();
+    if (search) {
+      const s = search.toLowerCase();
       results = results.filter((m) =>
         m.username.toLowerCase().includes(s) ||
         m.bio?.toLowerCase().includes(s) ||
@@ -246,48 +239,68 @@ const Masters: React.FC = () => {
         m.languages?.some((l) => languageMatchesQuery(l, s))
       );
     }
-    if (language) {
-      results = results.filter((m) => masterSpeaksLanguage(m.languages, language));
+    if (query.language) {
+      results = results.filter((m) =>
+        masterSpeaksLanguage(m.languages, query.language)
+      );
     }
-    if (title) {
-      results = results.filter((m) => m.title === title);
+    if (query.title) {
+      results = results.filter((m) => m.title === query.title);
     }
-    if (ratingMin) {
-      const min = parseInt(ratingMin, 10);
+    if (query.rating) {
+      const min = parseInt(query.rating, 10);
       results = results.filter((m) => m.rating && m.rating >= min);
     }
 
     results = [...results].sort((a, b) => {
-      if (sortBy === "rating") return (b.rating || 0) - (a.rating || 0);
-      if (sortBy === "price-low") return (a.hourlyRate || 0) - (b.hourlyRate || 0);
-      if (sortBy === "price-high") return (b.hourlyRate || 0) - (a.hourlyRate || 0);
+      if (query.sort === "rating") return (b.rating || 0) - (a.rating || 0);
+      if (query.sort === "price-low") return (a.hourlyRate || 0) - (b.hourlyRate || 0);
+      if (query.sort === "price-high") return (b.hourlyRate || 0) - (a.hourlyRate || 0);
       return 0;
     });
 
     return results;
-  }, [masters, searchTerm, language, title, ratingMin, sortBy]);
+  }, [masters, search, query.language, query.title, query.rating, query.sort]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
-  const currentPage = Math.min(page, totalPages);
-  const pageMasters = filtered.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / MASTER_PAGE_SIZE));
+  const searchPending = search !== query.q;
+  const requestedPage = searchPending ? 1 : query.page;
+  const currentPage = Math.min(requestedPage, totalPages);
+  const pageMasters = filtered.slice(
+    (currentPage - 1) * MASTER_PAGE_SIZE,
+    currentPage * MASTER_PAGE_SIZE
+  );
 
-  const hasFilters = searchTerm || language || title || ratingMin;
+  const hasFilters = search || query.language || query.title || query.rating;
+
+  const applyQuery = (
+    partial: Partial<typeof query>,
+    history: "push" | "replace" = "replace"
+  ) => {
+    void setQuery(
+      {
+        q: search,
+        page: 1,
+        ...partial,
+      },
+      { history }
+    );
+  };
 
   const clearAllFilters = () => {
-    setSearchTerm("");
-    setLanguage("");
-    setTitle("");
-    setRatingMin("");
-    setPage(1);
+    setSearchDraft("");
+    applyQuery({ q: "", language: "", title: "", rating: "", page: 1 });
   };
 
-  const goToPage = (p: number) => {
-    setPage(p);
-    gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const goToPage = (page: number) => {
+    if (page === currentPage && !searchPending) return;
+    applyQuery({ page }, "push");
   };
 
-  // reset page when filters change
-  useEffect(() => { setPage(1); }, [searchTerm, language, title, ratingMin, sortBy]);
+  useEffect(() => {
+    if (loading || searchPending || query.page <= totalPages) return;
+    void setQuery({ page: totalPages }, { history: "replace" });
+  }, [loading, searchPending, query.page, totalPages, setQuery]);
 
   if (loading) {
     return (
@@ -334,8 +347,8 @@ const Masters: React.FC = () => {
               <Search className="w-[13px] h-[13px] shrink-0 text-[#8B6F4E]" strokeWidth={2} />
               <input
                 type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={searchDraft}
+                onChange={(e) => setSearchDraft(e.target.value)}
                 placeholder="Search by name or country"
                 className="min-w-0 flex-1 border-none bg-transparent font-[inherit] text-sm text-[#1F1109] outline-none placeholder:text-[#8B6F4E]/60"
               />
@@ -349,9 +362,9 @@ const Masters: React.FC = () => {
                 align="start"
                 shortLabel="Language"
                 label="All languages"
-                value={language}
+                value={query.language}
                 options={languageOptions}
-                onChange={setLanguage}
+                onChange={(language) => applyQuery({ language })}
                 icon={<Globe className="h-[11px] w-[11px] shrink-0 text-[#6B4F1F]" strokeWidth={2} />}
                 searchable
                 searchPool={languagePool}
@@ -363,9 +376,9 @@ const Masters: React.FC = () => {
                 align="center"
                 shortLabel="Title"
                 label="Any title"
-                value={title}
+                value={query.title}
                 options={titleOptions}
-                onChange={setTitle}
+                onChange={(title) => applyQuery({ title })}
               />
 
               <FilterDropdown
@@ -373,9 +386,9 @@ const Masters: React.FC = () => {
                 align="end"
                 shortLabel="Rating"
                 label="Rating: any"
-                value={ratingMin}
+                value={query.rating}
                 options={RATING_OPTIONS}
-                onChange={setRatingMin}
+                onChange={(rating) => applyQuery({ rating })}
                 formatLabel={(l) => `Rating: ${l}`}
               />
             </div>
@@ -395,18 +408,23 @@ const Masters: React.FC = () => {
             <span>Sort:</span>
             <FilterDropdown
               label="Top rated"
-              value={sortBy}
+              value={query.sort}
               options={SORT_OPTIONS}
-              onChange={setSortBy}
+              onChange={(sort) => {
+                if (
+                  sort === "rating" ||
+                  sort === "price-low" ||
+                  sort === "price-high"
+                ) {
+                  applyQuery({ sort });
+                }
+              }}
             />
           </div>
         </div>
 
         {/* Master grid */}
-        <div
-          ref={gridRef}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {pageMasters.length === 0 ? (
             <div className="col-span-full text-center py-16">
               <h3
@@ -438,46 +456,12 @@ const Masters: React.FC = () => {
           )}
         </div>
 
-        {/* Pagination */}
-        {filtered.length > 0 && totalPages > 1 && (
-          <div className="mt-7 flex max-w-full flex-wrap items-center justify-center gap-1.5">
-            <button
-              onClick={() => goToPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="inline-flex items-center justify-center w-7 h-7 rounded-full border border-[#1F1109]/[0.18] text-base text-[#5C4631] disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:bg-[#1F1109]/[0.06] transition-colors"
-            >
-              ‹
-            </button>
-
-            {pageList(currentPage, totalPages).map((p, i) =>
-              p === "gap" ? (
-                <span key={`gap-${i}`} className="px-1 text-xs text-[#5C4631]">
-                  …
-                </span>
-              ) : (
-                <button
-                  key={p}
-                  onClick={() => goToPage(p)}
-                  className={`inline-flex items-center justify-center min-w-[28px] h-7 px-2.5 rounded-full text-xs transition-colors ${
-                    p === currentPage
-                      ? "bg-[#3D2817] text-[#F4ECDD] font-medium cursor-default"
-                      : "text-[#5C4631] hover:bg-[#1F1109]/[0.06]"
-                  }`}
-                >
-                  {p}
-                </button>
-              )
-            )}
-
-            <button
-              onClick={() => goToPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="inline-flex items-center justify-center w-7 h-7 rounded-full border border-[#1F1109]/[0.18] text-base text-[#5C4631] disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:bg-[#1F1109]/[0.06] transition-colors"
-            >
-              ›
-            </button>
-          </div>
-        )}
+        <Pagination
+          page={currentPage}
+          pageSize={MASTER_PAGE_SIZE}
+          totalItems={filtered.length}
+          onPageChange={goToPage}
+        />
       </div>
     </div>
   );
