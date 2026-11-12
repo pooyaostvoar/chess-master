@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import { listBlogPosts } from "../services/api/blog.api";
 import { LatestBlogsSection } from "../components/home/LatestBlogsSection";
+import { Pagination } from "../components/Pagination";
 import { trackEvent } from "../lib/analytics";
 import { usePageMeta } from "../lib/seo";
-
-const PER_PAGE = 12;
+import { useDebouncedSearchDraft } from "../hooks/useDebouncedSearchDraft";
+import { useUrlQuery } from "../hooks/useUrlQuery";
+import { BLOG_PAGE_SIZES, blogQueryParsers } from "../lib/urlQuery";
 
 const BlogPostsPage: React.FC = () => {
   usePageMeta({
@@ -14,47 +16,76 @@ const BlogPostsPage: React.FC = () => {
       "Guides, tips, and insights from titled masters to help you improve your chess.",
     canonicalPath: "/posts",
   });
-  const [searchPhrase, setSearchPhrase] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [page, setPage] = useState(1);
+  const [query, setQuery] = useUrlQuery(blogQueryParsers);
+  const queryRef = useRef(query);
+  queryRef.current = query;
+  const commitSearch = useCallback((value: string) => {
+    const q = value.trim();
+    if (queryRef.current.q === q) return;
+    void setQuery({ q, page: 1 });
+  }, [setQuery]);
+  const [searchDraft, setSearchDraft] = useDebouncedSearchDraft(
+    query.q,
+    commitSearch
+  );
   const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState<Awaited<
     ReturnType<typeof listBlogPosts>
   > | null>(null);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setDebouncedQuery(searchPhrase.trim());
-      setPage(1);
-    }, 300);
-    return () => window.clearTimeout(timer);
-  }, [searchPhrase]);
-
-  useEffect(() => {
+    let cancelled = false;
     setLoading(true);
     listBlogPosts({
-      page,
-      pageSize: PER_PAGE,
-      q: debouncedQuery || undefined,
+      page: query.page,
+      pageSize: query.pageSize,
+      q: query.q || undefined,
     })
-      .then(setPosts)
-      .catch(() => setPosts({ items: [], total: 0, page: 1, pageSize: PER_PAGE }))
-      .finally(() => setLoading(false));
-  }, [page, debouncedQuery]);
+      .then((result) => {
+        if (!cancelled) setPosts(result);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setPosts({
+            items: [],
+            total: 0,
+            page: 1,
+            pageSize: query.pageSize,
+          });
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [query.page, query.pageSize, query.q]);
 
   useEffect(() => {
     if (loading || !posts) return;
     trackEvent("view_blog_list", {
-      page,
+      page: query.page,
       result_count: posts.total,
-      search_term: debouncedQuery || undefined,
+      search_term: query.q || undefined,
       page_path: "/posts",
     });
-  }, [loading, posts, page, debouncedQuery]);
+  }, [loading, posts, query.page, query.q]);
 
   const totalPages = posts
-    ? Math.max(1, Math.ceil(posts.total / PER_PAGE))
+    ? Math.max(1, Math.ceil(posts.total / query.pageSize))
     : 1;
+
+  useEffect(() => {
+    if (loading || !posts || query.page <= totalPages) return;
+    void setQuery({ page: totalPages }, { history: "replace" });
+  }, [loading, posts, query.page, totalPages, setQuery]);
+
+  const goToPage = (page: number) => {
+    if (page === query.page && searchDraft.trim() === query.q) return;
+    void setQuery({ page, q: searchDraft.trim() }, { history: "push" });
+  };
 
   return (
     <div className="bg-[#FAF5EB] min-h-screen">
@@ -88,8 +119,8 @@ const BlogPostsPage: React.FC = () => {
             <input
               type="text"
               placeholder="Search by title..."
-              value={searchPhrase}
-              onChange={(e) => setSearchPhrase(e.target.value)}
+              value={searchDraft}
+              onChange={(e) => setSearchDraft(e.target.value)}
               className="w-full bg-white border border-[#1F1109]/[0.14] rounded-lg pl-9 pr-3.5 py-2.5 text-xs text-[#1F1109] outline-none focus:border-[#B8893D] transition-colors placeholder:text-[#8B6F4E]/60"
             />
           </div>
@@ -98,7 +129,7 @@ const BlogPostsPage: React.FC = () => {
         {!loading && posts?.items.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-sm text-[#6B5640]">
-              {debouncedQuery
+              {query.q
                 ? "No articles match your search."
                 : "No articles published yet."}
             </p>
@@ -107,28 +138,21 @@ const BlogPostsPage: React.FC = () => {
           <LatestBlogsSection posts={posts?.items ?? []} loading={loading} />
         )}
 
-        {!loading && posts && posts.total > PER_PAGE && (
-          <div className="flex items-center justify-center gap-4 mt-10">
-            <button
-              type="button"
-              disabled={page <= 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="text-sm text-[#B8893D] font-medium hover:underline disabled:opacity-40 disabled:no-underline"
-            >
-              ← Previous
-            </button>
-            <span className="text-sm text-[#6B5640]">
-              Page {page} of {totalPages}
-            </span>
-            <button
-              type="button"
-              disabled={page >= totalPages}
-              onClick={() => setPage((p) => p + 1)}
-              className="text-sm text-[#B8893D] font-medium hover:underline disabled:opacity-40 disabled:no-underline"
-            >
-              Next →
-            </button>
-          </div>
+        {!loading && posts && (
+          <Pagination
+            className="mt-10"
+            page={query.page}
+            pageSize={query.pageSize}
+            totalItems={posts.total}
+            pageSizeOptions={BLOG_PAGE_SIZES}
+            onPageChange={goToPage}
+            onPageSizeChange={(pageSize) =>
+              void setQuery(
+                { pageSize, page: 1, q: searchDraft.trim() },
+                { history: "push" }
+              )
+            }
+          />
         )}
       </div>
     </div>
